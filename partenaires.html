@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Partenaires – Surfrider Sénégal</title>
+  <meta name="description" content="Les partenaires institutionnels, scientifiques, associatifs et financiers de la Surfrider Foundation Sénégal.">
+  <meta name="theme-color" content="#0072BC">
+  <link rel="icon" href="assets/img/logo-symbole-bleu.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css">
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/i18n.js"></script>
+  <script src="assets/js/main.js" defer></script>
+</head>
+<body>
+  <div data-site-header></div>
+
+  <main>
+    <section class="hero page-hero">
+      <div class="container">
+        <span class="eyebrow">Merci !</span>
+        <h1>Nos partenaires</h1>
+        <p class="lead">La Surfrider Foundation Sénégal remercie chaleureusement toutes celles et ceux qui agissent à ses côtés pour préserver l'océan.</p>
+      </div>
+      <svg class="hero-waves" viewBox="0 0 1440 120" preserveAspectRatio="none" aria-hidden="true">
+        <path d="M0 60 C 240 120 480 0 720 50 S 1200 110 1440 40 V120 H0Z" fill="#FBF6EE" opacity=".35"/>
+        <path d="M0 80 C 260 30 520 120 780 80 S 1240 40 1440 90 V120 H0Z" fill="#FBF6EE"/>
+      </svg>
+    </section>
+
+    <div id="partners"></div>
+
+    <section class="section section-tight">
+      <div class="container">
+        <div class="cta-band">
+          <div>
+            <h2>Devenir partenaire</h2>
+            <p style="margin:0">Mécénat, financement de programme, appui technique ou scientifique, partenariat local : parlons-en.</p>
+          </div>
+          <a class="btn btn-primary" href="contact.html">Contacter l'équipe partenariats</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div data-site-footer></div>
+
+  <script>
+    /* Pour ajouter un logo : déposer l'image dans assets/img/partenaires/
+       puis renseigner logo: "assets/img/partenaires/nom.png" sur la ligne du partenaire. */
+    const GROUPS = [
+      { title: "Institutions publiques", color: "#00853F", items: [
+        ["République du Sénégal"], ["Ministère de l'Environnement et de la Transition Écologique", "MEETE"],
+        ["DEEC", "Direction de l'Environnement et des Établissements Classés"], ["ONL", "Observatoire National du Littoral"],
+        ["Ville de Dakar"], ["Commune de Ouakam"], ["Commune de Yoff"], ["Commune de Ngor"], ["Ville de Cenon"]
+      ]},
+      { title: "Coopération & ambassades", color: "#0072BC", items: [
+        ["Ambassade d'Irlande"], ["Ambassade de France"], ["Ambassade du Portugal"], ["AFD", "Agence Française de Développement"]
+      ]},
+      { title: "Recherche & expertise", color: "#E31B23", items: [
+        ["Institut Pasteur de Dakar"], ["IRD", "Institut de Recherche pour le Développement"], ["UCAD", "Université Cheikh Anta Diop"], ["GRET"]
+      ]},
+      { title: "Réseau Surfrider & ONG", color: "#0B1F33", items: [
+        ["Surfrider Foundation Europe"], ["Women for Sea"], ["CARE"], ["Planète Urgence"]
+      ]},
+      { title: "Acteurs locaux du littoral", color: "#F2A900", items: [
+        ["APECSY"], ["Association des étudiants de Yoff"], ["Les Dauphins de Ngor"], ["Mbollo Arr", "Plongeurs de Yoff"],
+        ["Club environnemental de Yoff"], ["AMNSSB"]
+      ]}
+    ];
+    const initials = (n) => n.replace(/[’']/g, " ").split(/\s+/).filter(w => w.length > 2 || /^[A-Z]{2,}$/.test(w)).slice(0, 2).map(w => w[0]).join("").toUpperCase() || n.slice(0, 2).toUpperCase();
+    document.getElementById("partners").innerHTML = GROUPS.map((g, i) => `
+      <section class="section ${i % 2 ? "section-white" : ""}" style="padding:48px 0">
+        <div class="container">
+          <h2 style="font-size:2rem"><span style="display:inline-block;width:14px;height:14px;border-radius:4px;background:${g.color};margin-right:10px;vertical-align:4px"></span>${g.title}</h2>
+          <div class="grid grid-3">
+            ${g.items.map(([name, sub, logo]) => `
+              <div class="partner">
+                ${logo ? `<img src="${logo}" alt="">` : `<span class="mono" style="background:${g.color}${g.color === "#F2A900" ? ";color:#0B1F33" : ""}">${initials(name)}</span>`}
+                <span><strong>${name}</strong>${sub ? `<small>${sub}</small>` : ""}</span>
+              </div>`).join("")}
+          </div>
+        </div>
+      </section>`).join("");
+  </script>
+</body>
+</html>

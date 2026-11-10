@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Shop – Surfrider Sénégal</title>
+  <meta name="description" content="T-shirts, sweats, casquettes et goodies Surfrider Foundation Sénégal. Paiement par Wave. Chaque achat soutient la protection de l'océan.">
+  <meta name="theme-color" content="#0072BC">
+  <link rel="icon" href="assets/img/logo-symbole-bleu.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css">
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/i18n.js"></script>
+  <script src="assets/js/main.js" defer></script>
+  <script src="assets/js/shop.js" defer></script>
+</head>
+<body>
+  <div data-site-header></div>
+
+  <main>
+    <section class="hero page-hero">
+      <div class="container">
+        <span class="eyebrow">Porte les couleurs de l'océan</span>
+        <h1>Le shop</h1>
+        <p class="lead">T-shirts, sweats, casquettes et goodies aux couleurs de la Surfrider Sénégal. Chaque achat finance directement nos actions pour l'océan. Paiement simple et rapide avec Wave.</p>
+      </div>
+      <svg class="hero-waves" viewBox="0 0 1440 120" preserveAspectRatio="none" aria-hidden="true">
+        <path d="M0 60 C 240 120 480 0 720 50 S 1200 110 1440 40 V120 H0Z" fill="#FBF6EE" opacity=".35"/>
+        <path d="M0 80 C 260 30 520 120 780 80 S 1240 40 1440 90 V120 H0Z" fill="#FBF6EE"/>
+      </svg>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <div class="grid grid-3" id="products"></div>
+        <div class="notice notice-blue" style="margin-top:32px">
+          <strong>Comment ça marche ?</strong> Ajoute tes articles au panier, puis clique sur « Payer avec Wave ». Tu règles le montant total dans l'app Wave, puis tu nous envoies ta commande par WhatsApp pour organiser le retrait à Dakar ou la livraison.
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <button class="btn btn-dark cart-fab" id="cart-open" type="button" aria-haspopup="dialog">
+    <span>Panier</span> <span class="cart-count" id="cart-count" data-no-i18n>0</span>
+  </button>
+
+  <div class="drawer" id="cart" role="dialog" aria-modal="true" aria-labelledby="cart-title">
+    <div class="backdrop" data-close></div>
+    <div class="panel">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <h2 id="cart-title" style="margin:0;font-size:2rem">Ton panier</h2>
+        <button class="btn btn-outline btn-sm" type="button" data-close>Fermer</button>
+      </div>
+      <div id="cart-lines"></div>
+      <div style="display:flex;justify-content:space-between;font-family:var(--font-display);font-size:1.6rem;font-weight:800">
+        <span>Total</span><span id="cart-total">0 FCFA</span>
+      </div>
+      <form class="form" id="checkout">
+        <label>Prénom et nom<input name="name" required autocomplete="name"></label>
+        <label>Téléphone (WhatsApp)<input name="phone" required type="tel" autocomplete="tel" placeholder="77 000 00 00"></label>
+        <label>Retrait / livraison
+          <select name="delivery">
+            <option>Retrait à l'Ocean House (Virage)</option>
+            <option>Livraison à Dakar (frais à convenir)</option>
+          </select>
+        </label>
+        <button class="btn wave-pay" type="submit" id="pay-btn">Payer avec Wave</button>
+        <p id="pay-help" style="font-size:.92rem;color:var(--muted);margin:0"></p>
+      </form>
+    </div>
+  </div>
+
+  <div data-site-footer></div>
+</body>
+</html>

@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Espace membres – Surfrider Sénégal</title>
+  <meta name="robots" content="noindex">
+  <meta name="theme-color" content="#0072BC">
+  <link rel="icon" href="assets/img/logo-symbole-bleu.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css">
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/i18n.js"></script>
+  <script src="assets/js/main.js" defer></script>
+  <script src="assets/js/auth.js" defer></script>
+</head>
+<body>
+  <div data-site-header></div>
+  <main class="section">
+    <div class="container">
+      <span class="eyebrow">Réservé aux membres</span>
+      <h1 style="font-size:clamp(2.4rem,6vw,3.6rem)">Espace membres</h1>
+      <div id="app"></div>
+    </div>
+  </main>
+  <div data-site-footer></div>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const C = window.SF_CONFIG;
+      const tiles = (role) => {
+        const t = [];
+        if (role === "admin" || role === "saytoukat") t.push(["prelevements.html", "Prélèvements", "Saisir un prélèvement de qualité de l'eau sur ton site.", "var(--blue)"]);
+        if (role === "admin") {
+          t.push(["finances.html", "Finances", "Demandes de décaissement, suivi et tableau de bord financier.", "var(--green)"]);
+          t.push(["gestion-projets.html", "Gestion des projets", "Fiches projets, budgets et avancement.", "var(--red)"]);
+        }
+        return t;
+      };
+      const grid = (t) => `<div class="grid grid-3">${t.map(([h, n, d, c]) =>
+        `<a class="card card-accent" style="border-top-color:${c};text-decoration:none;color:inherit" href="${h}"><h3>${n} →</h3><p>${d}</p></a>`).join("")}</div>`;
+
+      SF_AUTH.guard.fallback = () => `<div style="text-align:left;margin-top:16px;display:grid;gap:10px">
+        <a class="btn btn-blue" href="${C.appsheet.prelevements}" target="_blank" rel="noopener">Saisir un prélèvement ↗</a>
+        <a class="btn btn-green" href="${C.appsheet.demandeDecaissement}" target="_blank" rel="noopener">Demande de décaissement ↗</a>
+        <a class="btn btn-dark" href="${C.appsheet.decaissements}" target="_blank" rel="noopener">Suivi des décaissements ↗</a>
+        <a class="btn btn-outline" href="${C.appsheet.projets}" target="_blank" rel="noopener">Projets (AppSheet) ↗</a></div>`;
+
+      SF_AUTH.guard({
+        need: "member", root: "#app", title: "Connexion",
+        render: (el, u) => {
+          const t = tiles(u.role);
+          el.innerHTML = t.length ? grid(t)
+            : `<div class="notice">${T("Bienvenue {name} ! Ton compte n'a pas encore de rôle dans l'espace membres. Si tu es Saytoukat Géej ou membre du bureau, demande l'accès à un·e administrateur·rice.", { name: u.name || "" })}</div>`;
+        }
+      });
+    });
+  </script>
+</body>
+</html>

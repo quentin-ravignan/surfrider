@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Prélèvements – Surfrider Sénégal</title>
+  <meta name="robots" content="noindex">
+  <meta name="theme-color" content="#0072BC">
+  <link rel="icon" href="assets/img/logo-symbole-bleu.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css">
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/i18n.js"></script>
+  <script src="assets/js/main.js" defer></script>
+  <script src="assets/js/auth.js" defer></script>
+</head>
+<body>
+  <div data-site-header></div>
+  <main class="section">
+    <div class="container">
+      <span class="eyebrow">Saytoukat Géej · gardien·ne·s de la mer</span>
+      <h1 style="font-size:clamp(2.4rem,6vw,3.6rem)">Prélèvements</h1>
+      <div id="app"></div>
+    </div>
+  </main>
+  <div data-site-footer></div>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const C = window.SF_CONFIG;
+      SF_AUTH.guard.fallback = () => `<a class="btn btn-blue" style="margin-top:12px" href="${C.appsheet.prelevements}" target="_blank" rel="noopener">Ouvrir le formulaire de prélèvement ↗</a>`;
+      SF_AUTH.guard({
+        need: "saytoukat", root: "#app", title: "Accès Saytoukat",
+        render: (el) => {
+          el.innerHTML = `
+            <div class="grid grid-3" style="margin-bottom:24px">
+              <div class="card card-accent"><h3>1. Sur le site</h3><p>Note la marée, la météo, les usagers et l'aspect de l'eau. Prends une photo de la plage et de la mer.</p></div>
+              <div class="card card-accent card-green"><h3>2. Le prélèvement</h3><p>Flacon stérile, rempli à environ 30 cm sous la surface, dans environ 1 m d'eau. Ne touche pas l'intérieur du bouchon. Suis le protocole de ta formation.</p></div>
+              <div class="card card-accent card-red"><h3>3. Au labo</h3><p>Garde le flacon au frais et apporte-le au laboratoire le jour même, dans les délais convenus.</p></div>
+            </div>
+            ${SF_AUTH.appsheetBlock(C.appsheet.prelevements, "Formulaire de prélèvement")}`;
+        }
+      });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Nos projets – Surfrider Sénégal</title>
+  <meta name="description" content="Les projets passés et en cours de la Surfrider Foundation Sénégal : qualité de l'eau, Ocean House, sensibilisation, plaidoyer.">
+  <meta name="theme-color" content="#0072BC">
+  <link rel="icon" href="assets/img/logo-symbole-bleu.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css">
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/i18n.js"></script>
+  <script src="assets/js/main.js" defer></script>
+</head>
+<body>
+  <div data-site-header></div>
+
+  <main>
+    <section class="hero page-hero">
+      <div class="container">
+        <span class="eyebrow">Monitorer · Alerter · Agir</span>
+        <h1>Nos projets</h1>
+        <p class="lead">Depuis 2020, la Surfrider Sénégal mène des actions concrètes sur le littoral dakarois, avec les citoyen·ne·s, les institutions et ses partenaires.</p>
+      </div>
+      <svg class="hero-waves" viewBox="0 0 1440 120" preserveAspectRatio="none" aria-hidden="true">
+        <path d="M0 60 C 240 120 480 0 720 50 S 1200 110 1440 40 V120 H0Z" fill="#FBF6EE" opacity=".35"/>
+        <path d="M0 80 C 260 30 520 120 780 80 S 1240 40 1440 90 V120 H0Z" fill="#FBF6EE"/>
+      </svg>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <div class="filters" role="group" aria-label="Filtrer les projets">
+          <button type="button" data-filter="all" aria-pressed="true">Tous</button>
+          <button type="button" data-filter="live" aria-pressed="false">En cours</button>
+          <button type="button" data-filter="done" aria-pressed="false">Réalisés</button>
+        </div>
+        <div id="projects" class="grid grid-2"></div>
+      </div>
+    </section>
+
+    <section class="section section-tight">
+      <div class="container">
+        <div class="cta-band">
+          <div>
+            <h2>Un projet avec nous ?</h2>
+            <p style="margin:0">Collectivité, entreprise, école, association ou chercheur·se : construisons ensemble des actions pour l'océan.</p>
+          </div>
+          <a class="btn btn-primary" href="contact.html">Nous écrire</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div data-site-footer></div>
+
+  <script>
+    const PROJECTS = [
+      {
+        status: "live", title: "Programme Qualité de l'eau", period: "2023 → aujourd'hui", theme: "Monitorer",
+        text: "Suivi participatif de la qualité des eaux de baignade sur six sites de la presqu'île de Dakar (Virage, Baie des Carpes, Ngor, Secret, Ouakam, Yoff), avec analyses bactériologiques en laboratoire.",
+        points: ["80 campagnes de prélèvements réalisées depuis octobre 2023", "Un réseau citoyen formé : les Saytoukat Géej, gardien·ne·s de la mer", "Plus de 90 acteur·rice·s mobilisé·e·s pendant la phase pilote", "Avec le Ministère de l'Environnement, la Ville de Dakar, la mairie de Ouakam, l'Institut Pasteur, le GRET et Surfrider Foundation Europe"],
+        link: ["qualite-eau.html", "Voir la carte"]
+      },
+      {
+        status: "live", title: "Plaidoyer national pour des eaux de baignade saines", period: "Avril 2026 → aujourd'hui", theme: "Alerter",
+        text: "Le 23 avril 2026, la Rencontre nationale sur la qualité des eaux récréatives a réuni des dizaines de parties prenantes à Dakar. La Surfrider Sénégal et ses partenaires y ont rendu publics les résultats et lancé un plaidoyer national.",
+        points: ["Note de plaidoyer et recommandations aux autorités et gestionnaires de sites", "Livrables d'atelier partagés avec les participant·e·s", "Une alerte pour tout le littoral sénégalais"]
+      },
+      {
+        status: "live", title: "Ocean House au Virage", period: "Ouverture le 28 octobre 2026", theme: "Agir",
+        text: "Un lieu ouvert sur la plage du Virage pour accueillir, sensibiliser et rassembler la communauté des ocean lovers autour d'animations et d'actions pour l'océan."
+      },
+      {
+        status: "live", title: "Journées d'action citoyenne", period: "2026", theme: "Agir",
+        text: "Mobilisations sur les plages dakaroises pour agir concrètement sur la qualité de l'eau et les déchets, comme la journée du 18 juillet 2026 à Yoff, avec les habitant·e·s, les associations et les partenaires."
+      },
+      {
+        status: "live", title: "Médiation scientifique & éducation", period: "2026", theme: "Agir",
+        text: "Échanges avec des acteurs de la recherche et de l'éducation (dont l'IMEV et son programme pédagogique « Adopt a float ») pour faire découvrir l'océan aux élèves dakarois, et contribution à un guide technique sur la gestion du milieu marin côtier."
+      },
+      {
+        status: "done", title: "La Surfrider Sénégal à l'UNOC 3", period: "Juin 2025 · Nice", theme: "Alerter",
+        text: "Participation à la 3ᵉ Conférence des Nations Unies sur l'Océan pour porter la voix des communautés sénégalaises engagées pour l'océan.",
+        points: ["Tables rondes avec Women for Sea, Surfrider Foundation Europe et CARE", "Projections du film « The Human Side of Plastics » avec Babacar Thiaw", "Émission spéciale RFI – La Matinale de l'Océan"]
+      },
+      {
+        status: "done", title: "Lancement élargi du programme Qualité de l'eau", period: "5 février 2025 · Hôtel de Ville de Dakar", theme: "Alerter",
+        text: "Réunion de présentation des résultats de la phase pilote et des ambitions 2025-2027 du programme aux institutions, bailleurs et partenaires potentiels."
+      },
+      {
+        status: "done", title: "Challenge App Afrique", period: "2025", theme: "Agir",
+        text: "Sélection de la Surfrider Sénégal pour la deuxième étape du Challenge App Afrique, qui récompense des projets numériques innovants à impact sur le continent."
+      },
+      {
+        status: "done", title: "Phase pilote Qualité de l'eau", period: "Oct. 2023 → 2025", theme: "Monitorer",
+        text: "Première campagne de suivi hebdomadaire des six sites, formation des premiers Saytoukat Géej (octobre 2023) et partenariat avec l'Institut Pasteur de Dakar pour les analyses."
+      },
+      {
+        status: "done", title: "Naissance du chapter Sénégal", period: "Novembre 2020", theme: "Agir",
+        text: "Création de Surfrider Foundation Sénégal, premier chapter d'Afrique subsaharienne, par six co-fondateur·rice·s passionné·e·s d'océan."
+      }
+    ];
+    const COLORS = { Monitorer: "var(--blue)", Alerter: "var(--red)", Agir: "var(--green)" };
+    const root = document.getElementById("projects");
+    function render(filter) {
+      root.innerHTML = PROJECTS.filter(p => filter === "all" || p.status === filter).map(p => `
+        <article class="card card-accent project" style="border-top-color:${COLORS[p.theme]}">
+          <div class="meta">
+            <span class="tag ${p.status === "live" ? "tag-live" : "tag-done"}">${p.status === "live" ? "En cours" : "Réalisé"}</span>
+            <span class="tag">${p.theme}</span>
+            <span>${p.period}</span>
+          </div>
+          <h3>${p.title}</h3>
+          <p>${p.text}</p>
+          ${p.points ? `<ul>${p.points.map(x => `<li>${x}</li>`).join("")}</ul>` : ""}
+          ${p.link ? `<div><a class="btn btn-outline btn-sm" href="${p.link[0]}">${p.link[1]}</a></div>` : ""}
+        </article>`).join("");
+    }
+    document.querySelectorAll("[data-filter]").forEach(b => b.addEventListener("click", () => {
+      document.querySelectorAll("[data-filter]").forEach(x => x.setAttribute("aria-pressed", x === b));
+      render(b.dataset.filter);
+    }));
+    render("all");
+  </script>
+</body>
+</html>

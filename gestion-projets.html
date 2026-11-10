@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Gestion des projets – Surfrider Sénégal</title>
+  <meta name="robots" content="noindex">
+  <meta name="theme-color" content="#0072BC">
+  <link rel="icon" href="assets/img/logo-symbole-bleu.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css">
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/i18n.js"></script>
+  <script src="assets/js/main.js" defer></script>
+  <script src="assets/js/auth.js" defer></script>
+  <script src="assets/js/admin-data.js" defer></script>
+</head>
+<body>
+  <div data-site-header></div>
+  <main class="section">
+    <div class="container">
+      <span class="eyebrow">Réservé aux administrateurs</span>
+      <h1 style="font-size:clamp(2.4rem,6vw,3.6rem)">Gestion des projets</h1>
+      <div id="app"></div>
+    </div>
+  </main>
+  <div data-site-footer></div>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const C = window.SF_CONFIG;
+      SF_AUTH.guard.fallback = () => `<a class="btn btn-dark" style="margin-top:12px" href="${C.appsheet.projets}" target="_blank" rel="noopener">Ouvrir les projets (AppSheet) ↗</a>`;
+      SF_AUTH.guard({
+        need: "admin", root: "#app", title: "Accès administrateurs",
+        render: (el) => {
+          el.innerHTML = `
+            <div class="tabs" role="tablist">
+              <button role="tab" aria-selected="true" data-tab="app">Fiches projets (AppSheet)</button>
+              <button role="tab" aria-selected="false" data-tab="board">Vue d'ensemble</button>
+            </div>
+            <div data-panel="app">${SF_AUTH.appsheetBlock(C.appsheet.projets, "Projets")}</div>
+            <div data-panel="board" hidden></div>`;
+          let loaded = false;
+          el.querySelectorAll("[data-tab]").forEach((b) => b.addEventListener("click", () => {
+            el.querySelectorAll("[data-tab]").forEach((x) => x.setAttribute("aria-selected", x === b));
+            el.querySelectorAll("[data-panel]").forEach((p) => (p.hidden = p.dataset.panel !== b.dataset.tab));
+            if (b.dataset.tab === "board" && !loaded) { loaded = true; SF_ADMIN.projectsBoard(el.querySelector('[data-panel="board"]')); }
+          }));
+        }
+      });
+    });
+  </script>
+</body>
+</html>

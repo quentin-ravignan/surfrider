@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Contact – Surfrider Sénégal</title>
+  <meta name="description" content="Contacter la Surfrider Foundation Sénégal : Instagram, Facebook, LinkedIn, WhatsApp, email, et l'équipe.">
+  <meta name="theme-color" content="#0072BC">
+  <link rel="icon" href="assets/img/logo-symbole-bleu.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css">
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/i18n.js"></script>
+  <script src="assets/js/main.js" defer></script>
+</head>
+<body>
+  <div data-site-header></div>
+
+  <main>
+    <section class="hero page-hero">
+      <div class="container">
+        <span class="eyebrow">On reste en contact</span>
+        <h1>Contact</h1>
+        <p class="lead">Une question, une idée de projet, envie de nous rejoindre ? Écris-nous ou retrouve-nous sur les réseaux.</p>
+      </div>
+      <svg class="hero-waves" viewBox="0 0 1440 120" preserveAspectRatio="none" aria-hidden="true">
+        <path d="M0 60 C 240 120 480 0 720 50 S 1200 110 1440 40 V120 H0Z" fill="#FBF6EE" opacity=".35"/>
+        <path d="M0 80 C 260 30 520 120 780 80 S 1240 40 1440 90 V120 H0Z" fill="#FBF6EE"/>
+      </svg>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <div class="social-grid" id="socials"></div>
+      </div>
+    </section>
+
+    <section class="section section-white">
+      <div class="container grid grid-2">
+        <div>
+          <span class="eyebrow">Écris-nous</span>
+          <h2>Envoyer un message</h2>
+          <p>Ton message s'ouvrira dans ta messagerie, prêt à être envoyé à <a id="mail-link" href="#"></a>.</p>
+          <form class="form" id="contact-form">
+            <label>Nom<input name="name" required autocomplete="name"></label>
+            <label>Email<input type="email" name="email" required autocomplete="email"></label>
+            <label>Sujet
+              <select name="subject">
+                <option>Question générale</option>
+                <option>Devenir bénévole</option>
+                <option>Devenir Saytoukat Géej</option>
+                <option>Partenariat</option>
+                <option>Presse</option>
+                <option>Commande shop</option>
+              </select>
+            </label>
+            <label>Message<textarea name="message" rows="5" required></textarea></label>
+            <button class="btn btn-blue" type="submit">Préparer l'email</button>
+          </form>
+        </div>
+        <div id="benevolat">
+          <span class="eyebrow">Agir avec la Surfrider</span>
+          <h2>Rejoins le mouvement</h2>
+          <div class="grid" style="gap:16px">
+            <div class="card card-accent card-green"><h3>Bénévole</h3><p>Ramassages, sensibilisation sur les plages, événements, animation de l'Ocean House… chaque coup de main compte.</p></div>
+            <div class="card card-accent"><h3>Saytoukat Géej</h3><p>Deviens gardien·ne de la mer : tu es formé·e pour réaliser les prélèvements et observations sur un site de baignade près de chez toi.</p></div>
+            <div class="card card-accent card-yellow"><h3>Stage & volontariat</h3><p>Étudiant·e ou volontaire international·e ? Envoie-nous ta candidature et tes disponibilités.</p></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="equipe">
+      <div class="container">
+        <div class="section-head">
+          <span class="eyebrow">La team</span>
+          <h2>Une équipe passionnée</h2>
+          <p>La Surfrider Sénégal, c'est 6 co-fondateur·rice·s, une équipe exécutive, des volontaires au quotidien sur le terrain et une communauté de 1 725 membres avec un réseau citoyen de suivi de la pollution, les Saytoukat Géej.</p>
+        </div>
+        <div class="grid grid-3" id="team"></div>
+      </div>
+    </section>
+  </main>
+
+  <div data-site-footer></div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const C = window.SF_CONFIG, I = window.SF_ICONS;
+      document.getElementById("socials").innerHTML = `
+        <a class="social s-ig" href="${C.instagram}" target="_blank" rel="noopener">${I.ig}<strong>Instagram</strong><span>@surfridersenegal</span></a>
+        <a class="social s-fb" href="${C.facebook}" target="_blank" rel="noopener">${I.fb}<strong>Facebook</strong><span>Surfrider Sénégal</span></a>
+        <a class="social s-li" href="${C.linkedin}" target="_blank" rel="noopener">${I.li}<strong>LinkedIn</strong><span>Surfrider Foundation Sénégal</span></a>
+        <a class="social s-wa" href="https://wa.me/${C.whatsapp}" target="_blank" rel="noopener">${I.wa}<strong>WhatsApp</strong><span>${C.phone}</span></a>`;
+      const ml = document.getElementById("mail-link"); ml.href = "mailto:" + C.email; ml.textContent = C.email;
+
+      document.getElementById("contact-form").addEventListener("submit", (e) => {
+        e.preventDefault();
+        const f = new FormData(e.target);
+        const body = `${f.get("message")}\n\n— ${f.get("name")} (${f.get("email")})`;
+        location.href = `mailto:${C.email}?subject=${encodeURIComponent("[Site] " + f.get("subject"))}&body=${encodeURIComponent(body)}`;
+      });
+
+      const TEAM = [
+        ["Babacar Thiaw", "Président", "#00853F"],
+        ["Claire Stragier", "Directrice générale", "#0072BC"],
+        ["Paulèle Cissé", "Trésorière", "#E31B23"],
+        ["Adama Samba", "Secrétaire", "#F2A900"],
+        ["Quentin de Ravignan", "Responsable partenariats", "#0B1F33"],
+        ["Marlène Menoux", "Responsable projets", "#00853F"],
+        ["Pape Segan Ndiaye", "Responsable sensibilisation et mobilisation sociale", "#0072BC"],
+        ["Maguette Diouf", "Animatrice", "#E31B23"],
+        ["Mame Khary Diagne", "Animatrice", "#F2A900"]
+      ];
+      document.getElementById("team").innerHTML = TEAM.map(([n, r, c]) => `
+        <div class="card team-card">
+          <div class="avatar" style="background:${c}${c === "#F2A900" ? ";color:#0B1F33" : ""}" aria-hidden="true">${n.split(" ").map(w => w[0]).filter(ch => ch === ch.toUpperCase()).slice(0, 2).join("")}</div>
+          <h3>${n}</h3><p class="role">${r}</p>
+        </div>`).join("");
+    });
+  </script>
+</body>
+</html>

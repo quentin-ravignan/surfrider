@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Qualité de l'eau – Surfrider Sénégal</title>
+  <meta name="description" content="Carte de la qualité des eaux de baignade à Dakar : résultats des prélèvements de la Surfrider Foundation Sénégal sur 6 sites depuis 2023.">
+  <meta name="theme-color" content="#0072BC">
+  <link rel="icon" href="assets/img/logo-symbole-bleu.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+  <link rel="stylesheet" href="assets/css/style.css">
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/i18n.js"></script>
+  <script src="assets/js/main.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js" defer></script>
+  <script src="assets/js/water.js" defer></script>
+</head>
+<body>
+  <div data-site-header></div>
+
+  <main>
+    <section class="hero page-hero">
+      <div class="container">
+        <span class="eyebrow">Programme Qualité de l'eau · depuis 2023</span>
+        <h1>Qualité de l'eau</h1>
+        <p class="lead">Connaître, comprendre et agir pour améliorer la qualité des eaux récréatives du littoral sénégalais. Retrouvez les résultats des prélèvements réalisés sur six sites de la presqu'île de Dakar.</p>
+      </div>
+      <svg class="hero-waves" viewBox="0 0 1440 120" preserveAspectRatio="none" aria-hidden="true">
+        <path d="M0 60 C 240 120 480 0 720 50 S 1200 110 1440 40 V120 H0Z" fill="#FBF6EE" opacity=".35"/>
+        <path d="M0 80 C 260 30 520 120 780 80 S 1240 40 1440 90 V120 H0Z" fill="#FBF6EE"/>
+      </svg>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <div class="controls">
+          <label for="period"><strong>Afficher :</strong></label>
+          <select id="period">
+            <option value="last">Dernier prélèvement</option>
+            <option value="all">Bilan de toutes les campagnes</option>
+          </select>
+          <span id="data-status" class="tag" role="status">Chargement des données…</span>
+        </div>
+        <div class="legend" aria-label="Légende">
+          <span><i style="background:var(--good)"></i>Bonne qualité</span>
+          <span><i style="background:var(--mid)"></i>Qualité moyenne</span>
+          <span><i style="background:var(--bad)"></i>Mauvaise qualité</span>
+          <span><i style="background:#9AA7B4"></i>Pas de donnée</span>
+        </div>
+        <div class="wq-layout" style="margin-top:16px">
+          <div id="map" role="region" aria-label="Carte des sites de prélèvement"></div>
+          <div>
+            <h3>Les 6 sites suivis</h3>
+            <div id="site-list" class="site-list"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-white">
+      <div class="container">
+        <div class="section-head">
+          <span class="eyebrow">Évolution</span>
+          <h2 id="chart-title">Historique des prélèvements</h2>
+          <p>Concentrations en bactéries indicatrices de pollution fécale (UFC/100 ml, échelle logarithmique). Les lignes pointillées marquent les seuils « bon » et « mauvais ».</p>
+        </div>
+        <div class="chart-wrap" id="chart"></div>
+        <div id="site-stats" class="kpis" style="margin-top:20px"></div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container grid grid-2">
+        <div class="card">
+          <h3>Comment lire les résultats ?</h3>
+          <p>Chaque prélèvement est analysé en laboratoire pour mesurer deux bactéries indicatrices d'une contamination par les eaux usées : <strong>Escherichia coli</strong> et les <strong>entérocoques intestinaux</strong>.</p>
+          <table class="data-table" style="margin-bottom:12px">
+            <thead><tr><th>Qualité</th><th>E. coli</th><th>Entérocoques</th></tr></thead>
+            <tbody>
+              <tr><td><span class="badge q-good">Bonne</span></td><td>≤ 100</td><td>≤ 100</td></tr>
+              <tr><td><span class="badge q-mid">Moyenne</span></td><td>100 à 1 000</td><td>100 à 370</td></tr>
+              <tr><td><span class="badge q-bad">Mauvaise</span></td><td>&gt; 1 000</td><td>&gt; 370</td></tr>
+            </tbody>
+          </table>
+          <p><small>Valeurs en UFC/100 ml. Un prélèvement est classé selon le paramètre le plus défavorable.</small></p>
+        </div>
+        <div class="card">
+          <h3>Les bons réflexes</h3>
+          <ul>
+            <li>Évite la baignade dans les <strong>48 h qui suivent une forte pluie</strong> : les eaux usées et pluviales ruissellent vers la mer.</li>
+            <li>Ne bois pas la tasse et rince-toi à l'eau douce après la session.</li>
+            <li>Couvre les plaies et coupures avant d'aller à l'eau.</li>
+            <li>Signale toute odeur, mousse ou couleur anormale de l'eau à l'équipe.</li>
+            <li>Rejoins les <strong>Saytoukat Géej</strong>, les gardien·ne·s de la mer, pour participer aux prélèvements !</li>
+          </ul>
+          <a class="btn btn-blue btn-sm" href="contact.html#benevolat">Devenir Saytoukat</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-dark">
+      <div class="container">
+        <div class="section-head">
+          <span class="eyebrow">Plaidoyer national · 23 avril 2026</span>
+          <h2>Une alerte pour tout le littoral</h2>
+          <p>Durant plus de deux ans, un suivi rigoureux a été mené avec des institutions publiques nationales et locales, des partenaires techniques et scientifiques, un réseau de citoyen·ne·s engagé·e·s (les Saytoukat Géej), des riverain·e·s et des acteur·rice·s des sites suivis.</p>
+          <p>Les résultats révèlent une qualité de l'eau variable selon les sites et les saisons, parfois préoccupante, avec une proportion importante de prélèvements non satisfaisants et des dépassements des seuils internationaux. Cette pollution peut avoir des conséquences sur la santé des usagers, les rendements de la pêche, le tourisme, les activités nautiques et la biodiversité marine.</p>
+          <p>Le 23 avril 2026, à l'issue d'une Rencontre nationale réunissant des dizaines de parties prenantes, la Surfrider Foundation Sénégal et ses partenaires ont lancé un plaidoyer national pour l'amélioration de la qualité des eaux de baignade au Sénégal.</p>
+        </div>
+        <a class="btn btn-primary" href="https://sites.google.com/view/surfridersenegal/qualit%C3%A9-de-leau" target="_blank" rel="noopener">Lire la note de plaidoyer</a>
+      </div>
+    </section>
+  </main>
+
+  <div data-site-footer></div>
+</body>
+</html>
