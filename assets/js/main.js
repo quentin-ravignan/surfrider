@@ -23,7 +23,7 @@
     ["game.html", "Game", "nav-game"],
     ["membres.html", "Espace membres", "nav-members"]
   ];
-  const MEMBER_PAGES = ["membres.html", "prelevements.html", "finances.html", "gestion-projets.html"];
+  const MEMBER_PAGES = ["membres.html", "prelevements.html", "finances.html", "gestion-projets.html", "annuaire.html"];
 
   const header = document.querySelector("[data-site-header]");
   if (header) {

@@ -35,7 +35,7 @@ window.SF_CONFIG = {
      2. Ajouter l'URL du site dans « Origines JavaScript autorisées »
         (ex : https://quentin-ravignan.github.io)
      3. Coller l'ID ci-dessous. */
-  googleClientId: "",
+  googleClientId: "835654071271-9ol5lii5u1gkhtsnfr22dso679jtr6uf.apps.googleusercontent.com",
 
   /* Administrateurs : accès aux pages Finances et Projets (gestion) */
   admins: [
@@ -73,5 +73,15 @@ window.SF_CONFIG = {
      elles ne sont jamais publiques. Laisser vide pour masquer le tableau. */
   financeSheetId: "",
   financeSheetTab: "Décaissements",
-  projectsSheetTab: "Projets"
+  projectsSheetTab: "Projets",
+
+  /* Page « Membres » (admins) : annuaires lus avec le compte Google connecté.
+     Les colonnes sensibles (CNI, numéro Wave) ne sont jamais affichées. */
+  saytoukatSheetId: "1Xlvqgqq6q4tiKu8tO3GrhI3ddBcH2ToRTxeHRWHADWM",
+  saytoukatTab: "Saytoukat",
+  /* Liste des adhérent·e·s de l'association (Google Sheet avec une ligne
+     d'en-tête : Nom, Email, Téléphone, Date d'adhésion…). Laisser vide si
+     elle n'existe pas encore. */
+  membersSheetId: "",
+  membersTab: "Membres"
 };
