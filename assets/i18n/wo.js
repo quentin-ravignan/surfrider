@@ -386,5 +386,21 @@ window.SF_DICT.wo = {
  "Rechercher": "Seet",
  "Tous les sites": "Béréb yépp",
  "{n} résultat(s)": "{n} ngérte",
- "Données personnelles : usage interne à l'association uniquement. Les colonnes CNI et Wave sont masquées.": "Xibaar yu sutura : ngir mbootaay bi rekk. Kolonu CNI ak Wave yi, ñu nëbb leen."
+ "Données personnelles : usage interne à l'association uniquement. Les colonnes CNI et Wave sont masquées.": "Xibaar yu sutura : ngir mbootaay bi rekk. Kolonu CNI ak Wave yi, ñu nëbb leen.",
+ "Sur le terrain": "Ci tefes gi",
+ "La communauté en action": "Mbooloo mi ci jëf",
+ "Nettoyages de plage, prélèvements, sensibilisation : la communauté Surfrider Sénégal en action.": "Setal tefes yi, jël ndox, xamal : mbooloom Surfrider Senegaal ci jëf.",
+ "Chaque déchet ramassé est un déchet de moins dans l'océan": "Mbalit mu nekk mu ñu for, mbalit la mu wàññeeku ci géej gi",
+ "Un bénévole ramasse des déchets plastiques sur les rochers": "Ab way-jappale di for mbalitu plastik ci kaw doj yi",
+ "Microplastiques et débris sur le sable": "Mikro-plastik ak mbalit ci suuf si",
+ "Amas de déchets au bord d'une plage de Dakar pendant un nettoyage": "Mbalit mu bari ci wetu tefesu Ndakaaru bi ñuy setal",
+ "L'équipe de bénévoles retire un pneu de la plage": "Ekipu way-jappale yi di dindi ab pnë ci tefes gi",
+ "Bouchons, pailles et plastiques collectés sur une plage, triés sur le sable": "Bouchon, paille ak plastik yu ñu for ci tefes, ñu tànnale leen ci suuf si",
+ "Un bénévole porte un sac de déchets sur la plage": "Ab way-jappale di yor mbuusu mbalit ci tefes gi",
+ "Des bénévoles ramassent des déchets entre les rochers": "Ay way-jappale di for mbalit ci diggante doj yi",
+ "Deux bénévoles secouent des plastiques pleins de sable": "Ñaari way-jappale di yëngal plastik yu fees ak suuf",
+ "Sachets d'eau plastique abandonnés sur le sable": "Saasu ndox yu plastik yu ñu bàyyi ci suuf si",
+ "Un jeune retire un vieux sac coincé entre les rochers": "Ab ndaw di génne mbuus mu màggat mu tëju ci diggante doj yi",
+ "Un jeune remplit un grand sac de déchets au pied des rochers": "Ab ndaw di fees mbuus mu mag ak mbalit ci suufu doj yi",
+ "Deux enfants tiennent un sac de déchets ramassés sur la plage": "Ñaari xale di téye mbuusu mbalit mu ñu for ci tefes gi"
 };

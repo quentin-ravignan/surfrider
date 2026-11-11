@@ -506,6 +506,23 @@ R = [
 ("Données personnelles : usage interne à l'association uniquement. Les colonnes CNI et Wave sont masquées.",
  "Personal data: for internal association use only. ID card and Wave columns are hidden.",
  "Xibaar yu sutura : ngir mbootaay bi rekk. Kolonu CNI ak Wave yi, ñu nëbb leen."),
+# --- Restyle : photos
+("Sur le terrain", "In the field", "Ci tefes gi"),
+("La communauté en action", "The community in action", "Mbooloo mi ci jëf"),
+("Nettoyages de plage, prélèvements, sensibilisation : la communauté Surfrider Sénégal en action.", "Beach clean-ups, sampling, awareness-raising: the Surfrider Senegal community in action.", "Setal tefes yi, jël ndox, xamal : mbooloom Surfrider Senegaal ci jëf."),
+("Chaque déchet ramassé est un déchet de moins dans l'océan", "Every piece of litter picked up is one less in the ocean", "Mbalit mu nekk mu ñu for, mbalit la mu wàññeeku ci géej gi"),
+("Un bénévole ramasse des déchets plastiques sur les rochers", "A volunteer picks up plastic waste on the rocks", "Ab way-jappale di for mbalitu plastik ci kaw doj yi"),
+("Microplastiques et débris sur le sable", "Microplastics and debris on the sand", "Mikro-plastik ak mbalit ci suuf si"),
+("Amas de déchets au bord d'une plage de Dakar pendant un nettoyage", "A pile of waste by a Dakar beach during a clean-up", "Mbalit mu bari ci wetu tefesu Ndakaaru bi ñuy setal"),
+("L'équipe de bénévoles retire un pneu de la plage", "The volunteer team removes a tyre from the beach", "Ekipu way-jappale yi di dindi ab pnë ci tefes gi"),
+("Bouchons, pailles et plastiques collectés sur une plage, triés sur le sable", "Bottle caps, straws and plastics collected on a beach, sorted on the sand", "Bouchon, paille ak plastik yu ñu for ci tefes, ñu tànnale leen ci suuf si"),
+("Un bénévole porte un sac de déchets sur la plage", "A volunteer carries a bag of waste on the beach", "Ab way-jappale di yor mbuusu mbalit ci tefes gi"),
+("Des bénévoles ramassent des déchets entre les rochers", "Volunteers pick up waste between the rocks", "Ay way-jappale di for mbalit ci diggante doj yi"),
+("Deux bénévoles secouent des plastiques pleins de sable", "Two volunteers shake out sand-filled plastics", "Ñaari way-jappale di yëngal plastik yu fees ak suuf"),
+("Sachets d'eau plastique abandonnés sur le sable", "Plastic water sachets left on the sand", "Saasu ndox yu plastik yu ñu bàyyi ci suuf si"),
+("Un jeune retire un vieux sac coincé entre les rochers", "A young person pulls an old bag stuck between the rocks", "Ab ndaw di génne mbuus mu màggat mu tëju ci diggante doj yi"),
+("Un jeune remplit un grand sac de déchets au pied des rochers", "A young person fills a big bag with waste at the foot of the rocks", "Ab ndaw di fees mbuus mu mag ak mbalit ci suufu doj yi"),
+("Deux enfants tiennent un sac de déchets ramassés sur la plage", "Two children hold a bag of waste collected on the beach", "Ñaari xale di téye mbuusu mbalit mu ñu for ci tefes gi"),
 ]
 
 seen = set()

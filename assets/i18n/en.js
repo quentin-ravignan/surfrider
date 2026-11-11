@@ -386,5 +386,21 @@ window.SF_DICT.en = {
  "Rechercher": "Search",
  "Tous les sites": "All sites",
  "{n} résultat(s)": "{n} result(s)",
- "Données personnelles : usage interne à l'association uniquement. Les colonnes CNI et Wave sont masquées.": "Personal data: for internal association use only. ID card and Wave columns are hidden."
+ "Données personnelles : usage interne à l'association uniquement. Les colonnes CNI et Wave sont masquées.": "Personal data: for internal association use only. ID card and Wave columns are hidden.",
+ "Sur le terrain": "In the field",
+ "La communauté en action": "The community in action",
+ "Nettoyages de plage, prélèvements, sensibilisation : la communauté Surfrider Sénégal en action.": "Beach clean-ups, sampling, awareness-raising: the Surfrider Senegal community in action.",
+ "Chaque déchet ramassé est un déchet de moins dans l'océan": "Every piece of litter picked up is one less in the ocean",
+ "Un bénévole ramasse des déchets plastiques sur les rochers": "A volunteer picks up plastic waste on the rocks",
+ "Microplastiques et débris sur le sable": "Microplastics and debris on the sand",
+ "Amas de déchets au bord d'une plage de Dakar pendant un nettoyage": "A pile of waste by a Dakar beach during a clean-up",
+ "L'équipe de bénévoles retire un pneu de la plage": "The volunteer team removes a tyre from the beach",
+ "Bouchons, pailles et plastiques collectés sur une plage, triés sur le sable": "Bottle caps, straws and plastics collected on a beach, sorted on the sand",
+ "Un bénévole porte un sac de déchets sur la plage": "A volunteer carries a bag of waste on the beach",
+ "Des bénévoles ramassent des déchets entre les rochers": "Volunteers pick up waste between the rocks",
+ "Deux bénévoles secouent des plastiques pleins de sable": "Two volunteers shake out sand-filled plastics",
+ "Sachets d'eau plastique abandonnés sur le sable": "Plastic water sachets left on the sand",
+ "Un jeune retire un vieux sac coincé entre les rochers": "A young person pulls an old bag stuck between the rocks",
+ "Un jeune remplit un grand sac de déchets au pied des rochers": "A young person fills a big bag with waste at the foot of the rocks",
+ "Deux enfants tiennent un sac de déchets ramassés sur la plage": "Two children hold a bag of waste collected on the beach"
 };

@@ -313,8 +313,8 @@ const I18N = {
   },
 };
 
-const LANGS = ['fr', 'en', 'wo'];
-let LANG = 'fr';
+const LANGS = ['wo', 'fr', 'en'];
+let LANG = 'wo'; // langue par défaut du site
 try { const l = localStorage.getItem('sf-lang'); if (LANGS.includes(l)) LANG = l; } catch (e) { /* ignore */ }
 function L() { return I18N[LANG] || I18N.fr; }
 function t(path) {
@@ -325,10 +325,11 @@ function t(path) {
 const fmt = (n) => Math.round(n).toLocaleString(LANG === 'en' ? 'en-GB' : 'fr-FR');
 
 const CHARACTERS = [
-  { id: 'babacar', name: 'Babacar', chest: 0x00853F, belly: 0x00853F, sleeves: 0xFDEF42, shorts: 0x0B1F33, board: 0xFDEF42, stripe: 0xE31B23, hair: 'short' },
-  { id: 'paulele', name: 'Paulèle', chest: 0xFDEF42, belly: 0xFDEF42, sleeves: 0x00853F, shorts: 0x0B1F33, board: 0xE31B23, stripe: 0xFFFFFF, hair: 'bun' },
-  { id: 'adama', name: 'Adama', chest: 0xE31B23, belly: 0xE31B23, sleeves: 0xFFFFFF, shorts: 0x00853F, board: 0x0072BC, stripe: 0xFDEF42, hair: 'short' },
-  { id: 'claire', name: 'Claire', chest: 0x00853F, belly: 0xE31B23, sleeves: 0xFDEF42, shorts: 0x0B1F33, board: 0xFFFFFF, stripe: 0x0072BC, hair: 'bun' },
+  // T-shirt Surfrider + board short pour tout le monde ; silhouettes stylisées, sans recherche de ressemblance
+  { id: 'babacar', name: 'Babacar', skin: 0x4a2c1d, height: 1.17, hair: 'crop', shirt: 0xf4f4f2, shorts: 0x00853F, board: 0xFDEF42, stripe: 0xE31B23 },
+  { id: 'paulele', name: 'Paulèle', skin: 0x5a3626, hair: 'hijab', scarf: 0x0f9b6c, shirt: 0x0072BC, longSleeves: true, shorts: 0xE31B23, longShorts: true, leggings: 0x0B1F33, board: 0xFDEF42, stripe: 0xffffff },
+  { id: 'adama', name: 'Adama', skin: 0x4f3020, hair: 'dreads', shirt: 0x1d3557, shorts: 0xFDEF42, board: 0x0072BC, stripe: 0xFDEF42 },
+  { id: 'claire', name: 'Claire', skin: 0xf1cdb0, hair: 'ponytail', hairColor: 0x5a3a22, shirt: 0xd8dde2, shorts: 0x0a8fd0, board: 0xffffff, stripe: 0x00853F },
 ];
 
 const SPOTS = [
@@ -672,48 +673,177 @@ function updateSpray(dt, speed) {
 }
 
 /* ---------------- Surfeur ---------------- */
-const SKIN = 0x8d5a3b;
-function buildSurfer(ch) {
+// Logo Surfrider (carré blanc arrondi + vague bleue qui s'enroule) dessiné en CanvasTexture
+let logoMat = null;
+function getLogoMat() {
+  if (logoMat) return logoMat;
+  const c = document.createElement('canvas');
+  c.width = c.height = 128;
+  const g = c.getContext('2d');
+  const r = 26;
+  g.fillStyle = '#ffffff';
+  g.beginPath();
+  g.moveTo(r, 4); g.arcTo(124, 4, 124, 124, r); g.arcTo(124, 124, 4, 124, r); g.arcTo(4, 124, 4, 4, r); g.arcTo(4, 4, 124, 4, r);
+  g.closePath(); g.fill();
+  g.strokeStyle = '#0072BC';
+  g.lineCap = 'round';
+  // spirale de la vague
+  g.lineWidth = 11;
+  g.beginPath();
+  for (let i = 0; i <= 60; i++) {
+    const a = Math.PI * 0.95 + i * 0.075;
+    const rad = 44 - i * 0.55;
+    const x = 68 + Math.cos(a) * rad, y = 64 + Math.sin(a) * rad;
+    if (i === 0) g.moveTo(x, y); else g.lineTo(x, y);
+  }
+  g.stroke();
+  // lignes d'eau
+  g.lineWidth = 8;
+  for (const y of [100, 114]) {
+    g.beginPath(); g.moveTo(20, y); g.quadraticCurveTo(64, y - 10, 108, y); g.stroke();
+  }
+  const tex = new THREE.CanvasTexture(c);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  logoMat = new THREE.MeshLambertMaterial({ map: tex, transparent: true });
+  return logoMat;
+}
+
+// Géométries arrondies partagées (mises en cache)
+const geoCache = new Map();
+function capsuleGeo(r, len) {
+  const k = 'c' + r + '_' + len;
+  if (!geoCache.has(k)) geoCache.set(k, new THREE.CapsuleGeometry(r, len, 3, 10));
+  return geoCache.get(k);
+}
+function sphereGeo(r, w = 14, h = 10) {
+  const k = 's' + r + '_' + w;
+  if (!geoCache.has(k)) geoCache.set(k, new THREE.SphereGeometry(r, w, h));
+  return geoCache.get(k);
+}
+const UP = new THREE.Vector3(0, 1, 0);
+const _a = new THREE.Vector3(), _b = new THREE.Vector3(), _d = new THREE.Vector3();
+// membre (capsule) entre deux points
+function limb(parent, a, b, r, color, smooth) {
+  _a.set(a[0], a[1], a[2]); _b.set(b[0], b[1], b[2]);
+  _d.subVectors(_b, _a);
+  const len = Math.max(0.01, _d.length());
+  const m = new THREE.Mesh(capsuleGeo(r, Math.round(len * 100) / 100), mat(color, smooth ? { flatShading: false } : null));
+  m.position.addVectors(_a, _b).multiplyScalar(0.5);
+  m.quaternion.setFromUnitVectors(UP, _d.normalize());
+  parent.add(m);
+  return m;
+}
+
+const SMOOTH = { flatShading: false };
+function buildSurfer(ch, lite) {
+  const skin = ch.skin || 0x6b4430;
+  const L = ch.height || 1; // facteur de taille (jambes / tronc)
   const root = new THREE.Group();
   const tilt = new THREE.Group(); root.add(tilt);
   const yaw = new THREE.Group(); tilt.add(yaw);
   const boardG = new THREE.Group(); yaw.add(boardG);
-  const board = new THREE.Mesh(GEO.boardShape, mat(ch.board)); board.position.y = 0.06; boardG.add(board);
+  const board = new THREE.Mesh(GEO.boardShape, mat(ch.board, SMOOTH)); board.position.y = 0.06; boardG.add(board);
   const stripe = boxM(0.05, 0.02, 1.9, ch.stripe); stripe.position.y = 0.115; boardG.add(stripe);
   const fin = boxM(0.04, 0.22, 0.25, 0x0B1F33); fin.position.set(0, -0.05, 0.85); boardG.add(fin);
 
   const rider = new THREE.Group(); rider.position.y = 0.1; yaw.add(rider);
+  const hipY = 0.78 * L;
+  const kneeY = 0.4 * L;
   const legs = [];
-  for (const s of [-1, 1]) {
-    const leg = mesh(GEO.cyl6, ch.shorts);
-    leg.scale.set(0.1, 0.82, 0.1);
-    leg.position.set(0, 0.4, s * 0.3);
-    leg.rotation.x = s * 0.32;
-    rider.add(leg); legs.push(leg);
-    const shin = mesh(GEO.cyl6, SKIN); shin.scale.set(0.085, 0.3, 0.085); shin.position.set(0, 0.15, s * 0.4); shin.rotation.x = s * 0.32; rider.add(shin);
+  if (!lite) {
+    const shinCol = ch.leggings || skin;
+    for (const s of [-1, 1]) {
+      const foot = [0, 0.05, s * 0.4], knee = [-0.12, kneeY, s * 0.3], hip = [0, hipY, s * 0.13];
+      legs.push(limb(rider, foot, knee, 0.065, shinCol, true));
+      // short de surf : jusqu'au genou (ou plus long pour Paulèle)
+      const kneeLow = [knee[0] * 0.9, knee[1] - (ch.longShorts ? 0.06 : -0.04), knee[2]];
+      limb(rider, kneeLow, hip, 0.095, ch.shorts, true);
+      const f = new THREE.Mesh(sphereGeo(0.06, 8, 6), mat(skin, SMOOTH)); f.scale.set(1, 0.6, 1.7); f.position.set(-0.04, 0.04, s * 0.4); rider.add(f);
+    }
   }
-  const torso = new THREE.Group(); torso.position.y = 0.78; rider.add(torso);
-  const hips = boxM(0.3, 0.22, 0.46, ch.shorts); hips.position.y = 0.06; torso.add(hips);
-  const belly = boxM(0.32, 0.26, 0.42, ch.belly); belly.position.y = 0.28; torso.add(belly);
-  const chest = boxM(0.38, 0.32, 0.5, ch.chest); chest.position.y = 0.56; torso.add(chest);
-  const neck = mesh(GEO.cyl6, SKIN); neck.scale.set(0.07, 0.12, 0.07); neck.position.y = 0.76; torso.add(neck);
-  const head = mesh(GEO.ico1, SKIN); head.scale.setScalar(0.17); head.position.set(-0.02, 0.92, 0); torso.add(head);
-  const hairCol = 0x1d1410;
-  const cap = mesh(GEO.hemi, hairCol); cap.scale.set(0.18, 0.13, 0.18); cap.position.set(0.0, 0.95, 0); cap.rotation.z = 0.35; torso.add(cap);
-  if (ch.hair === 'bun') {
-    const bun = mesh(GEO.ico1, hairCol); bun.scale.setScalar(0.09); bun.position.set(0.14, 1.04, 0); torso.add(bun);
+  const torso = new THREE.Group(); torso.position.y = hipY; rider.add(torso);
+  // bassin (short)
+  const pelvis = new THREE.Mesh(sphereGeo(0.16), mat(ch.shorts, SMOOTH)); pelvis.scale.set(0.95, 0.8, 1.35); pelvis.position.y = 0.04; torso.add(pelvis);
+  // tronc (T-shirt)
+  const tl = 0.3 * L;
+  const chest = new THREE.Mesh(capsuleGeo(0.16, Math.round(tl * 100) / 100), mat(ch.shirt, SMOOTH));
+  chest.scale.set(0.85, 1, 1.32); chest.position.y = 0.12 + tl / 2 + 0.06; torso.add(chest);
+  const topY = 0.12 + tl + 0.12;
+  if (!lite) {
+    const logo = new THREE.Mesh(new THREE.PlaneGeometry(0.17, 0.17), getLogoMat());
+    logo.rotation.y = -Math.PI / 2; logo.position.set(-0.142, topY - 0.17, 0); torso.add(logo);
   }
+  // cou + tête
+  const neck = limb(torso, [0, topY - 0.02, 0], [-0.01, topY + 0.08, 0], 0.055, skin, true);
+  const headY = topY + 0.21;
+  const head = new THREE.Mesh(sphereGeo(0.135, 16, 12), mat(skin, SMOOTH)); head.scale.set(1, 1.12, 0.95); head.position.set(-0.02, headY, 0); torso.add(head);
+  if (!lite) {
+    for (const s of [-1, 1]) {
+      const eye = new THREE.Mesh(sphereGeo(0.018, 6, 4), mat(0x1a1410)); eye.position.set(-0.145, headY + 0.03, s * 0.045); torso.add(eye);
+    }
+    const nose = new THREE.Mesh(sphereGeo(0.022, 6, 4), mat(skin, SMOOTH)); nose.position.set(-0.155, headY - 0.01, 0); torso.add(nose);
+  }
+  // coiffure
+  const hairCol = ch.hairColor || 0x16100c;
+  const hairMat = mat(hairCol, SMOOTH);
+  const capGeoKey = 'cap';
+  if (!geoCache.has(capGeoKey)) geoCache.set(capGeoKey, new THREE.SphereGeometry(0.143, 16, 8, 0, Math.PI * 2, 0, Math.PI * 0.42));
+  const addCap = (sx = 1, sy = 1.12) => { const c = new THREE.Mesh(geoCache.get(capGeoKey), hairMat); c.scale.set(sx, sy, 0.95); c.position.set(-0.015, headY + 0.005, 0); c.rotation.z = 0.25; torso.add(c); return c; };
+  if (ch.hair === 'crop') {
+    addCap(0.99, 1.1);
+  } else if (ch.hair === 'dreads') {
+    addCap(1.02, 1.14);
+    if (!lite) {
+      for (let i = 0; i < 16; i++) {
+        const th = 0.25 + (i % 3) * 0.33, ph = (i / 16) * Math.PI * 2;
+        const dir = [Math.sin(th) * Math.cos(ph), Math.cos(th), Math.sin(th) * Math.sin(ph)];
+        if (dir[0] < -0.45 && th > 0.5) continue; // dégage le visage
+        const base = [-0.015 + dir[0] * 0.13, headY + dir[1] * 0.14, dir[2] * 0.13];
+        const tip = [base[0] + dir[0] * 0.09, base[1] + dir[1] * 0.06 - 0.03, base[2] + dir[2] * 0.09];
+        limb(torso, base, tip, 0.022, hairCol, true);
+      }
+    }
+  } else if (ch.hair === 'hijab') {
+    // voile : couvre cheveux, oreilles et cou, visage dégagé
+    const sc = mat(ch.scarf, { flatShading: false, side: THREE.DoubleSide });
+    if (!geoCache.has('hijab')) geoCache.set('hijab', new THREE.SphereGeometry(0.158, 18, 12, 0.85, Math.PI * 2 - 1.7, 0, Math.PI * 0.82));
+    const veil = new THREE.Mesh(geoCache.get('hijab'), sc); veil.scale.set(1, 1.12, 1); veil.position.set(-0.01, headY + 0.01, 0); torso.add(veil);
+    const top = new THREE.Mesh(new THREE.SphereGeometry(0.16, 16, 6, 0, Math.PI * 2, 0, Math.PI * 0.3), sc); top.scale.set(1, 1.12, 1); top.position.set(-0.01, headY + 0.01, 0); torso.add(top);
+    const drape = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.26, 0.26, 16, 1, true), sc); drape.position.set(0.0, topY + 0.02, 0); drape.scale.z = 1.2; torso.add(drape);
+  } else if (ch.hair === 'ponytail') {
+    addCap(1.03, 1.16);
+    const back = new THREE.Mesh(sphereGeo(0.14, 12, 8), hairMat); back.scale.set(0.8, 1.05, 0.98); back.position.set(0.03, headY + 0.01, 0); torso.add(back);
+    const bun = new THREE.Mesh(sphereGeo(0.06, 10, 8), hairMat); bun.position.set(0.15, headY + 0.03, 0); torso.add(bun);
+    if (!lite) limb(torso, [0.17, headY + 0.01, 0], [0.24, headY - 0.17, 0], 0.035, hairCol, true);
+  } else if (ch.hair === 'bun') {
+    addCap();
+    const bun = new THREE.Mesh(sphereGeo(0.07, 10, 8), hairMat); bun.position.set(0.13, headY + 0.1, 0); torso.add(bun);
+  } else {
+    addCap();
+  }
+  // bras
   const arms = [];
+  const shY = topY - 0.08;
+  const sleeveCol = ch.shirt;
   for (const s of [-1, 1]) {
-    const arm = new THREE.Group(); arm.position.set(0, 0.64, s * 0.25); torso.add(arm);
-    const up = boxM(0.11, 0.11, 0.32, ch.sleeves); up.position.z = s * 0.16; arm.add(up);
-    const fore = boxM(0.09, 0.09, 0.3, SKIN); fore.position.z = s * 0.45; arm.add(fore);
-    const hand = mesh(GEO.ico0, SKIN); hand.scale.setScalar(0.07); hand.position.z = s * 0.62; arm.add(hand);
+    const arm = new THREE.Group(); arm.position.set(0, shY, s * 0.2); torso.add(arm);
+    const elbow = [-0.02, -0.1, s * 0.3], wrist = [-0.08, -0.17, s * 0.56];
+    const sh = new THREE.Mesh(sphereGeo(0.075, 10, 8), mat(sleeveCol, SMOOTH)); arm.add(sh);
+    if (ch.longSleeves) {
+      limb(arm, [0, 0, 0], elbow, 0.055, sleeveCol, true);
+      limb(arm, elbow, wrist, 0.047, sleeveCol, true);
+    } else {
+      const mid = [elbow[0] * 0.45, elbow[1] * 0.45, elbow[2] * 0.45];
+      limb(arm, [0, 0, 0], mid, 0.062, sleeveCol, true);
+      limb(arm, mid, elbow, 0.05, skin, true);
+      limb(arm, elbow, wrist, 0.045, skin, true);
+    }
+    const hand = new THREE.Mesh(sphereGeo(0.05, 8, 6), mat(skin, SMOOTH)); hand.scale.set(0.8, 1, 1.2); hand.position.set(wrist[0] - 0.01, wrist[1] - 0.02, wrist[2] + s * 0.05); arm.add(hand);
     arm.rotation.x = s * -0.35;
     arms.push(arm);
   }
   torso.rotation.z = 0.25; // penché vers la vague
-  root.userData = { tilt, yaw, boardG, rider, torso, arms, legs };
+  root.userData = { tilt, yaw, boardG, rider, torso, arms, legs, neck };
   return root;
 }
 
@@ -963,7 +1093,7 @@ function buildTower(w, h, d, color, glass) {
 const NPC_COLORS = [0xE31B23, 0x00853F, 0xFDEF42, 0x0072BC, 0x222222, 0xf08a4b, 0xffffff];
 function buildNpcSurfer() {
   const c = pick(NPC_COLORS);
-  const s = buildSurfer({ chest: c, belly: c, sleeves: pick(NPC_COLORS), shorts: 0x1b2a3a, board: pick([0xffffff, 0xFDEF42, 0x7fd0f0, 0xf2a7c0]), stripe: pick(NPC_COLORS), hair: Math.random() < 0.4 ? 'bun' : 'short' });
+  const s = buildSurfer({ shirt: c, shorts: 0x1b2a3a, skin: pick([0x4a2c1d, 0x6b4430, 0xc99a78]), board: pick([0xffffff, 0xFDEF42, 0x7fd0f0, 0xf2a7c0]), stripe: pick(NPC_COLORS), hair: Math.random() < 0.4 ? 'bun' : 'crop' }, true);
   const u = s.userData;
   u.rider.position.y = -0.5; // assis sur la planche, jambes dans l'eau
   u.torso.rotation.z = -0.1;
@@ -1733,7 +1863,7 @@ function renderThumbs() {
     const water = new THREE.Mesh(new THREE.CircleGeometry(1.6, 7), new THREE.MeshLambertMaterial({ color: 0x2fb8c8, flatShading: true }));
     water.rotation.x = -Math.PI / 2; sc.add(water);
     const cam = new THREE.PerspectiveCamera(32, 1, 0.1, 50);
-    cam.position.set(-3.6, 2.2, 4.6); cam.lookAt(0, 0.95, 0);
+    cam.position.set(-3.0, 1.75, 3.3); cam.lookAt(0, 1.0, 0);
     for (const ch of CHARACTERS) {
       const s = buildSurfer(ch);
       s.userData.yaw.rotation.y = 0.5;

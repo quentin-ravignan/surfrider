@@ -85,9 +85,9 @@
     <section id="screen-title" class="screen screen-center">
       <div class="panel title-panel">
         <div class="lang-switch" role="group" aria-label="Langue / Language / Làkk">
+          <button type="button" class="lang-btn" data-lang="wo" lang="wo">WO</button>
           <button type="button" class="lang-btn" data-lang="fr" lang="fr">FR</button>
           <button type="button" class="lang-btn" data-lang="en" lang="en">EN</button>
-          <button type="button" class="lang-btn" data-lang="wo" lang="wo">WO</button>
         </div>
         <img class="logo" src="assets/img/logo-horizontal-blanc.png" alt="Surfrider Foundation Sénégal" width="240" height="80">
         <h1 class="game-title"><span data-i18n="ui.title1">Surf</span> <span class="amp">&amp;</span> <span data-i18n="ui.title2">Nettoie</span></h1>
@@ -196,14 +196,14 @@
     setTimeout(function () {
       if (!window.__srGameReady) {
         var t = document.getElementById('loading-text');
-        var lang = 'fr';
-        try { lang = localStorage.getItem('sf-lang') || 'fr'; } catch (e) {}
+        var lang = 'wo';
+        try { lang = localStorage.getItem('sf-lang') || 'wo'; } catch (e) {}
         var msg = {
           fr: "Le jeu n'a pas pu se charger. Vérifie ta connexion puis recharge la page.",
           en: "The game could not load. Check your connection and reload the page.",
           wo: "Fo wi mënul a ubbiku. Seetal sa connexion te ubbiwaat page bi."
         };
-        if (t) t.textContent = msg[lang] || msg.fr;
+        if (t) t.textContent = msg[lang] || msg.wo;
       }
     }, 12000);
   </script>

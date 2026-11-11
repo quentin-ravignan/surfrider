@@ -8,14 +8,11 @@
    • Pour lister les textes d'une page : SF_I18N.extract() dans la console.
    La langue choisie est mémorisée (clé localStorage « sf-lang »), aussi lue par le jeu. */
 (function () {
-  const LANGS = { fr: "FR", en: "EN", wo: "WO" };
-  const NAMES = { fr: "Français", en: "English", wo: "Wolof" };
+  const LANGS = { wo: "WO", fr: "FR", en: "EN" };
+  const NAMES = { wo: "Wolof", fr: "Français", en: "English" };
   let lang = "";
   try { lang = localStorage.getItem("sf-lang") || ""; } catch (e) {}
-  if (!LANGS[lang]) {
-    const nav = (navigator.language || "fr").slice(0, 2).toLowerCase();
-    lang = nav === "en" ? "en" : nav === "wo" ? "wo" : "fr";
-  }
+  if (!LANGS[lang]) lang = "wo"; // langue par défaut du site : wolof
   const html = document.documentElement;
   html.lang = lang;
 
