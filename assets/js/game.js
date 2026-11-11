@@ -339,7 +339,7 @@ const SPOTS = [
     rockColor: 0x3a2c24, startClean: 0.1, wave: 3, trashLvl: 2, foam: 0.4, lipSpray: 0.2,
     sky: ['#2f74c0', '#a9cdea', '#f3e2c4'], sun: '#fff0d6', sunI: 2.3, sunDir: [-0.45, 0.5, -0.75], hemi: ['#d8e9ff', '#7a6a50'],
     sand: '#e2cfa8', land: '#b09a74', fog: '#e7e4da',
-    water: ['#0a3f86', '#2a8fd0'],
+    water: ['#0a4f8a', '#1fb6c9'],
     trashMix: { bouteille: 3, sac: 2, canette: 2, filet: 1, megot: 2, sachet: 2 },
   },
   {
@@ -348,7 +348,7 @@ const SPOTS = [
     rockColor: 0x1c1a1a, startClean: 0.15, wave: 4, trashLvl: 1, foam: 0.3, lipSpray: 0.3,
     sky: ['#9fa9ae', '#c9c5b9', '#e4d9c5'], sun: '#fff4e0', sunI: 1.7, sunDir: [-0.3, 0.7, -0.6], hemi: ['#e6e2d8', '#5a5045'],
     sand: '#8f7d68', land: '#8a7556', fog: '#ddd3c2',
-    water: ['#0b6a6a', '#3fd0b0'],
+    water: ['#0a4f8a', '#1fb6c9'],
     trashMix: { bouteille: 3, sac: 2, canette: 2, filet: 2, megot: 2, sachet: 2 },
   },
   {
@@ -357,7 +357,7 @@ const SPOTS = [
     startClean: 0, wave: 2, trashLvl: 3, foam: 1, lipSpray: 0,
     sky: ['#8c979f', '#b4bcc1', '#d4d6d3'], sun: '#f4f1ea', sunI: 1.4, sunDir: [0.4, 0.75, -0.5], hemi: ['#e4e8ea', '#8a8270'],
     sand: '#e6d3ae', land: '#c4b08a', fog: '#cfd2d0',
-    water: ['#11707a', '#4fd6c0'],
+    water: ['#0a4f8a', '#1fb6c9'],
     trashMix: { bouteille: 3, sac: 3, canette: 2, filet: 1, megot: 2, sachet: 4 },
   },
   {
@@ -366,7 +366,7 @@ const SPOTS = [
     startClean: 0.1, wave: 2, trashLvl: 2, foam: 0.7, lipSpray: 1,
     sky: ['#1f6fc4', '#7fb8e6', '#e0f0fb'], sun: '#fffaf0', sunI: 2.4, sunDir: [-0.35, 0.75, -0.55], hemi: ['#e6f3ff', '#6a5040'],
     sand: '#9a5a3a', land: '#8d5634', fog: '#d6eaf6',
-    water: ['#0a4f9a', '#3ad6d0'],
+    water: ['#0a4f8a', '#1fb6c9'],
     clouds: 14,
     trashMix: { bouteille: 3, sac: 2, canette: 2, filet: 2, megot: 2, sachet: 2 },
   },
@@ -503,7 +503,8 @@ for (let i = 0; i < wavePos.count; i++) {
   waveBase[i * 2 + 1] = wavePos.getZ(i);
 }
 waveGeo.setAttribute('color', new THREE.BufferAttribute(new Float32Array(wavePos.count * 3), 3));
-const waveMesh = new THREE.Mesh(waveGeo, new THREE.MeshLambertMaterial({ vertexColors: true, flatShading: true }));
+// Phong + facettes : reflets du soleil sur les facettes (peu coûteux)
+const waveMesh = new THREE.Mesh(waveGeo, new THREE.MeshPhongMaterial({ vertexColors: true, flatShading: true, shininess: 110, specular: 0x5a8fa8 }));
 waveMesh.frustumCulled = false;
 scene.add(waveMesh);
 
@@ -523,12 +524,12 @@ lipGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(lipCo
   }
   lipGeo.setIndex(idx);
 }
-const lipMesh = new THREE.Mesh(lipGeo, new THREE.MeshLambertMaterial({ color: 0xf2fbff, flatShading: true, side: THREE.DoubleSide }));
+const lipMesh = new THREE.Mesh(lipGeo, new THREE.MeshPhongMaterial({ color: 0xf2fbff, flatShading: true, side: THREE.DoubleSide, shininess: 40, specular: 0x8899aa }));
 lipMesh.frustumCulled = false;
 scene.add(lipMesh);
 
 // Océan au large
-const ocean = new THREE.Mesh(new THREE.PlaneGeometry(2000, 2000), new THREE.MeshLambertMaterial({ color: 0x1b8fb0 }));
+const ocean = new THREE.Mesh(new THREE.PlaneGeometry(2000, 2000), new THREE.MeshPhongMaterial({ color: 0x1b8fb0, shininess: 60, specular: 0x5a8aa0 }));
 ocean.rotation.x = -Math.PI / 2;
 ocean.position.set(-300, -0.45, -300);
 scene.add(ocean);
@@ -544,15 +545,16 @@ landMesh.position.set(WAVE_X1 + 66 + 450, 0.5, -400);
 scene.add(landMesh);
 
 const COL = {
-  murkyDeep: new THREE.Color('#465232'), murkyLight: new THREE.Color('#a39a5c'),
+  murkyDeep: new THREE.Color('#2f5458'), murkyLight: new THREE.Color('#7fa39a'),
   cleanDeep: new THREE.Color('#0a5f8c'), cleanLight: new THREE.Color('#47e0d6'),
   foam: new THREE.Color('#f4fbff'),
+  rim: new THREE.Color('#a8f0f2'),
 };
 const cDeep = new THREE.Color(), cLight = new THREE.Color(), cTmp = new THREE.Color();
 
-const W = { H: 4, travel: 0, t: 0 };
+const W = { H: 4, travel: 0, t: 0, close: 0, collapse: 0 };
 function crestH(p) {
-  return W.H * (1 + 0.12 * Math.sin(p * 0.045) + 0.06 * Math.sin(p * 0.11 + 1.3));
+  return W.H * (1 + 0.12 * Math.sin(p * 0.045) + 0.06 * Math.sin(p * 0.11 + 1.3)) * (1 - 0.6 * W.collapse);
 }
 function profile(x, H) {
   if (x >= XT) return 0;
@@ -584,7 +586,12 @@ function updateWave() {
     const x = waveBase[i * 2], z = waveBase[i * 2 + 1];
     const p = z - tr;
     const H = crestH(p);
-    const h = profile(x, H) + chop(x, p, t);
+    let h = profile(x, H) + chop(x, p, t);
+    if (W.close > 0) {
+      const front = XL - 1 + W.close * (XT + 12 - XL);
+      const dx = (x - front) / 1.8;
+      h += 1.1 * Math.min(1, W.close * 3) * Math.exp(-dx * dx) * (0.8 + 0.2 * Math.sin(p * 0.5 + t * 6));
+    }
     pos[i * 3] = x;
     pos[i * 3 + 1] = h;
     pos[i * 3 + 2] = z;
@@ -592,7 +599,22 @@ function updateWave() {
     let r = Math.max(0, h) / H;
     if (x >= XL) cTmp.copy(cDeep).lerp(cLight, Math.min(1, Math.pow(r, 0.8) * 1.05));
     else cTmp.copy(cDeep).lerp(cLight, r * 0.5);
+    // liseré clair (effet de transparence) sous la lèvre
+    if (x >= XL && r > 0.68 && r <= 0.88) cTmp.lerp(COL.rim, (r - 0.68) * 2.6);
     if (x > XL - 1.2 && x < XL + 1.6 && r > 0.86) cTmp.lerp(COL.foam, 0.7);
+    // traînées d'écume légères sur la face
+    if (x > XL + 1 && x < XT) {
+      const st = Math.sin(p * 0.9 + x * 0.55 - t * 0.7) * Math.sin(p * 0.21 + 1.7);
+      if (st > 0.72) cTmp.lerp(COL.foam, (st - 0.72) * 1.4);
+    }
+    // fermeture de la vague : barre d'écume qui roule vers le bord
+    if (W.close > 0) {
+      const front = XL - 1 + W.close * (XT + 12 - XL);
+      if (x > XL - 3 && x < front) {
+        const nz = 0.7 + 0.3 * Math.sin(p * 0.7 + x * 1.3 + t * 5);
+        cTmp.lerp(COL.foam, Math.min(0.92, W.close * 2.2) * nz);
+      }
+    }
     if (foamLvl && x > XT - 0.5 && x < XT + 14) {
       // lignes d'écume / mousse devant la vague
       const f = Math.sin(p * 0.21 + x * 0.7 + t * 0.5) + 0.6 * Math.sin(p * 0.07 - x * 1.3);
@@ -614,10 +636,12 @@ function updateWave() {
     const H = crestH(p);
     const s = H / 5;
     const wob = 0.15 * Math.sin(p * 0.3 + t * 3);
+    const pitch = Math.min(1, W.close * 2.2);
     for (let k = 0; k < P; k++) {
       const j = (r * P + k) * 3;
-      lp[j] = XL + LIP_PROFILE[k][0] * s + wob * (k / P);
-      lp[j + 1] = H + LIP_PROFILE[k][1] * s + (k === 2 ? wob : 0);
+      const u2 = (k / (P - 1)) * (k / (P - 1));
+      lp[j] = XL + LIP_PROFILE[k][0] * s + wob * (k / P) + pitch * u2 * 3.4 * s;
+      lp[j + 1] = H + LIP_PROFILE[k][1] * s + (k === 2 ? wob : 0) - pitch * u2 * H * 0.85;
       lp[j + 2] = z;
     }
   }
@@ -658,6 +682,18 @@ function emitLipSpray(z) {
   sprayVel[i * 3 + 1] = rand(1, 3);
   sprayVel[i * 3 + 2] = rand(-0.5, 0.5);
   sprayLife[i] = rand(0.5, 0.9);
+}
+// gerbes d'écume quand la vague ferme
+function emitCloseSpray(z) {
+  const i = sprayIdx; sprayIdx = (sprayIdx + 1) % SPRAY_N;
+  const H = crestH(z - W.travel);
+  sprayPos[i * 3] = XL + rand(-0.5, 2) + W.close * (XT - XL) * 0.6;
+  sprayPos[i * 3 + 1] = H * rand(0.3, 1);
+  sprayPos[i * 3 + 2] = z;
+  sprayVel[i * 3] = rand(2, 7);
+  sprayVel[i * 3 + 1] = rand(2, 6);
+  sprayVel[i * 3 + 2] = rand(-1, 1);
+  sprayLife[i] = rand(0.5, 1);
 }
 function updateSpray(dt, speed) {
   for (let i = 0; i < SPRAY_N; i++) {
@@ -1399,7 +1435,8 @@ function resetRun() {
   });
   keys.left = keys.right = false;
   waterClean = S.clean;
-  W.travel = 0;
+  W.travel = 0; W.close = 0; W.collapse = 0; W.H = S.spot.waveH;
+  S.x = INTRO_X0;
   S.nextTrash = 0; S.nextObst = 40; S.nextHotspot = 55;
   // pré-remplissage devant le surfeur
   for (let z = -30; z > -170; z -= 100 / S.spot.trashPer100) spawnTrash(z);
@@ -1482,6 +1519,13 @@ window.addEventListener('keydown', (e) => {
   if (S.mode === 'play' || S.mode === 'countdown') {
     if (['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Space'].includes(k)) e.preventDefault();
   }
+  if (S.mode === 'intro' || S.mode === 'closeout') {
+    if (['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Space'].includes(k)) e.preventDefault();
+  }
+  if (S.mode === 'intro' && ['Space', 'Enter', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'KeyA', 'KeyD'].includes(k)) {
+    finishIntro();
+    if (k === 'Space' || k === 'Enter') return;
+  }
   if (S.mode === 'play') {
     if (k === 'ArrowLeft' || k === 'KeyA' || k === 'KeyQ') keys.left = true;
     else if (k === 'ArrowRight' || k === 'KeyD') keys.right = true;
@@ -1503,6 +1547,7 @@ window.addEventListener('blur', () => { keys.left = keys.right = false; });
 
 const touch = { id: null, sx: 0, sy: 0, sxSurfer: 0, ly: 0, lt: 0, jumped: false, upStartY: 0 };
 canvas.addEventListener('pointerdown', (e) => {
+  if (S.mode === 'intro') finishIntro(); // un tap passe le take-off
   if (S.mode !== 'play') return;
   e.preventDefault();
   touch.id = e.pointerId;
@@ -1800,6 +1845,12 @@ function updateSurferPose(dt, menu) {
   u.torso.rotation.z = 0.25 + clamp(-S.vx * 0.02, -0.25, 0.25);
   u.arms[0].rotation.x = 0.1 + Math.sin(W.t * 2) * 0.08 + (S.air ? 0.55 : 0);
   u.arms[1].rotation.x = -0.1 - Math.sin(W.t * 2.3) * 0.08 - (S.air ? 0.55 : 0);
+  // pop-up du take-off : allongé/accroupi puis debout
+  if (S.mode === 'intro') {
+    const pk = clamp(S.introT / (INTRO_DUR * 0.3), 0, 1);
+    u.rider.position.y -= (1 - pk) * 0.55;
+    u.torso.rotation.z += (1 - pk) * 0.9;
+  }
   // chute
   if (S.wipe > 0) {
     const k = clamp((2 - S.wipe) / 0.35, 0, 1);
@@ -2039,6 +2090,61 @@ function selectSpot(sp) {
 
 /* ---------------- Déroulé d'une partie ---------------- */
 let countdownTimer = 0;
+/* ---------------- Cinématiques : take-off et fermeture ---------------- */
+const INTRO_DUR = reducedMotion ? 0.6 : 2.0;
+const CLOSE_DUR = reducedMotion ? 0.7 : 2.2;
+const INTRO_X0 = XL + 0.4;
+function syncEntities() {
+  for (const it of S.items) { const z = it.p + W.travel; it.obj.position.set(it.x, surfaceY(it.x, z) + 0.2, z); }
+  for (const o of S.obstacles) { const z = o.p + W.travel; o.obj.position.set(o.x, o.type === 'rock' ? surfaceY(o.x, z) * 0.6 - 0.1 : surfaceY(o.x, z) - 0.15, z); }
+}
+function startIntro() {
+  S.mode = 'intro';
+  S.introT = 0;
+  S.x = INTRO_X0; S.vx = 0; S.h = 0; S.air = false;
+  S.elapsed = 0;
+}
+function finishIntro() {
+  if (S.mode !== 'intro') return;
+  W.H = S.spot.waveH;
+  S.mode = 'play';
+  S.elapsed = 0;
+  S.vx = 4;
+}
+function updateIntro(dt) {
+  S.introT += dt;
+  const k = clamp(S.introT / INTRO_DUR, 0, 1);
+  const spot = S.spot;
+  S.speed = spot.speed * (0.7 + 0.3 * k);
+  W.travel += S.speed * dt;
+  W.H = spot.waveH * (0.86 + 0.14 * Math.min(1, k * 1.6)); // le pic se creuse
+  // pop-up (30 %) puis drop dans la face
+  const d = clamp((k - 0.3) / 0.7, 0, 1);
+  const e = d * d * (3 - 2 * d);
+  const prevX = S.x;
+  S.x = lerp(INTRO_X0, 2, e);
+  S.vx = (S.x - prevX) / Math.max(dt, 1e-3);
+  if (d > 0 && d < 1 && Math.random() < 0.7) emitSpray(S.x + 0.3, surfaceY(S.x, 0), 0.5, 3, 1);
+  syncEntities();
+  if (k >= 1) finishIntro();
+}
+function updateCloseout(dt) {
+  S.closeT += dt;
+  const k = clamp(S.closeT / CLOSE_DUR, 0, 1);
+  W.close = k;
+  W.collapse = clamp((k - 0.35) / 0.65, 0, 1);
+  S.speed *= Math.pow(0.55, dt);
+  W.travel += S.speed * dt;
+  // le surfeur s'échappe par-dessus l'arrière de la vague
+  if (!S.kicked) { S.kicked = true; S.air = true; S.h = Math.max(S.h, 0.1); S.vy = reducedMotion ? 6 : 10; S.vx = -13; S.trick = null; S.wipe = 0; }
+  S.x = Math.max(XL - 6, S.x + S.vx * dt);
+  S.vx *= Math.pow(0.6, dt);
+  if (S.air) { S.vy -= 21 * dt; S.h += S.vy * dt; if (S.h <= 0) { S.h = 0; S.air = false; } }
+  if (!reducedMotion) for (let n = 0; n < 5; n++) emitCloseSpray(rand(-90, 8));
+  syncEntities();
+  if (k >= 1) { S.mode = 'over'; showResults(); }
+}
+
 function startCountdown() {
   applySpot(S.spot);
   resetRun();
@@ -2062,15 +2168,15 @@ function startCountdown() {
       countdownTimer = setTimeout(step, i === seq.length ? 500 : 700);
     } else {
       ui.countdown.innerHTML = '';
-      S.mode = 'play';
-      S.elapsed = 0;
+      startIntro();
     }
   };
   step();
 }
 
 function pauseGame() {
-  if (S.mode !== 'play' && S.mode !== 'countdown') return;
+  if (S.mode !== 'play' && S.mode !== 'countdown' && S.mode !== 'intro') return;
+  if (S.mode === 'intro') W.H = S.spot.waveH;
   clearTimeout(countdownTimer);
   ui.countdown.innerHTML = '';
   S.mode = 'paused';
@@ -2091,17 +2197,19 @@ function quitToMenu(screen) {
   ui.pauseBtn.hidden = true;
   ui.fact.classList.remove('is-show');
   clearEntities();
+  W.close = 0; W.collapse = 0; W.H = S.spot.waveH;
   S.h = 0; S.air = false; S.wipe = 0; S.invuln = 0; S.trick = null; S.vx = 0;
   if (screen === 'spot') buildSpotCards();
   showScreen(screen);
 }
 
 function endGame() {
-  S.mode = 'over';
-  S.air = false; S.h = 0; S.trick = null;
-  Sound.end();
+  // la vague ferme (closeout) puis écran de résultats
+  S.mode = 'closeout';
+  S.closeT = 0; S.kicked = false;
+  keys.left = keys.right = false; S.touchTarget = null;
+  Sound.end(); Sound.noise(1.2, 300, 0.4);
   popTrick(t('ui.endPop'), fmt(S.score) + ' ' + t('ui.pts'), 'is-good');
-  setTimeout(showResults, 1400);
 }
 
 function showResults() {
@@ -2187,6 +2295,10 @@ function tick(dt) {
     W.t += dt;
     if (playing) {
       updateGame(dt);
+    } else if (S.mode === 'intro') {
+      updateIntro(dt);
+    } else if (S.mode === 'closeout') {
+      updateCloseout(dt);
     } else {
       // mode démo (menus, compte à rebours, fin)
       S.menuT += dt;
@@ -2198,21 +2310,18 @@ function tick(dt) {
         S.vx = Math.cos(S.menuT * 0.5) * 0.5 * (XT - XL) * 0.25;
         waterClean = lerp(waterClean, 0.75, dt * 0.5);
       }
-      if (S.mode === 'countdown' || S.mode === 'over') {
-        // les objets suivent le défilement de l'eau
-        for (const it of S.items) { const z = it.p + W.travel; it.obj.position.set(it.x, surfaceY(it.x, z) + 0.2, z); }
-        for (const o of S.obstacles) { const z = o.p + W.travel; o.obj.position.set(o.x, o.type === 'rock' ? surfaceY(o.x, z) * 0.6 - 0.1 : surfaceY(o.x, z) - 0.15, z); }
-      }
+      if (S.mode === 'countdown' || S.mode === 'over') syncEntities(); // les objets suivent l'eau
     }
-    const spd = playing ? S.speed : S.spot.speed * 0.8;
+    const riding = playing || S.mode === 'intro' || S.mode === 'closeout';
+    const spd = riding ? S.speed : S.spot.speed * 0.8;
     updateProps(dt, spd);
     updateWave();
     if (S.spot.lipSpray) for (let k = 0; k < 3; k++) if (Math.random() < S.spot.lipSpray * 0.8) emitLipSpray(rand(-60, 6));
     updateSpray(dt, spd);
-    updateSurferPose(dt, !playing && S.mode !== 'over' && S.mode !== 'countdown');
+    updateSurferPose(dt, !riding && S.mode !== 'over' && S.mode !== 'countdown');
   }
   updateCamera(dt, S.mode === 'menu' || S.mode === 'loading');
-  if (playing || S.mode === 'countdown') updateHud();
+  if (playing || S.mode === 'countdown' || S.mode === 'intro') updateHud();
   renderer.render(scene, camera);
 }
 
