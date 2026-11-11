@@ -211,7 +211,7 @@ const fmt = (n) => Math.round(n).toLocaleString(LANG === 'en' ? 'en-GB' : 'fr-FR
 // Apparence 3D de chaque joueur (stylisée) + atout de jeu
 const CHAR_LOOKS = {
   luca: { skin: 0xf0c9aa, hair: 'classic', hairColor: 0x1e1612, beard: 'stubble', beardOpacity: 0.3, shirt: 0x111418, shorts: 0xF2A900, board: 0xffffff, stripe: 0x3A7A93, perk: 'tricks' },
-  shugo: { skin: 0xefc6a6, hair: 'full', hairColor: 0x2a1d16, beard: 'full', shirt: 0x3A7A93, shorts: 0x111418, board: 0xF2A900, stripe: 0x111418, perk: 'combo' },
+  shugo: { skin: 0xefc6a6, hair: 'crop', hairColor: 0x2a1d16, shirt: 0x3A7A93, shorts: 0x111418, board: 0xF2A900, stripe: 0x111418, perk: 'combo' },
   max: { skin: 0xf1cbae, hair: 'curly', hairColor: 0x9a6a3e, shirt: 0xF2A900, shorts: 0x3A7A93, board: 0x111418, stripe: 0x4CAF2F, perk: 'cooler' },
   quentin: { skin: 0xf3cfb4, hair: 'wavy', hairColor: 0x5a3a22, moustache: true, shirt: 0x4CAF2F, shorts: 0x1d2a33, board: 0x3A7A93, stripe: 0xF2A900, perk: 'magnet' },
   victor: { skin: 0xf2cdb2, hair: 'short', hairColor: 0x6b4a2e, beard: 'stubble', shirt: 0xe98aa6, shorts: 0x3A7A93, board: 0x4CAF2F, stripe: 0xffffff, perk: 'air' },
