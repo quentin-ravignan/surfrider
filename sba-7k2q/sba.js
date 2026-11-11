@@ -69,15 +69,15 @@ const I18N = {
       waterNote: 'L’abus d’alcool est dangereux pour la santé : à consommer avec modération. Et après la session, on ne conduit pas, on se fait raccompagner.',
     },
     chars: {
-      luca: { role: 'Membre fondateur', perk: 'Roi du barrel', perkDesc: 'Figures +25 % de points.',
+      luca: { role: 'Ma che Porco Dio', perk: 'Roi du barrel', perkDesc: 'Figures +25 % de points.',
         bio: 'Toujours le premier au pic et le dernier à sortir. Il a un abonnement au tube.' },
-      shugo: { role: 'Trésorier de la glacière', perk: 'Tournée générale', perkDesc: 'Ton combo met plus de temps à retomber.',
+      shugo: { role: 'Le castor de Secret', perk: 'Tournée générale', perkDesc: 'Ton combo met plus de temps à retomber.',
         bio: 'Il tient les comptes, la glacière et le moral des troupes. Rarement dans cet ordre.' },
-      max: { role: 'Vigie du line-up', perk: 'Flair de lynx', perkDesc: 'Repère les packs au loin et remplit la glacière plus vite.',
+      max: { role: 'Le dompteur de Ngor', perk: 'Flair de lynx', perkDesc: 'Repère les packs au loin et remplit la glacière plus vite.',
         bio: 'Il voit une série arriver à 2 km et une bière fraîche à 200 m.' },
-      quentin: { role: 'Capitaine des sessions', perk: 'Gosier en pente', perkDesc: 'Aimant : attire les bières de plus loin.',
+      quentin: { role: 'Le canard breton', perk: 'Gosier en pente', perkDesc: 'Aimant : attire les bières de plus loin.',
         bio: 'Moustache au vent, il ne laisse jamais une bouteille dériver seule.' },
-      victor: { role: 'Ressort du club', perk: 'Montée de sève', perkDesc: 'Sauts plus hauts et plus longs.',
+      victor: { role: 'Vroussos Services, binouse à toutes heures', perk: 'Montée de sève', perkDesc: 'Sauts plus hauts et plus longs.',
         bio: 'Gros ressort dans les jambes : il décolle de chaque lèvre comme si c’était la dernière.' },
     },
     spots: {
@@ -148,15 +148,15 @@ const I18N = {
       waterNote: 'Please drink responsibly. And after the session, nobody drives: get a lift home.',
     },
     chars: {
-      luca: { role: 'Founding member', perk: 'Barrel king', perkDesc: 'Tricks score +25%.',
+      luca: { role: 'Ma che Porco Dio', perk: 'Barrel king', perkDesc: 'Tricks score +25%.',
         bio: 'First one at the peak, last one out. He has a season pass to the tube.' },
-      shugo: { role: 'Cooler treasurer', perk: 'Round on me', perkDesc: 'Your combo takes longer to drop.',
+      shugo: { role: 'The beaver of Secret', perk: 'Round on me', perkDesc: 'Your combo takes longer to drop.',
         bio: 'Keeps the books, the cooler and the morale. Rarely in that order.' },
-      max: { role: 'Line-up lookout', perk: 'Eagle eye', perkDesc: 'Spots six-packs from afar and fills the cooler faster.',
+      max: { role: 'The tamer of Ngor', perk: 'Eagle eye', perkDesc: 'Spots six-packs from afar and fills the cooler faster.',
         bio: 'Sees a set coming from a mile away, and a cold beer from 200 metres.' },
-      quentin: { role: 'Session captain', perk: 'Thirsty throat', perkDesc: 'Magnet: pulls beers in from further away.',
+      quentin: { role: 'The Breton duck', perk: 'Thirsty throat', perkDesc: 'Magnet: pulls beers in from further away.',
         bio: 'Moustache in the wind, he never lets a bottle drift alone.' },
-      victor: { role: 'Club spring', perk: 'Big hops', perkDesc: 'Higher, longer jumps.',
+      victor: { role: 'Vroussos Services, beers at all hours', perk: 'Big hops', perkDesc: 'Higher, longer jumps.',
         bio: 'Springs for legs: he launches off every lip like it is the last one.' },
     },
     spots: {
@@ -210,8 +210,8 @@ const fmt = (n) => Math.round(n).toLocaleString(LANG === 'en' ? 'en-GB' : 'fr-FR
 
 // Apparence 3D de chaque joueur (stylisée) + atout de jeu
 const CHAR_LOOKS = {
-  luca: { skin: 0xf0c9aa, hair: 'messy', hairColor: 0x1e1612, beard: 'stubble', beardOpacity: 0.3, shirt: 0x111418, shorts: 0xF2A900, board: 0xffffff, stripe: 0x3A7A93, perk: 'tricks' },
-  shugo: { skin: 0xefc6a6, hair: 'receding', hairColor: 0x2a1d16, beard: 'full', shirt: 0x3A7A93, shorts: 0x111418, board: 0xF2A900, stripe: 0x111418, perk: 'combo' },
+  luca: { skin: 0xf0c9aa, hair: 'classic', hairColor: 0x1e1612, beard: 'stubble', beardOpacity: 0.3, shirt: 0x111418, shorts: 0xF2A900, board: 0xffffff, stripe: 0x3A7A93, perk: 'tricks' },
+  shugo: { skin: 0xefc6a6, hair: 'full', hairColor: 0x2a1d16, beard: 'full', shirt: 0x3A7A93, shorts: 0x111418, board: 0xF2A900, stripe: 0x111418, perk: 'combo' },
   max: { skin: 0xf1cbae, hair: 'curly', hairColor: 0x9a6a3e, shirt: 0xF2A900, shorts: 0x3A7A93, board: 0x111418, stripe: 0x4CAF2F, perk: 'cooler' },
   quentin: { skin: 0xf3cfb4, hair: 'wavy', hairColor: 0x5a3a22, moustache: true, shirt: 0x4CAF2F, shorts: 0x1d2a33, board: 0x3A7A93, stripe: 0xF2A900, perk: 'magnet' },
   victor: { skin: 0xf2cdb2, hair: 'short', hairColor: 0x6b4a2e, beard: 'stubble', shirt: 0xe98aa6, shorts: 0x3A7A93, board: 0x4CAF2F, stripe: 0xffffff, perk: 'air' },
@@ -850,6 +850,18 @@ function buildSurfer(ch, lite) {
     const mass = new THREE.Mesh(cached('hairMassS', () => new THREE.SphereGeometry(0.152, 16, 10, 1.05, Math.PI * 2 - 2.1, 0, Math.PI * 0.62)), hairMat2);
     mass.scale.set(1.02, 1.08, 1.06); mass.position.set(0.0, headY, 0); torso.add(mass);
     tufts(18, 0.048, 0.152);
+  } else if (ch.hair === 'classic') {
+    // coupe classique : courte sur les côtés, raie sur le côté, mèche plaquée
+    const c = addCap(1.0, 1.08); c.rotation.z = -0.62; // dégage le front, court sur les côtés
+    const top = new THREE.Mesh(sphereGeo(0.12, 14, 10), hairMat); top.scale.set(1.0, 0.42, 1.08); top.position.set(-0.01, headY + 0.115, 0.0); torso.add(top);
+    const quiff = new THREE.Mesh(sphereGeo(0.07, 12, 8), hairMat); quiff.scale.set(0.9, 0.55, 1.45); quiff.position.set(-0.085, headY + 0.13, -0.035); quiff.rotation.x = -0.3; torso.add(quiff);
+  } else if (ch.hair === 'full') {
+    // cheveux fournis, courts-moyens
+    addCap(1.05, 1.18);
+    const mass = new THREE.Mesh(cached('hairMassS', () => new THREE.SphereGeometry(0.152, 16, 10, 1.05, Math.PI * 2 - 2.1, 0, Math.PI * 0.62)), hairMat2);
+    mass.scale.set(1.06, 1.16, 1.1); mass.position.set(0.0, headY + 0.008, 0); torso.add(mass);
+    const front = new THREE.Mesh(sphereGeo(0.08, 12, 8), hairMat); front.scale.set(1.0, 0.55, 1.6); front.position.set(-0.08, headY + 0.11, 0); torso.add(front);
+    tufts(10, 0.045, 0.158);
   } else if (ch.hair === 'receding') {
     const c = addCap(0.99, 1.06); c.rotation.z = -0.85;
   } else if (ch.hair === 'bun') {
@@ -1233,10 +1245,55 @@ function updateProps(dt, speed) {
 }
 
 /* ------------------------------------------------------------------ */
-/* Son (WebAudio, désactivé par défaut)                                */
+/* Son (WebAudio, activé par défaut) + boucle hip-hop old school                              */
 /* ------------------------------------------------------------------ */
 const Sound = {
-  enabled: false, ctx: null, master: null, ambient: null,
+  enabled: (() => { try { return localStorage.getItem(STORAGE_SOUND) !== '0'; } catch (e) { return true; } })(),
+  ctx: null, master: null, ambient: null, beatTimer: null,
+  /* Les navigateurs exigent un geste de l'utilisateur pour lancer l'audio */
+  unlock() {
+    if (!this.enabled) return;
+    this.init();
+    if (this.ctx && this.ctx.state === 'suspended') this.ctx.resume();
+    this.startBeat();
+  },
+  /* Boom-bap ~90 BPM : kick, caisse claire, charley swingué, basse et accords jazzy */
+  startBeat() {
+    if (!this.ctx || this.beatTimer) return;
+    const ctx = this.ctx;
+    this.music = ctx.createGain(); this.music.gain.value = 0.55; this.music.connect(this.master);
+    const step = 60 / 90 / 4; // double-croche
+    const swing = step * 0.18;
+    const KICK = [1,0,0,0, 0,0,0,1, 0,0,1,0, 0,0,0,0];
+    const SNARE = [0,0,0,0, 1,0,0,0, 0,0,0,0, 1,0,0,1];
+    const HAT = [1,0,1,0, 1,0,1,1, 1,0,1,0, 1,0,1,0];
+    // 2 mesures : La m7 puis Ré m9 (notes MIDI)
+    const BASS = [[45,0],[45,3],[48,6],[45,10],[50,16],[50,19],[53,22],[52,26],[50,28]];
+    const CHORDS = [[[57,60,64,67],0],[[57,60,64,67],7],[[62,65,69,72],16],[[60,65,69,74],23]];
+    const mtof = (m) => 440 * Math.pow(2, (m - 69) / 12);
+    const out = this.music;
+    const kick = (t) => { const o = ctx.createOscillator(), g = ctx.createGain(); o.frequency.setValueAtTime(130, t); o.frequency.exponentialRampToValueAtTime(42, t + 0.14); g.gain.setValueAtTime(0.9, t); g.gain.exponentialRampToValueAtTime(0.001, t + 0.35); o.connect(g); g.connect(out); o.start(t); o.stop(t + 0.4); };
+    const snare = (t, v = 0.45) => { const s = ctx.createBufferSource(); s.buffer = this.noiseBuf; const f = ctx.createBiquadFilter(); f.type = 'bandpass'; f.frequency.value = 1800; f.Q.value = 0.8; const g = ctx.createGain(); g.gain.setValueAtTime(v, t); g.gain.exponentialRampToValueAtTime(0.001, t + 0.18); s.connect(f); f.connect(g); g.connect(out); s.start(t, Math.random()); s.stop(t + 0.2);
+      const o = ctx.createOscillator(), og = ctx.createGain(); o.type = 'triangle'; o.frequency.value = 190; og.gain.setValueAtTime(v * 0.5, t); og.gain.exponentialRampToValueAtTime(0.001, t + 0.1); o.connect(og); og.connect(out); o.start(t); o.stop(t + 0.12); };
+    const hat = (t, v) => { const s = ctx.createBufferSource(); s.buffer = this.noiseBuf; const f = ctx.createBiquadFilter(); f.type = 'highpass'; f.frequency.value = 7000; const g = ctx.createGain(); g.gain.setValueAtTime(v, t); g.gain.exponentialRampToValueAtTime(0.001, t + 0.05); s.connect(f); f.connect(g); g.connect(out); s.start(t, Math.random()); s.stop(t + 0.06); };
+    const bass = (t, m) => { const o = ctx.createOscillator(), f = ctx.createBiquadFilter(), g = ctx.createGain(); o.type = 'sawtooth'; o.frequency.value = mtof(m - 12); f.type = 'lowpass'; f.frequency.value = 320; g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.32, t + 0.01); g.gain.exponentialRampToValueAtTime(0.001, t + step * 2.6); o.connect(f); f.connect(g); g.connect(out); o.start(t); o.stop(t + step * 2.8); };
+    const keys = (t, notes) => { for (const m of notes) { const o = ctx.createOscillator(), g = ctx.createGain(); o.type = 'triangle'; o.frequency.value = mtof(m); g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.06, t + 0.015); g.gain.exponentialRampToValueAtTime(0.001, t + step * 5); o.connect(g); g.connect(out); o.start(t); o.stop(t + step * 5.2); } };
+    let n = 0, next = ctx.currentTime + 0.1;
+    const tick = () => {
+      while (next < ctx.currentTime + 0.25) {
+        const i = n % 16, bar = n % 32;
+        const t = next + (i % 2 ? swing : 0);
+        if (KICK[i]) kick(t);
+        if (SNARE[i]) snare(t, i === 15 ? 0.15 : 0.45);
+        if (HAT[i]) hat(t, i % 4 === 0 ? 0.12 : 0.06);
+        for (const [m, at] of BASS) if (at === bar) bass(t, m);
+        for (const [c, at] of CHORDS) if (at === bar) keys(t, c);
+        n++; next += step;
+      }
+    };
+    tick();
+    this.beatTimer = setInterval(tick, 60);
+  },
   init() {
     if (this.ctx) return;
     const AC = window.AudioContext || window.webkitAudioContext;
@@ -1253,7 +1310,7 @@ const Sound = {
     this.noiseBuf = buf;
     const src = this.ctx.createBufferSource(); src.buffer = buf; src.loop = true;
     const f = this.ctx.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = 500;
-    const g = this.ctx.createGain(); g.gain.value = 0.12;
+    const g = this.ctx.createGain(); g.gain.value = 0.08;
     const lfo = this.ctx.createOscillator(); lfo.frequency.value = 0.15;
     const lfoG = this.ctx.createGain(); lfoG.gain.value = 0.06;
     lfo.connect(lfoG); lfoG.connect(g.gain);
@@ -1262,7 +1319,7 @@ const Sound = {
   },
   toggle() {
     this.enabled = !this.enabled;
-    if (this.enabled) { this.init(); if (this.ctx && this.ctx.state === 'suspended') this.ctx.resume(); }
+    if (this.enabled) this.unlock();
     else if (this.ctx) this.ctx.suspend();
     try { localStorage.setItem(STORAGE_SOUND, this.enabled ? '1' : '0'); } catch (e) { /* ignore */ }
     return this.enabled;
@@ -2168,6 +2225,16 @@ for (const b of $$('[data-go]')) {
   });
 }
 const soundBtn = $('#btn-sound');
+soundBtn.setAttribute('aria-pressed', String(Sound.enabled));
+// premier geste de l'utilisateur : lance l'audio (son activé par défaut)
+const firstGesture = (e) => {
+  if (e.target && e.target.closest && e.target.closest('#btn-sound')) return; // le bouton gère lui-même
+  window.removeEventListener('pointerdown', firstGesture, true);
+  window.removeEventListener('keydown', firstGesture, true);
+  Sound.unlock();
+};
+window.addEventListener('pointerdown', firstGesture, true);
+window.addEventListener('keydown', firstGesture, true);
 soundBtn.addEventListener('click', () => {
   const on = Sound.toggle();
   soundBtn.setAttribute('aria-pressed', String(on));
