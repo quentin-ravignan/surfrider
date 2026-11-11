@@ -404,5 +404,6 @@ window.SF_DICT.wo = {
  "Un jeune remplit un grand sac de déchets au pied des rochers": "Ab ndaw di fees mbuus mu mag ak mbalit ci suufu doj yi",
  "Deux enfants tiennent un sac de déchets ramassés sur la plage": "Ñaari xale di téye mbuusu mbalit mu ñu for ci tefes gi",
  "Satellite": "Satellite",
- "Plan": "Kaart"
+ "Plan": "Kaart",
+ "L'équipe de la Surfrider Sénégal réunie": "Ekipu Surfrider Senegaal bi ñu dajaloo"
 };

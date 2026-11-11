@@ -404,5 +404,6 @@ window.SF_DICT.en = {
  "Un jeune remplit un grand sac de déchets au pied des rochers": "A young person fills a big bag with waste at the foot of the rocks",
  "Deux enfants tiennent un sac de déchets ramassés sur la plage": "Two children hold a bag of waste collected on the beach",
  "Satellite": "Satellite",
- "Plan": "Map"
+ "Plan": "Map",
+ "L'équipe de la Surfrider Sénégal réunie": "The Surfrider Senegal team together"
 };

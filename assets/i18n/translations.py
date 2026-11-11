@@ -525,6 +525,7 @@ R = [
 ("Deux enfants tiennent un sac de déchets ramassés sur la plage", "Two children hold a bag of waste collected on the beach", "Ñaari xale di téye mbuusu mbalit mu ñu for ci tefes gi"),
 ("Satellite", "Satellite", "Satellite"),
 ("Plan", "Map", "Kaart"),
+("L'équipe de la Surfrider Sénégal réunie", "The Surfrider Senegal team together", "Ekipu Surfrider Senegaal bi ñu dajaloo"),
 ]
 
 seen = set()

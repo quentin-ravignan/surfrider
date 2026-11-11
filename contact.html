@@ -10,10 +10,10 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/css/style.css?v=20261111">
-  <script src="assets/js/config.js?v=20261111"></script>
-  <script src="assets/js/i18n.js?v=20261111"></script>
-  <script src="assets/js/main.js?v=20261111" defer></script>
+  <link rel="stylesheet" href="assets/css/style.css?v=20261112">
+  <script src="assets/js/config.js?v=20261112"></script>
+  <script src="assets/js/i18n.js?v=20261112"></script>
+  <script src="assets/js/main.js?v=20261112" defer></script>
 </head>
 <body>
   <div data-site-header></div>
@@ -79,6 +79,7 @@
           <h2>Une équipe passionnée</h2>
           <p>La Surfrider Sénégal, c'est 6 co-fondateur·rice·s, une équipe exécutive, des volontaires au quotidien sur le terrain et une communauté de 1 725 membres avec un réseau citoyen de suivi de la pollution, les Saytoukat Géej.</p>
         </div>
+        <img class="split-img wide" src="assets/img/team/equipe.jpg" alt="L'équipe de la Surfrider Sénégal réunie" loading="lazy" width="517" height="499" style="max-width:640px;margin:0 auto 36px;aspect-ratio:auto">
         <div class="grid grid-3" id="team"></div>
       </div>
     </section>
@@ -104,19 +105,21 @@
       });
 
       const TEAM = [
-        ["Babacar Thiaw", "Président", "#00853F"],
-        ["Claire Stragier", "Directrice générale", "#0072BC"],
-        ["Paulèle Cissé", "Trésorière", "#E31B23"],
-        ["Adama Samba", "Secrétaire", "#F2A900"],
-        ["Quentin de Ravignan", "Responsable partenariats", "#0B1F33"],
-        ["Marlène Menoux", "Responsable projets", "#00853F"],
+        ["Babacar Thiaw", "Président", "#00853F", "babacar-thiaw"],
+        ["Claire Stragier", "Directrice générale", "#0072BC", "claire-stragier"],
+        ["Paulèle Cissé", "Trésorière", "#E31B23", "paulele-cisse"],
+        ["Adama Samba", "Secrétaire", "#F2A900", "adama-samba"],
+        ["Quentin de Ravignan", "Responsable partenariats", "#0B1F33", "quentin-de-ravignan"],
+        ["Marlène Menoux", "Responsable projets", "#00853F", "marlene-menoux"],
         ["Pape Segan Ndiaye", "Responsable sensibilisation et mobilisation sociale", "#0072BC"],
         ["Maguette Diouf", "Animatrice", "#E31B23"],
         ["Mame Khary Diagne", "Animatrice", "#F2A900"]
       ];
-      document.getElementById("team").innerHTML = TEAM.map(([n, r, c]) => `
+      document.getElementById("team").innerHTML = TEAM.map(([n, r, c, photo]) => `
         <div class="card team-card">
-          <div class="avatar" style="background:${c}${c === "#F2A900" ? ";color:#0B1F33" : ""}" aria-hidden="true">${n.split(" ").map(w => w[0]).filter(ch => ch === ch.toUpperCase()).slice(0, 2).join("")}</div>
+          ${photo
+            ? `<img class="avatar-photo" src="assets/img/team/${photo}.jpg" alt="${n}" loading="lazy" width="480" height="480">`
+            : `<div class="avatar" style="background:${c}${c === "#F2A900" ? ";color:#0B1F33" : ""}" aria-hidden="true">${n.split(" ").map(w => w[0]).filter(ch => ch === ch.toUpperCase()).slice(0, 2).join("")}</div>`}
           <h3>${n}</h3><p class="role">${r}</p>
         </div>`).join("");
     });

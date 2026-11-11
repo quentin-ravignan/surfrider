@@ -333,3 +333,5 @@ p { margin: 0 0 1em; }
 @media (prefers-reduced-motion: reduce) { .gallery img { transition: none; } }
 
 @media (max-width: 899px) { .hero-logo { margin: 0 auto; width: min(200px, 55vw); } }
+
+.avatar-photo { width: 140px; height: 140px; border-radius: 50%; object-fit: cover; margin: 0 auto 16px; border: 4px solid var(--white); box-shadow: 0 0 0 3px var(--blue); }
