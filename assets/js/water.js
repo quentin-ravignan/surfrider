@@ -174,9 +174,15 @@
 
   document.addEventListener("DOMContentLoaded", async () => {
     map = L.map("map", { scrollWheelZoom: false }).setView([14.742, -17.497], 12);
-    L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png", {
-      maxZoom: 18, attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>'
-    }).addTo(map);
+    // Fonds de carte sans clé d'API : OpenStreetMap (plan) et Esri World Imagery (satellite)
+    const plan = L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      maxZoom: 19, attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    });
+    const sat = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}", {
+      maxZoom: 19, attribution: "Imagerie &copy; Esri, Maxar, Earthstar Geographics"
+    });
+    sat.addTo(map);
+    L.control.layers({ [t("Satellite")]: sat, [t("Plan")]: plan }, null, { position: "topright" }).addTo(map);
     data = await load();
     selected = data[0]?.site;
     render();

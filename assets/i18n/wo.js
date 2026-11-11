@@ -46,7 +46,7 @@ window.SF_DICT.wo = {
  "Explorer la carte": "Xool kaart bi",
  "Nouveau · Jeu 3D": "Bees · Po 3D",
  "Surfe, ramasse, apprends": "Surfe, for, jàng",
- "Choisis Babacar, Paulèle, Adama ou Claire, et surfe une minute à Ouakam, au Secret, au Virage ou à N'gor. Enchaîne les figures et nettoie l'océan pour marquer des points… en apprenant les bons gestes pour protéger la mer. Jouable sur téléphone !": "Tànnal Babacar, Paulèle, Adama walla Claire, te surfe benn simili ci Ouakam, Secret, Virage walla N'gor. Def ay figures te setal géej gi ngir am ay poñ… di jàng ni ñuy sàmme géej gi. Mën nga ko fo ci sa telefon !",
+ "Choisis Babacar, Paulèle, Adama ou Claire, et surfe 30 secondes à Ouakam, au Secret, au Virage ou à N'gor. Enchaîne les figures et nettoie l'océan pour marquer des points… en apprenant les bons gestes pour protéger la mer. Jouable sur téléphone !": "Tànnal Babacar, Paulèle, Adama walla Claire, te surfe 30 segond ci Ouakam, Secret, Virage walla N'gor. Def ay figures te setal géej gi ngir am ay poñ… di jàng ni ñuy sàmme géej gi. Mën nga ko fo ci sa telefon !",
  "Jouer maintenant": "Fo léegi",
  "Agis avec la Surfrider": "Jëfal ak Surfrider",
  "Bénévole, Saytoukat Géej, partenaire ou simple ocean lover : il y a une place pour toi.": "Way-jappale, Saytoukat Géej, àndandoo walla kuy bëgg géej rekk : am na sa palaas.",
@@ -402,5 +402,7 @@ window.SF_DICT.wo = {
  "Sachets d'eau plastique abandonnés sur le sable": "Saasu ndox yu plastik yu ñu bàyyi ci suuf si",
  "Un jeune retire un vieux sac coincé entre les rochers": "Ab ndaw di génne mbuus mu màggat mu tëju ci diggante doj yi",
  "Un jeune remplit un grand sac de déchets au pied des rochers": "Ab ndaw di fees mbuus mu mag ak mbalit ci suufu doj yi",
- "Deux enfants tiennent un sac de déchets ramassés sur la plage": "Ñaari xale di téye mbuusu mbalit mu ñu for ci tefes gi"
+ "Deux enfants tiennent un sac de déchets ramassés sur la plage": "Ñaari xale di téye mbuusu mbalit mu ñu for ci tefes gi",
+ "Satellite": "Satellite",
+ "Plan": "Kaart"
 };

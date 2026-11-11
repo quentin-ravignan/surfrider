@@ -46,7 +46,7 @@ window.SF_DICT.en = {
  "Explorer la carte": "Explore the map",
  "Nouveau · Jeu 3D": "New · 3D game",
  "Surfe, ramasse, apprends": "Surf, collect, learn",
- "Choisis Babacar, Paulèle, Adama ou Claire, et surfe une minute à Ouakam, au Secret, au Virage ou à N'gor. Enchaîne les figures et nettoie l'océan pour marquer des points… en apprenant les bons gestes pour protéger la mer. Jouable sur téléphone !": "Pick Babacar, Paulèle, Adama or Claire and surf for one minute at Ouakam, Secret, Virage or N'gor. Chain tricks and clean the ocean to score points… while learning how to protect the sea. Playable on your phone!",
+ "Choisis Babacar, Paulèle, Adama ou Claire, et surfe 30 secondes à Ouakam, au Secret, au Virage ou à N'gor. Enchaîne les figures et nettoie l'océan pour marquer des points… en apprenant les bons gestes pour protéger la mer. Jouable sur téléphone !": "Pick Babacar, Paulèle, Adama or Claire and surf for 30 seconds at Ouakam, Secret, Virage or N'gor. Chain tricks and clean the ocean to score points… while learning how to protect the sea. Playable on your phone!",
  "Jouer maintenant": "Play now",
  "Agis avec la Surfrider": "Take action with Surfrider",
  "Bénévole, Saytoukat Géej, partenaire ou simple ocean lover : il y a une place pour toi.": "Volunteer, Saytoukat Géej, partner or simply an ocean lover: there's a place for you.",
@@ -402,5 +402,7 @@ window.SF_DICT.en = {
  "Sachets d'eau plastique abandonnés sur le sable": "Plastic water sachets left on the sand",
  "Un jeune retire un vieux sac coincé entre les rochers": "A young person pulls an old bag stuck between the rocks",
  "Un jeune remplit un grand sac de déchets au pied des rochers": "A young person fills a big bag with waste at the foot of the rocks",
- "Deux enfants tiennent un sac de déchets ramassés sur la plage": "Two children hold a bag of waste collected on the beach"
+ "Deux enfants tiennent un sac de déchets ramassés sur la plage": "Two children hold a bag of waste collected on the beach",
+ "Satellite": "Satellite",
+ "Plan": "Map"
 };

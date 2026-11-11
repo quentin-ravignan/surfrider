@@ -67,9 +67,9 @@ R = [
 ("Explorer la carte", "Explore the map", "Xool kaart bi"),
 ("Nouveau · Jeu 3D", "New · 3D game", "Bees · Po 3D"),
 ("Surfe, ramasse, apprends", "Surf, collect, learn", "Surfe, for, jàng"),
-("Choisis Babacar, Paulèle, Adama ou Claire, et surfe une minute à Ouakam, au Secret, au Virage ou à N'gor. Enchaîne les figures et nettoie l'océan pour marquer des points… en apprenant les bons gestes pour protéger la mer. Jouable sur téléphone !",
- "Pick Babacar, Paulèle, Adama or Claire and surf for one minute at Ouakam, Secret, Virage or N'gor. Chain tricks and clean the ocean to score points… while learning how to protect the sea. Playable on your phone!",
- "Tànnal Babacar, Paulèle, Adama walla Claire, te surfe benn simili ci Ouakam, Secret, Virage walla N'gor. Def ay figures te setal géej gi ngir am ay poñ… di jàng ni ñuy sàmme géej gi. Mën nga ko fo ci sa telefon !"),
+("Choisis Babacar, Paulèle, Adama ou Claire, et surfe 30 secondes à Ouakam, au Secret, au Virage ou à N'gor. Enchaîne les figures et nettoie l'océan pour marquer des points… en apprenant les bons gestes pour protéger la mer. Jouable sur téléphone !",
+ "Pick Babacar, Paulèle, Adama or Claire and surf for 30 seconds at Ouakam, Secret, Virage or N'gor. Chain tricks and clean the ocean to score points… while learning how to protect the sea. Playable on your phone!",
+ "Tànnal Babacar, Paulèle, Adama walla Claire, te surfe 30 segond ci Ouakam, Secret, Virage walla N'gor. Def ay figures te setal géej gi ngir am ay poñ… di jàng ni ñuy sàmme géej gi. Mën nga ko fo ci sa telefon !"),
 ("Jouer maintenant", "Play now", "Fo léegi"),
 ("Agis avec la Surfrider", "Take action with Surfrider", "Jëfal ak Surfrider"),
 ("Bénévole, Saytoukat Géej, partenaire ou simple ocean lover : il y a une place pour toi.",
@@ -523,6 +523,8 @@ R = [
 ("Un jeune retire un vieux sac coincé entre les rochers", "A young person pulls an old bag stuck between the rocks", "Ab ndaw di génne mbuus mu màggat mu tëju ci diggante doj yi"),
 ("Un jeune remplit un grand sac de déchets au pied des rochers", "A young person fills a big bag with waste at the foot of the rocks", "Ab ndaw di fees mbuus mu mag ak mbalit ci suufu doj yi"),
 ("Deux enfants tiennent un sac de déchets ramassés sur la plage", "Two children hold a bag of waste collected on the beach", "Ñaari xale di téye mbuusu mbalit mu ñu for ci tefes gi"),
+("Satellite", "Satellite", "Satellite"),
+("Plan", "Map", "Kaart"),
 ]
 
 seen = set()
