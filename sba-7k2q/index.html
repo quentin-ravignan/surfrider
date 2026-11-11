@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0d1416">
+  <meta name="robots" content="noindex, nofollow">
+  <title>SBA – Surf &amp; Beer</title>
+  <meta name="description" content="Jeu de surf privé du SBA – Surf and Beer Association.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800&family=Barlow:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="sba.css">
+  <script type="importmap">
+    { "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js" } }
+  </script>
+</head>
+<body>
+  <div id="app">
+    <canvas id="scene" aria-label="Jeu de surf en 3D" data-i18n-aria="ui.canvas"></canvas>
+
+    <div class="top-actions">
+      <button id="btn-sound" class="icon-btn" type="button" aria-pressed="false" aria-label="Activer le son">
+        <svg class="ico-off" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z" fill="currentColor"/><path d="M16 9l5 6M21 9l-5 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/></svg>
+        <svg class="ico-on" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z" fill="currentColor"/><path d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/></svg>
+      </button>
+      <button id="btn-pause" class="icon-btn" type="button" aria-label="Pause" data-i18n-aria="ui.pause" hidden>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="5" width="4" height="14" rx="1" fill="currentColor"/><rect x="14" y="5" width="4" height="14" rx="1" fill="currentColor"/></svg>
+      </button>
+    </div>
+
+    <!-- HUD -->
+    <div id="hud" hidden>
+      <div class="hud-top">
+        <div class="hud-box hud-score">
+          <span class="lbl" data-i18n="ui.score">Score</span>
+          <span id="hud-score" class="val">0</span>
+        </div>
+        <div class="hud-box hud-timer">
+          <span class="lbl" data-i18n="ui.time">Temps</span>
+          <span id="hud-timer" class="val">30</span>
+        </div>
+        <div class="hud-box hud-combo">
+          <span class="lbl" data-i18n="ui.combo">Combo</span>
+          <span id="hud-mult" class="val">x1</span>
+          <span class="combo-bar"><i id="hud-combo-bar"></i></span>
+        </div>
+      </div>
+      <div class="hud-clean">
+        <span class="lbl" data-i18n="ui.cleanMeter">Glacière</span>
+        <span class="clean-bar"><i id="hud-clean-bar"></i></span>
+        <span id="hud-clean-pct" class="pct">0 %</span>
+      </div>
+      <div id="hud-state" class="state-tag" aria-hidden="true"></div>
+      <div id="trick-pop" class="trick-pop" aria-live="polite"></div>
+      <div id="fact-toast" class="fact-toast" role="status" aria-live="polite">
+        <span class="fact-kicker"></span>
+        <p id="fact-text"></p>
+      </div>
+      <div id="float-layer" class="float-layer" aria-hidden="true"></div>
+      <div id="hint-drag" class="hint-drag" data-i18n="ui.hintDrag">Glisse ← → pour surfer · glisse vers le haut pour sauter</div>
+
+      <div class="controls">
+        <button id="btn-jump" class="ctl ctl-jump" type="button"><span data-i18n="ui.jump">Saut</span><small class="kbd" data-i18n="ui.space">Espace</small></button>
+        <div class="tricks">
+          <button class="ctl ctl-trick" type="button" data-trick="cutback"><span data-i18n="tricks.cutback">Cutback</span><small class="kbd">1</small></button>
+          <button class="ctl ctl-trick" type="button" data-trick="aerial"><span data-i18n="tricks.aerial">Aerial</span><small class="kbd">2</small></button>
+          <button class="ctl ctl-trick" type="button" data-trick="spin"><span data-i18n="tricks.spin">360</span><small class="kbd">3</small></button>
+        </div>
+      </div>
+    </div>
+
+    <div id="countdown" class="countdown" aria-live="assertive"></div>
+
+    <!-- Chargement -->
+    <section id="screen-loading" class="screen screen-center is-active">
+      <div class="panel panel-small">
+        <img class="logo" src="img/logo-sba.png" alt="SBA – Surf and Beer Association" width="160" height="160">
+        <p id="loading-text" class="muted" data-i18n="ui.loading">On décapsule la vague…</p>
+      </div>
+    </section>
+
+    <!-- Titre -->
+    <section id="screen-title" class="screen screen-center">
+      <div class="panel title-panel">
+        <div class="lang-switch" role="group" aria-label="Langue / Language">
+          <button type="button" class="lang-btn" data-lang="fr" lang="fr">FR</button>
+          <button type="button" class="lang-btn" data-lang="en" lang="en">EN</button>
+        </div>
+        <img class="logo" src="img/logo-sba.png" alt="SBA – Surf and Beer Association" width="160" height="160">
+        <h1 class="game-title"><span data-i18n="ui.title1">Surf</span> <span class="amp">&amp;</span> <span data-i18n="ui.title2">Beer</span></h1>
+        <p class="subtitle" data-i18n="ui.subtitle"></p>
+        <button id="btn-start" class="btn btn-primary btn-big" type="button" data-i18n="ui.play">Jouer</button>
+        <p class="tiny muted" data-i18n="ui.titleHint"></p>
+      </div>
+    </section>
+
+    <!-- Choix du surfeur -->
+    <section id="screen-char" class="screen">
+      <div class="panel panel-wide">
+        <p class="step" data-i18n="ui.step1">Étape 1 / 2</p>
+        <h2 data-i18n="ui.chooseSurfer">Choisis ton surfeur</h2>
+        <div id="char-grid" class="card-grid" role="radiogroup"></div>
+        <div id="char-detail" class="detail"></div>
+        <div class="row-actions">
+          <button class="btn btn-ghost" type="button" data-go="title" data-i18n="ui.back">Retour</button>
+          <button id="btn-char-ok" class="btn btn-primary" type="button" data-i18n="ui.choose">Choisir</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Choix du spot -->
+    <section id="screen-spot" class="screen">
+      <div class="panel panel-wide">
+        <p class="step" data-i18n="ui.step2">Étape 2 / 2</p>
+        <h2 data-i18n="ui.chooseSpot">Choisis ton spot</h2>
+        <div id="spot-grid" class="card-grid" role="radiogroup"></div>
+        <div class="row-actions">
+          <button class="btn btn-ghost" type="button" data-go="char" data-i18n="ui.back">Retour</button>
+          <button id="btn-spot-ok" class="btn btn-primary" type="button" data-i18n="ui.surfHere">Surfer ici</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Comment jouer -->
+    <section id="screen-howto" class="screen">
+      <div class="panel">
+        <h2 data-i18n="ui.howTitle">Comment jouer</h2>
+        <ul class="howto">
+          <li><b class="pill pill-blue" data-i18n="ui.hSteer"></b><span><span class="only-touch" data-i18n="ui.hSteerTouch"></span><span class="only-kbd" data-i18n="ui.hSteerKbd"></span> <span data-i18n="ui.hSteerTxt"></span></span></li>
+          <li><b class="pill pill-green" data-i18n="ui.hJump"></b><span><span class="only-touch" data-i18n="ui.hJumpTouch"></span><span class="only-kbd" data-i18n="ui.hJumpKbd"></span> <span data-i18n="ui.hJumpTxt"></span></span></li>
+          <li><b class="pill pill-yellow" data-i18n="ui.hTricks"></b><span><span data-i18n="ui.hTricksTxt"></span> <span class="only-kbd" data-i18n="ui.hTricksKbd"></span></span></li>
+          <li><b class="pill pill-sand" data-i18n="ui.hTrash"></b><span data-i18n="ui.hTrashTxt"></span></li>
+          <li><b class="pill pill-red" data-i18n="ui.hObst"></b><span data-i18n="ui.hObstTxt"></span></li>
+          <li><b class="pill pill-navy" data-i18n="ui.combo"></b><span data-i18n="ui.hComboTxt"></span></li>
+        </ul>
+        <div class="row-actions">
+          <button class="btn btn-ghost" type="button" data-go="spot" data-i18n="ui.back">Retour</button>
+          <button id="btn-go" class="btn btn-primary" type="button" data-i18n="ui.go">C'est parti !</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Pause -->
+    <section id="screen-pause" class="screen screen-center">
+      <div class="panel panel-small">
+        <h2 data-i18n="ui.pause">Pause</h2>
+        <div class="stack">
+          <button id="btn-resume" class="btn btn-primary" type="button" data-i18n="ui.resume">Reprendre</button>
+          <button id="btn-restart" class="btn btn-ghost" type="button" data-i18n="ui.restart">Recommencer</button>
+          <button id="btn-quit" class="btn btn-ghost" type="button" data-i18n="ui.changeSpot">Changer de spot</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Résultats -->
+    <section id="screen-results" class="screen">
+      <div class="panel">
+        <p class="step" id="res-spot"></p>
+        <h2 data-i18n="ui.sessionOver">Session terminée !</h2>
+        <div class="res-score">
+          <span class="lbl" data-i18n="ui.finalScore">Score final</span>
+          <span id="res-total" class="big"></span>
+          <span id="res-record" class="record"></span>
+        </div>
+        <dl class="res-grid">
+          <div><dt data-i18n="ui.rTricks">Figures</dt><dd id="res-tricks"></dd></div>
+          <div><dt data-i18n="ui.rClean">Nettoyage</dt><dd id="res-clean"></dd></div>
+          <div><dt data-i18n="ui.rCount">Déchets ramassés</dt><dd id="res-count"></dd></div>
+          <div><dt data-i18n="ui.rKg">Poids estimé</dt><dd id="res-kg"></dd></div>
+          <div><dt data-i18n="ui.rCombo">Meilleur combo</dt><dd id="res-combo"></dd></div>
+          <div><dt data-i18n="ui.cleanMeter">Glacière</dt><dd id="res-ocean"></dd></div>
+        </dl>
+        <div class="lesson">
+          <img src="img/logo-sba.png" alt="" width="48" height="48">
+          <div>
+            <p class="lesson-kicker" data-i18n="ui.lesson">La leçon de la session</p>
+            <p id="res-lesson"></p>
+            <p class="tiny" data-i18n="ui.waterNote"></p>
+          </div>
+        </div>
+        <div class="row-actions">
+          <button id="btn-spot-change" class="btn btn-ghost" type="button" data-i18n="ui.changeSpot">Changer de spot</button>
+          <button id="btn-replay" class="btn btn-primary" type="button" data-i18n="ui.replay">Rejouer</button>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <noscript><p class="noscript">Ce jeu nécessite JavaScript. · This game requires JavaScript.</p></noscript>
+  <script>
+    // Message de secours si le module 3D ne se charge pas (hors ligne, navigateur ancien…)
+    setTimeout(function () {
+      if (!window.__srGameReady) {
+        var t = document.getElementById('loading-text');
+        var lang = 'fr';
+        try { lang = localStorage.getItem('sba-lang') || 'fr'; } catch (e) {}
+        var msg = {
+          fr: "Le jeu n'a pas pu se charger. Vérifie ta connexion puis recharge la page.",
+          en: "The game could not load. Check your connection and reload the page."
+        };
+        if (t) t.textContent = msg[lang] || msg.fr;
+      }
+    }, 12000);
+  </script>
+  <script type="module" src="sba.js"></script>
+</body>
+</html>
