@@ -744,10 +744,10 @@ function getFaceMat(skin, light) {
     g.beginPath(); g.ellipse(x, y, 12, 8, 0, Math.PI * 1.05, Math.PI * 1.95); g.stroke();
   }
   // nez (ombre + narines)
-  g.strokeStyle = shade(skin, 0.7); g.lineWidth = 2.5;
-  g.beginPath(); g.moveTo(62, 60); g.quadraticCurveTo(58, 74, 62, 79); g.stroke();
+  g.strokeStyle = shade(skin, 0.75); g.lineWidth = 1.8;
+  g.beginPath(); g.moveTo(63, 66); g.quadraticCurveTo(60, 74, 63, 78); g.stroke();
   g.fillStyle = shade(skin, 0.5);
-  for (const s of [-1, 1]) { g.beginPath(); g.ellipse(64 + s * 5, 80, 2.6, 1.6, 0, 0, Math.PI * 2); g.fill(); }
+  for (const s of [-1, 1]) { g.beginPath(); g.ellipse(64 + s * 3.5, 79, 1.7, 1.1, 0, 0, Math.PI * 2); g.fill(); }
   // bouche souriante
   g.fillStyle = light ? '#c8706a' : shade(skin, 0.62);
   g.beginPath(); g.moveTo(45, 91); g.quadraticCurveTo(64, 85, 83, 91); g.quadraticCurveTo(64, 108, 45, 91); g.fill();
@@ -853,7 +853,7 @@ function buildSurfer(ch, lite) {
     const faceGeo = cached('face', () => new THREE.SphereGeometry(0.1365, 14, 10, -0.95, 1.9, Math.PI * 0.26, Math.PI * 0.48));
     const face = new THREE.Mesh(faceGeo, getFaceMat(skin, lightSkin)); face.renderOrder = 1; head.add(face);
     // nez en volume
-    const nose = new THREE.Mesh(sphereGeo(0.026, 8, 6), mat(skin, SMOOTH)); nose.scale.set(0.9, 1.25, 0.85); nose.position.set(-0.133, -0.012, 0); head.add(nose);
+    const nose = new THREE.Mesh(sphereGeo(0.015, 8, 6), mat(skin, SMOOTH)); nose.scale.set(0.8, 1.1, 0.75); nose.position.set(-0.127, -0.012, 0); head.add(nose);
     // oreilles (cachées par le voile)
     if (ch.hair !== 'hijab' && ch.hair !== 'loose') {
       for (const s of [-1, 1]) {

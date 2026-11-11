@@ -615,3 +615,33 @@ body.is-touch .ctl small.kbd { display: none; }
   .fact-toast, .state-tag, .hint-drag, .btn, .card { transition: none !important; }
   .card[aria-checked="true"] { transform: none; }
 }
+
+/* ---------- HUD compact : plus de visibilité sur la vague ---------- */
+.hud-top { top: calc(var(--safe-t) + 58px); left: calc(var(--safe-l) + 8px); right: calc(var(--safe-r) + 8px); gap: 6px; }
+.hud-box { padding: 2px 8px 3px; border-radius: 8px; background: rgba(11,31,51,.45); }
+.hud-box .lbl, .hud-clean .lbl { font-size: 9px; letter-spacing: .5px; }
+.hud-box .val { font-size: 18px; }
+.hud-timer .val { font-size: 22px; }
+.hud-score { min-width: 64px; }
+.hud-timer { min-width: 50px; }
+.hud-combo { min-width: 60px; }
+.combo-bar { height: 3px; margin-top: 2px; }
+.hud-clean { top: calc(var(--safe-t) + 106px); width: min(260px, calc(100% - 140px)); padding: 2px 10px; gap: 6px; background: rgba(11,31,51,.45); }
+.clean-bar { height: 6px; }
+.hud-clean .pct { font-size: 12px; min-width: 30px; }
+.state-tag { top: calc(var(--safe-t) + 134px); font-size: 11px; padding: 2px 9px; }
+.trick-pop { top: 24%; }
+.trick-pop .t { font-size: clamp(24px, 7vw, 40px); }
+.trick-pop .p { font-size: 17px; }
+/* infobulles (éco-gestes) en bas, au-dessus des boutons */
+.fact-toast { top: auto; bottom: calc(var(--safe-b) + 104px); width: min(380px, calc(100% - 24px)); padding: 6px 10px; border-left-width: 4px; border-radius: 8px; transform: translate(-50%, 8px); background: rgba(244,233,216,.92); }
+.fact-toast.is-show { transform: translate(-50%, 0); }
+.fact-toast .fact-kicker { font-size: 11px; }
+.fact-toast p { font-size: 12px; line-height: 1.25; }
+@media (max-height: 520px) and (orientation: landscape) {
+  .hud-top { top: calc(var(--safe-t) + 6px); width: min(340px, 50%); }
+  .hud-clean { top: calc(var(--safe-t) + 50px); width: min(240px, 45%); }
+  .state-tag { top: calc(var(--safe-t) + 74px); }
+  .fact-toast { bottom: calc(var(--safe-b) + 84px); width: min(360px, 50%); }
+}
+@media (max-width: 360px) { .hud-box .val { font-size: 16px; } .hud-timer .val { font-size: 20px; } }
