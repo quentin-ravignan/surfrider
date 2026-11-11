@@ -827,7 +827,8 @@ function buildSurfer(ch, lite) {
   const sleeveCol = ch.shirt;
   for (const s of [-1, 1]) {
     const arm = new THREE.Group(); arm.position.set(0, shY, s * 0.2); torso.add(arm);
-    const elbow = [-0.02, -0.1, s * 0.3], wrist = [-0.08, -0.17, s * 0.56];
+    // bras baissés et souples : coude légèrement plié vers l'avant
+    const elbow = [0.04, -0.25, s * 0.15], wrist = [0.13, -0.46, s * 0.22];
     const sh = new THREE.Mesh(sphereGeo(0.075, 10, 8), mat(sleeveCol, SMOOTH)); arm.add(sh);
     if (ch.longSleeves) {
       limb(arm, [0, 0, 0], elbow, 0.055, sleeveCol, true);
@@ -839,7 +840,7 @@ function buildSurfer(ch, lite) {
       limb(arm, elbow, wrist, 0.045, skin, true);
     }
     const hand = new THREE.Mesh(sphereGeo(0.05, 8, 6), mat(skin, SMOOTH)); hand.scale.set(0.8, 1, 1.2); hand.position.set(wrist[0] - 0.01, wrist[1] - 0.02, wrist[2] + s * 0.05); arm.add(hand);
-    arm.rotation.x = s * -0.35;
+    arm.rotation.x = s * -0.08;
     arms.push(arm);
   }
   torso.rotation.z = 0.25; // penché vers la vague
@@ -1709,8 +1710,8 @@ function updateSurferPose(dt, menu) {
   const bob = Math.sin(W.t * 3.2) * 0.03;
   u.rider.position.y = 0.1 + bob - crouch - (S.air ? 0.08 : 0);
   u.torso.rotation.z = 0.25 + clamp(-S.vx * 0.02, -0.25, 0.25);
-  u.arms[0].rotation.x = 0.35 + Math.sin(W.t * 2) * 0.1 + (S.air ? 0.6 : 0);
-  u.arms[1].rotation.x = -0.35 - Math.sin(W.t * 2.3) * 0.1 - (S.air ? 0.6 : 0);
+  u.arms[0].rotation.x = 0.1 + Math.sin(W.t * 2) * 0.08 + (S.air ? 0.55 : 0);
+  u.arms[1].rotation.x = -0.1 - Math.sin(W.t * 2.3) * 0.08 - (S.air ? 0.55 : 0);
   // chute
   if (S.wipe > 0) {
     const k = clamp((2 - S.wipe) / 0.35, 0, 1);
