@@ -4,7 +4,7 @@
  */
 import * as THREE from 'three';
 
-const GAME_DURATION = 60; // secondes
+const GAME_DURATION = 30; // secondes
 const STORAGE_BEST = 'srsn-game-best-v1';
 const STORAGE_SOUND = 'srsn-game-sound-v1';
 
@@ -31,7 +31,7 @@ const I18N = {
     ui: {
       backSite: '← Retour au site', canvas: 'Jeu de surf en 3D', loading: 'Chargement de la vague…',
       title1: 'Surf', title2: 'Nettoie',
-      subtitle: "Surfe les vagues de Dakar, enchaîne les figures et ramasse un maximum de déchets en 60 secondes pour rendre l'océan propre.",
+      subtitle: "Surfe les vagues de Dakar, enchaîne les figures et ramasse un maximum de déchets en 30 secondes pour rendre l'océan propre.",
       play: 'Jouer', titleHint: 'Mobile : glisse pour diriger · Ordinateur : flèches + Espace',
       step1: 'Étape 1 / 2', step2: 'Étape 2 / 2', chooseSurfer: 'Choisis ton surfeur', chooseSpot: 'Choisis ton spot',
       back: 'Retour', choose: 'Choisir', surfHere: 'Surfer ici', surfers: 'Surfeurs', spots: 'Spots',
@@ -126,7 +126,7 @@ const I18N = {
     ui: {
       backSite: '← Back to site', canvas: '3D surf game', loading: 'Loading the wave…',
       title1: 'Surf', title2: 'Clean',
-      subtitle: 'Surf the waves of Dakar, chain tricks and pick up as much trash as you can in 60 seconds to clean up the ocean.',
+      subtitle: 'Surf the waves of Dakar, chain tricks and pick up as much trash as you can in 30 seconds to clean up the ocean.',
       play: 'Play', titleHint: 'Mobile: swipe to steer · Computer: arrow keys + Space',
       step1: 'Step 1 / 2', step2: 'Step 2 / 2', chooseSurfer: 'Choose your surfer', chooseSpot: 'Choose your spot',
       back: 'Back', choose: 'Choose', surfHere: 'Surf here', surfers: 'Surfers', spots: 'Spots',
@@ -221,7 +221,7 @@ const I18N = {
     ui: {
       backSite: '← Dellu ci site bi', canvas: 'Fowu surf ci 3D', loading: 'Duus bi ngi ñëw…',
       title1: 'Surf', title2: 'Setal',
-      subtitle: 'Surfeel ci duusi Ndakaaru, def ay figure te dajale mbalit mu bare ci 60 saa ngir setal géej gi.',
+      subtitle: 'Surfeel ci duusi Ndakaaru, def ay figure te dajale mbalit mu bare ci 30 saa ngir setal géej gi.',
       play: 'Tambali', titleHint: 'Telefon : yëngal sa baaraam · Ordinatëer : fèlës yi + Espace',
       step1: 'Tappa 1 / 2', step2: 'Tappa 2 / 2', chooseSurfer: 'Tànn sa surfeur', chooseSpot: 'Tànn sa spot',
       back: 'Dellu', choose: 'Tànn', surfHere: 'Surfe fii', surfers: 'Surfeur yi', spots: 'Spot yi',
@@ -329,13 +329,13 @@ const CHARACTERS = [
   { id: 'babacar', name: 'Babacar', skin: 0x4a2c1d, height: 1.17, hair: 'crop', shirt: 0xf4f4f2, shorts: 0x00853F, board: 0xFDEF42, stripe: 0xE31B23 },
   { id: 'paulele', name: 'Paulèle', skin: 0x5a3626, hair: 'hijab', scarf: 0x0f9b6c, shirt: 0x0072BC, longSleeves: true, shorts: 0xE31B23, longShorts: true, leggings: 0x0B1F33, board: 0xFDEF42, stripe: 0xffffff },
   { id: 'adama', name: 'Adama', skin: 0x4f3020, hair: 'dreads', shirt: 0x1d3557, shorts: 0xFDEF42, board: 0x0072BC, stripe: 0xFDEF42 },
-  { id: 'claire', name: 'Claire', skin: 0xf1cdb0, hair: 'ponytail', hairColor: 0x5a3a22, shirt: 0xd8dde2, shorts: 0x0a8fd0, board: 0xffffff, stripe: 0x00853F },
+  { id: 'claire', name: 'Claire', skin: 0xf1cdb0, hair: 'loose', hairColor: 0x5a3a22, shirt: 0xd8dde2, shorts: 0x0a8fd0, board: 0xffffff, stripe: 0x00853F },
 ];
 
 const SPOTS = [
   {
     id: 'ouakam', name: 'Ouakam',
-    waveH: 6.4, speed: 15, speedGain: 0.4, trashPer100: 6.5, obstPer100: 1.7, obstacle: 'rock',
+    waveH: 6.4, speed: 15, speedGain: 0.5, trashPer100: 8.78, obstPer100: 2.12, obstacle: 'rock',
     rockColor: 0x3a2c24, startClean: 0.1, wave: 3, trashLvl: 2, foam: 0.4, lipSpray: 0.2,
     sky: ['#2f74c0', '#a9cdea', '#f3e2c4'], sun: '#fff0d6', sunI: 2.3, sunDir: [-0.45, 0.5, -0.75], hemi: ['#d8e9ff', '#7a6a50'],
     sand: '#e2cfa8', land: '#b09a74', fog: '#e7e4da',
@@ -344,7 +344,7 @@ const SPOTS = [
   },
   {
     id: 'secret', name: 'Secret',
-    waveH: 7.4, speed: 16.5, speedGain: 0.4, trashPer100: 5.5, obstPer100: 2.3, obstacle: 'rock',
+    waveH: 7.4, speed: 16.5, speedGain: 0.5, trashPer100: 7.43, obstPer100: 2.88, obstacle: 'rock',
     rockColor: 0x1c1a1a, startClean: 0.15, wave: 4, trashLvl: 1, foam: 0.3, lipSpray: 0.3,
     sky: ['#9fa9ae', '#c9c5b9', '#e4d9c5'], sun: '#fff4e0', sunI: 1.7, sunDir: [-0.3, 0.7, -0.6], hemi: ['#e6e2d8', '#5a5045'],
     sand: '#8f7d68', land: '#8a7556', fog: '#ddd3c2',
@@ -353,7 +353,7 @@ const SPOTS = [
   },
   {
     id: 'virage', name: 'Virage',
-    waveH: 4.9, speed: 13.5, speedGain: 0.35, trashPer100: 9.5, obstPer100: 1.4, obstacle: 'pirogue',
+    waveH: 4.9, speed: 13.5, speedGain: 0.44, trashPer100: 12.83, obstPer100: 1.75, obstacle: 'pirogue',
     startClean: 0, wave: 2, trashLvl: 3, foam: 1, lipSpray: 0,
     sky: ['#8c979f', '#b4bcc1', '#d4d6d3'], sun: '#f4f1ea', sunI: 1.4, sunDir: [0.4, 0.75, -0.5], hemi: ['#e4e8ea', '#8a8270'],
     sand: '#e6d3ae', land: '#c4b08a', fog: '#cfd2d0',
@@ -362,7 +362,7 @@ const SPOTS = [
   },
   {
     id: 'ngor', name: "N'gor",
-    waveH: 5.6, speed: 14, speedGain: 0.25, trashPer100: 6.5, obstPer100: 0.9, obstacle: 'pirogue',
+    waveH: 5.6, speed: 14, speedGain: 0.31, trashPer100: 8.78, obstPer100: 1.12, obstacle: 'pirogue',
     startClean: 0.1, wave: 2, trashLvl: 2, foam: 0.7, lipSpray: 1,
     sky: ['#1f6fc4', '#7fb8e6', '#e0f0fb'], sun: '#fffaf0', sunI: 2.4, sunDir: [-0.35, 0.75, -0.55], hemi: ['#e6f3ff', '#6a5040'],
     sand: '#9a5a3a', land: '#8d5634', fog: '#d6eaf6',
@@ -673,61 +673,124 @@ function updateSpray(dt, speed) {
 }
 
 /* ---------------- Surfeur ---------------- */
-// Logo Surfrider (carré blanc arrondi + vague bleue qui s'enroule) dessiné en CanvasTexture
-let logoMat = null;
+// Logo officiel Surfrider (symbole bleu, PNG transparent) sur le T-shirt
+const LOGO_ASPECT = 1501 / 1372;
+let thumbsDirty = false;
+let logoMat = null, patchMat = null;
 function getLogoMat() {
   if (logoMat) return logoMat;
+  const tex = new THREE.TextureLoader().load('assets/img/logo-symbole-bleu.png', () => {
+    thumbsDirty = true;
+    if (currentScreen === 'char') buildCharCards();
+  });
+  tex.colorSpace = THREE.SRGBColorSpace;
+  tex.anisotropy = 4;
+  logoMat = new THREE.MeshLambertMaterial({ map: tex, transparent: true, alphaTest: 0.05 });
+  return logoMat;
+}
+// petit écusson blanc arrondi pour les T-shirts foncés / bleus
+function getPatchMat() {
+  if (patchMat) return patchMat;
+  const c = document.createElement('canvas');
+  c.width = c.height = 64;
+  const g = c.getContext('2d');
+  const r = 14;
+  g.fillStyle = '#ffffff';
+  g.beginPath();
+  g.moveTo(r, 2); g.arcTo(62, 2, 62, 62, r); g.arcTo(62, 62, 2, 62, r); g.arcTo(2, 62, 2, 2, r); g.arcTo(2, 2, 62, 2, r);
+  g.closePath(); g.fill();
+  const tex = new THREE.CanvasTexture(c);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  patchMat = new THREE.MeshLambertMaterial({ map: tex, transparent: true });
+  return patchMat;
+}
+function isLight(hex) {
+  const r = (hex >> 16) & 255, g = (hex >> 8) & 255, b = hex & 255;
+  return (0.299 * r + 0.587 * g + 0.114 * b) / 255 > 0.62;
+}
+function shade(hex, f) {
+  const r = Math.min(255, Math.round(((hex >> 16) & 255) * f));
+  const g = Math.min(255, Math.round(((hex >> 8) & 255) * f));
+  const b = Math.min(255, Math.round((hex & 255) * f));
+  return `rgb(${r},${g},${b})`;
+}
+
+// Visage dessiné (sourcils, yeux, nez, bouche) : décalque CanvasTexture sur l'avant de la tête
+const faceMats = new Map();
+function getFaceMat(skin, light) {
+  const key = skin + (light ? 'l' : 'd');
+  if (faceMats.has(key)) return faceMats.get(key);
   const c = document.createElement('canvas');
   c.width = c.height = 128;
   const g = c.getContext('2d');
-  const r = 26;
-  g.fillStyle = '#ffffff';
-  g.beginPath();
-  g.moveTo(r, 4); g.arcTo(124, 4, 124, 124, r); g.arcTo(124, 124, 4, 124, r); g.arcTo(4, 124, 4, 4, r); g.arcTo(4, 4, 124, 4, r);
-  g.closePath(); g.fill();
-  g.strokeStyle = '#0072BC';
-  g.lineCap = 'round';
-  // spirale de la vague
-  g.lineWidth = 11;
-  g.beginPath();
-  for (let i = 0; i <= 60; i++) {
-    const a = Math.PI * 0.95 + i * 0.075;
-    const rad = 44 - i * 0.55;
-    const x = 68 + Math.cos(a) * rad, y = 64 + Math.sin(a) * rad;
-    if (i === 0) g.moveTo(x, y); else g.lineTo(x, y);
+  const brow = light ? '#4a3020' : '#120c08';
+  // sourcils
+  g.strokeStyle = brow; g.lineWidth = 6; g.lineCap = 'round';
+  for (const s of [-1, 1]) {
+    g.beginPath(); g.moveTo(64 + s * 11, 42); g.quadraticCurveTo(64 + s * 23, 35, 64 + s * 35, 41); g.stroke();
   }
-  g.stroke();
-  // lignes d'eau
-  g.lineWidth = 8;
-  for (const y of [100, 114]) {
-    g.beginPath(); g.moveTo(20, y); g.quadraticCurveTo(64, y - 10, 108, y); g.stroke();
+  // yeux : blanc + iris + pupille + reflet
+  for (const s of [-1, 1]) {
+    const x = 64 + s * 23, y = 56;
+    g.fillStyle = '#fbf8f2';
+    g.beginPath(); g.ellipse(x, y, 12, 8, 0, 0, Math.PI * 2); g.fill();
+    g.fillStyle = light ? '#6a4a2a' : '#3a2214';
+    g.beginPath(); g.arc(x, y + 0.5, 6.5, 0, Math.PI * 2); g.fill();
+    g.fillStyle = '#050403';
+    g.beginPath(); g.arc(x, y + 0.5, 3.2, 0, Math.PI * 2); g.fill();
+    g.fillStyle = '#ffffff';
+    g.beginPath(); g.arc(x - 2.2, y - 2, 1.8, 0, Math.PI * 2); g.fill();
+    g.strokeStyle = light ? '#3a2418' : '#0a0604'; g.lineWidth = 2.4;
+    g.beginPath(); g.ellipse(x, y, 12, 8, 0, Math.PI * 1.05, Math.PI * 1.95); g.stroke();
   }
+  // nez (ombre + narines)
+  g.strokeStyle = shade(skin, 0.7); g.lineWidth = 2.5;
+  g.beginPath(); g.moveTo(62, 60); g.quadraticCurveTo(58, 74, 62, 79); g.stroke();
+  g.fillStyle = shade(skin, 0.5);
+  for (const s of [-1, 1]) { g.beginPath(); g.ellipse(64 + s * 5, 80, 2.6, 1.6, 0, 0, Math.PI * 2); g.fill(); }
+  // bouche souriante
+  g.fillStyle = light ? '#c8706a' : shade(skin, 0.62);
+  g.beginPath(); g.moveTo(45, 91); g.quadraticCurveTo(64, 85, 83, 91); g.quadraticCurveTo(64, 108, 45, 91); g.fill();
+  g.fillStyle = '#f7f2ea';
+  g.beginPath(); g.moveTo(50, 92); g.quadraticCurveTo(64, 90, 78, 92); g.quadraticCurveTo(64, 98, 50, 92); g.fill();
+  g.strokeStyle = light ? '#7a3330' : shade(skin, 0.38); g.lineWidth = 2.6;
+  g.beginPath(); g.moveTo(44, 90); g.quadraticCurveTo(64, 100, 84, 90); g.stroke();
   const tex = new THREE.CanvasTexture(c);
   tex.colorSpace = THREE.SRGBColorSpace;
-  logoMat = new THREE.MeshLambertMaterial({ map: tex, transparent: true });
-  return logoMat;
+  const m = new THREE.MeshLambertMaterial({ map: tex, transparent: true, depthWrite: false });
+  faceMats.set(key, m);
+  return m;
 }
 
 // Géométries arrondies partagées (mises en cache)
 const geoCache = new Map();
-function capsuleGeo(r, len) {
-  const k = 'c' + r + '_' + len;
-  if (!geoCache.has(k)) geoCache.set(k, new THREE.CapsuleGeometry(r, len, 3, 10));
-  return geoCache.get(k);
+function cached(key, make) { if (!geoCache.has(key)) geoCache.set(key, make()); return geoCache.get(key); }
+function capsuleGeo(r, len, radial = 10) {
+  return cached('c' + r + '_' + len + '_' + radial, () => new THREE.CapsuleGeometry(r, len, 3, radial));
 }
 function sphereGeo(r, w = 14, h = 10) {
-  const k = 's' + r + '_' + w;
-  if (!geoCache.has(k)) geoCache.set(k, new THREE.SphereGeometry(r, w, h));
-  return geoCache.get(k);
+  return cached('s' + r + '_' + w, () => new THREE.SphereGeometry(r, w, h));
 }
 const UP = new THREE.Vector3(0, 1, 0);
 const _a = new THREE.Vector3(), _b = new THREE.Vector3(), _d = new THREE.Vector3();
 // membre (capsule) entre deux points
-function limb(parent, a, b, r, color, smooth) {
+function limb(parent, a, b, r, color, smooth, radial) {
   _a.set(a[0], a[1], a[2]); _b.set(b[0], b[1], b[2]);
   _d.subVectors(_b, _a);
   const len = Math.max(0.01, _d.length());
-  const m = new THREE.Mesh(capsuleGeo(r, Math.round(len * 100) / 100), mat(color, smooth ? { flatShading: false } : null));
+  const m = new THREE.Mesh(capsuleGeo(r, Math.round(len * 100) / 100, radial), typeof color === 'object' ? color : mat(color, smooth ? { flatShading: false } : null));
+  m.position.addVectors(_a, _b).multiplyScalar(0.5);
+  m.quaternion.setFromUnitVectors(UP, _d.normalize());
+  parent.add(m);
+  return m;
+}
+// jambe de board short : tube évasé du genou (a) à la hanche (b)
+function shortLeg(parent, a, b, rTop, rBot, color) {
+  _a.set(a[0], a[1], a[2]); _b.set(b[0], b[1], b[2]);
+  _d.subVectors(_b, _a);
+  const len = Math.round(_d.length() * 100) / 100;
+  const geo = cached('sh' + rTop + rBot + len, () => new THREE.CylinderGeometry(rTop, rBot, len, 12));
+  const m = new THREE.Mesh(geo, mat(color, SMOOTH));
   m.position.addVectors(_a, _b).multiplyScalar(0.5);
   m.quaternion.setFromUnitVectors(UP, _d.normalize());
   parent.add(m);
@@ -737,6 +800,7 @@ function limb(parent, a, b, r, color, smooth) {
 const SMOOTH = { flatShading: false };
 function buildSurfer(ch, lite) {
   const skin = ch.skin || 0x6b4430;
+  const lightSkin = isLight(skin);
   const L = ch.height || 1; // facteur de taille (jambes / tronc)
   const root = new THREE.Group();
   const tilt = new THREE.Group(); root.add(tilt);
@@ -753,74 +817,98 @@ function buildSurfer(ch, lite) {
   if (!lite) {
     const shinCol = ch.leggings || skin;
     for (const s of [-1, 1]) {
-      const foot = [0, 0.05, s * 0.4], knee = [-0.12, kneeY, s * 0.3], hip = [0, hipY, s * 0.13];
+      const foot = [0, 0.05, s * 0.4], knee = [-0.12, kneeY, s * 0.3], hip = [0, hipY, s * 0.14];
       legs.push(limb(rider, foot, knee, 0.065, shinCol, true));
-      // short de surf : jusqu'au genou (ou plus long pour Paulèle)
-      const kneeLow = [knee[0] * 0.9, knee[1] - (ch.longShorts ? 0.06 : -0.04), knee[2]];
-      limb(rider, kneeLow, hip, 0.095, ch.shorts, true);
+      // board short ample et évasé, jusqu'au genou (un peu plus bas pour Paulèle)
+      const drop = ch.longShorts ? 0.1 : 0.05;
+      const kneeLow = [knee[0] - 0.01, knee[1] - drop, knee[2] + s * 0.01];
+      shortLeg(rider, kneeLow, hip, 0.11, 0.14, ch.shorts);
       const f = new THREE.Mesh(sphereGeo(0.06, 8, 6), mat(skin, SMOOTH)); f.scale.set(1, 0.6, 1.7); f.position.set(-0.04, 0.04, s * 0.4); rider.add(f);
     }
   }
   const torso = new THREE.Group(); torso.position.y = hipY; rider.add(torso);
-  // bassin (short)
-  const pelvis = new THREE.Mesh(sphereGeo(0.16), mat(ch.shorts, SMOOTH)); pelvis.scale.set(0.95, 0.8, 1.35); pelvis.position.y = 0.04; torso.add(pelvis);
+  // bassin (short ample)
+  const pelvis = new THREE.Mesh(sphereGeo(0.16), mat(ch.shorts, SMOOTH)); pelvis.scale.set(1.08, 0.85, 1.55); pelvis.position.y = 0.04; torso.add(pelvis);
   // tronc (T-shirt)
   const tl = 0.3 * L;
   const chest = new THREE.Mesh(capsuleGeo(0.16, Math.round(tl * 100) / 100), mat(ch.shirt, SMOOTH));
   chest.scale.set(0.85, 1, 1.32); chest.position.y = 0.12 + tl / 2 + 0.06; torso.add(chest);
   const topY = 0.12 + tl + 0.12;
   if (!lite) {
-    const logo = new THREE.Mesh(new THREE.PlaneGeometry(0.17, 0.17), getLogoMat());
-    logo.rotation.y = -Math.PI / 2; logo.position.set(-0.142, topY - 0.17, 0); torso.add(logo);
+    const ly = topY - 0.17;
+    if (!isLight(ch.shirt)) {
+      const patch = new THREE.Mesh(cached('patch', () => new THREE.PlaneGeometry(0.2, 0.19)), getPatchMat());
+      patch.rotation.y = -Math.PI / 2; patch.position.set(-0.141, ly, 0); torso.add(patch);
+    }
+    const logo = new THREE.Mesh(cached('logo', () => new THREE.PlaneGeometry(0.16, 0.16 / LOGO_ASPECT)), getLogoMat());
+    logo.rotation.y = -Math.PI / 2; logo.position.set(-0.143, ly, 0); torso.add(logo);
   }
   // cou + tête
   const neck = limb(torso, [0, topY - 0.02, 0], [-0.01, topY + 0.08, 0], 0.055, skin, true);
-  const headY = topY + 0.21;
-  const head = new THREE.Mesh(sphereGeo(0.135, 16, 12), mat(skin, SMOOTH)); head.scale.set(1, 1.12, 0.95); head.position.set(-0.02, headY, 0); torso.add(head);
+  const headY = topY + 0.22;
+  const firstHeadChild = torso.children.length;
+  const head = new THREE.Mesh(sphereGeo(0.135, 18, 14), mat(skin, SMOOTH)); head.scale.set(1, 1.12, 0.95); head.position.set(-0.02, headY, 0); torso.add(head);
   if (!lite) {
-    for (const s of [-1, 1]) {
-      const eye = new THREE.Mesh(sphereGeo(0.018, 6, 4), mat(0x1a1410)); eye.position.set(-0.145, headY + 0.03, s * 0.045); torso.add(eye);
+    // visage (décalque sur une calotte légèrement plus grande que la tête)
+    const faceGeo = cached('face', () => new THREE.SphereGeometry(0.1365, 14, 10, -0.95, 1.9, Math.PI * 0.26, Math.PI * 0.48));
+    const face = new THREE.Mesh(faceGeo, getFaceMat(skin, lightSkin)); face.renderOrder = 1; head.add(face);
+    // nez en volume
+    const nose = new THREE.Mesh(sphereGeo(0.026, 8, 6), mat(skin, SMOOTH)); nose.scale.set(0.9, 1.25, 0.85); nose.position.set(-0.133, -0.012, 0); head.add(nose);
+    // oreilles (cachées par le voile)
+    if (ch.hair !== 'hijab' && ch.hair !== 'loose') {
+      for (const s of [-1, 1]) {
+        const ear = new THREE.Mesh(sphereGeo(0.032, 8, 6), mat(skin, SMOOTH)); ear.scale.set(0.8, 1.2, 0.45); ear.position.set(0.0, 0.0, s * 0.133); head.add(ear);
+      }
     }
-    const nose = new THREE.Mesh(sphereGeo(0.022, 6, 4), mat(skin, SMOOTH)); nose.position.set(-0.155, headY - 0.01, 0); torso.add(nose);
   }
   // coiffure
   const hairCol = ch.hairColor || 0x16100c;
   const hairMat = mat(hairCol, SMOOTH);
-  const capGeoKey = 'cap';
-  if (!geoCache.has(capGeoKey)) geoCache.set(capGeoKey, new THREE.SphereGeometry(0.143, 16, 8, 0, Math.PI * 2, 0, Math.PI * 0.42));
-  const addCap = (sx = 1, sy = 1.12) => { const c = new THREE.Mesh(geoCache.get(capGeoKey), hairMat); c.scale.set(sx, sy, 0.95); c.position.set(-0.015, headY + 0.005, 0); c.rotation.z = 0.25; torso.add(c); return c; };
+  const hairMat2 = mat(hairCol, { flatShading: false, side: THREE.DoubleSide });
+  const capGeo = cached('cap', () => new THREE.SphereGeometry(0.147, 18, 12, 0, Math.PI * 2, 0, Math.PI * 0.5));
+  const addCap = (sx = 1, sy = 1.12) => { const c = new THREE.Mesh(capGeo, hairMat); c.scale.set(sx, sy, 0.95); c.position.set(-0.015, headY + 0.005, 0); c.rotation.z = -0.5; torso.add(c); return c; };
   if (ch.hair === 'crop') {
     addCap(0.99, 1.1);
   } else if (ch.hair === 'dreads') {
-    addCap(1.02, 1.14);
+    addCap(1.03, 1.15);
     if (!lite) {
-      for (let i = 0; i < 16; i++) {
-        const th = 0.25 + (i % 3) * 0.33, ph = (i / 16) * Math.PI * 2;
-        const dir = [Math.sin(th) * Math.cos(ph), Math.cos(th), Math.sin(th) * Math.sin(ph)];
-        if (dir[0] < -0.45 && th > 0.5) continue; // dégage le visage
-        const base = [-0.015 + dir[0] * 0.13, headY + dir[1] * 0.14, dir[2] * 0.13];
-        const tip = [base[0] + dir[0] * 0.09, base[1] + dir[1] * 0.06 - 0.03, base[2] + dir[2] * 0.09];
-        limb(torso, base, tip, 0.022, hairCol, true);
+      // dreadlocks qui tombent jusqu'au cou / aux épaules, visage dégagé
+      for (let i = 0; i < 22; i++) {
+        const ph = (i / 22) * Math.PI * 2 + (i % 2) * 0.12;
+        const dx = Math.cos(ph), dz = Math.sin(ph);
+        if (dx < -0.3) continue; // devant (visage)
+        const th = 0.5 + (i % 3) * 0.22;
+        const base = [-0.015 + dx * Math.sin(th) * 0.135, headY + Math.cos(th) * 0.15, dz * Math.sin(th) * 0.135];
+        const mid = [base[0] + dx * 0.05, base[1] - 0.1, base[2] + dz * 0.05];
+        const len = 0.14 + (dx > 0.3 ? 0.06 : 0) + (i % 3) * 0.02;
+        const tip = [mid[0] + dx * 0.02, mid[1] - len, mid[2] + dz * 0.025];
+        limb(torso, base, mid, 0.021, hairMat, true, 6);
+        limb(torso, mid, tip, 0.019, hairMat, true, 6);
       }
     }
   } else if (ch.hair === 'hijab') {
     // voile : couvre cheveux, oreilles et cou, visage dégagé
     const sc = mat(ch.scarf, { flatShading: false, side: THREE.DoubleSide });
-    if (!geoCache.has('hijab')) geoCache.set('hijab', new THREE.SphereGeometry(0.158, 18, 12, 0.85, Math.PI * 2 - 1.7, 0, Math.PI * 0.82));
-    const veil = new THREE.Mesh(geoCache.get('hijab'), sc); veil.scale.set(1, 1.12, 1); veil.position.set(-0.01, headY + 0.01, 0); torso.add(veil);
-    const top = new THREE.Mesh(new THREE.SphereGeometry(0.16, 16, 6, 0, Math.PI * 2, 0, Math.PI * 0.3), sc); top.scale.set(1, 1.12, 1); top.position.set(-0.01, headY + 0.01, 0); torso.add(top);
-    const drape = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.26, 0.26, 16, 1, true), sc); drape.position.set(0.0, topY + 0.02, 0); drape.scale.z = 1.2; torso.add(drape);
-  } else if (ch.hair === 'ponytail') {
-    addCap(1.03, 1.16);
-    const back = new THREE.Mesh(sphereGeo(0.14, 12, 8), hairMat); back.scale.set(0.8, 1.05, 0.98); back.position.set(0.03, headY + 0.01, 0); torso.add(back);
-    const bun = new THREE.Mesh(sphereGeo(0.06, 10, 8), hairMat); bun.position.set(0.15, headY + 0.03, 0); torso.add(bun);
-    if (!lite) limb(torso, [0.17, headY + 0.01, 0], [0.24, headY - 0.17, 0], 0.035, hairCol, true);
+    const veil = new THREE.Mesh(cached('hijab', () => new THREE.SphereGeometry(0.158, 18, 12, 0.85, Math.PI * 2 - 1.7, 0, Math.PI * 0.82)), sc); veil.scale.set(1, 1.12, 1); veil.position.set(-0.01, headY + 0.01, 0); torso.add(veil);
+    const top = new THREE.Mesh(cached('hijabTop', () => new THREE.SphereGeometry(0.16, 16, 6, 0, Math.PI * 2, 0, Math.PI * 0.3)), sc); top.scale.set(1, 1.12, 1); top.position.set(-0.01, headY + 0.01, 0); torso.add(top);
+    const drape = new THREE.Mesh(cached('drape', () => new THREE.CylinderGeometry(0.12, 0.22, 0.2, 16, 1, true)), sc); drape.position.set(0.0, topY + 0.06, 0); drape.scale.z = 1.2; torso.add(drape);
+  } else if (ch.hair === 'loose') {
+    // cheveux détachés, aux épaules et dans le dos
+    addCap(1.04, 1.17);
+    const mass = new THREE.Mesh(cached('hairMass', () => new THREE.SphereGeometry(0.152, 18, 12, 1.0, Math.PI * 2 - 2.0, 0, Math.PI * 0.72)), hairMat2);
+    mass.scale.set(1.02, 1.14, 1.06); mass.position.set(0.0, headY + 0.005, 0); torso.add(mass);
+    const fall = new THREE.Mesh(cached('hairFall', () => new THREE.CylinderGeometry(0.14, 0.2, 0.3, 16, 1, true, Math.PI / 2 - 1.55, 3.1)), hairMat2);
+    fall.scale.set(1, 1, 1.05); fall.position.set(0.01, headY - 0.17, 0); torso.add(fall);
   } else if (ch.hair === 'bun') {
     addCap();
     const bun = new THREE.Mesh(sphereGeo(0.07, 10, 8), hairMat); bun.position.set(0.13, headY + 0.1, 0); torso.add(bun);
   } else {
     addCap();
   }
+  // tête + visage + coiffure regroupés et légèrement agrandis (lisibilité)
+  const headG = new THREE.Group(); headG.position.set(-0.02, headY, 0); headG.scale.setScalar(1.12);
+  for (const o of torso.children.slice(firstHeadChild)) { o.position.x += 0.02; o.position.y -= headY; headG.add(o); }
+  torso.add(headG);
   // bras
   const arms = [];
   const shY = topY - 0.08;
@@ -1312,7 +1400,7 @@ function resetRun() {
   keys.left = keys.right = false;
   waterClean = S.clean;
   W.travel = 0;
-  S.nextTrash = 0; S.nextObst = 40; S.nextHotspot = 90;
+  S.nextTrash = 0; S.nextObst = 40; S.nextHotspot = 55;
   // pré-remplissage devant le surfeur
   for (let z = -30; z > -170; z -= 100 / S.spot.trashPer100) spawnTrash(z);
   for (let z = -70; z > -170; z -= 100 / S.spot.obstPer100) spawnObstacle(z);
@@ -1524,7 +1612,7 @@ function collect(it) {
   S.cleanPts += pts; S.score += pts;
   S.count++; S.kg += info.kg;
   S.collected[it.type] = (S.collected[it.type] || 0) + 1;
-  const inc = (1 / 34) * (S.char.id === 'claire' ? 1.45 : 1);
+  const inc = (1 / 22) * (S.char.id === 'claire' ? 1.45 : 1);
   S.clean = Math.min(1, S.clean + inc);
   addChain();
   Sound.collect();
@@ -1616,7 +1704,7 @@ function updateGame(dt) {
   const tr = W.travel;
   if (tr >= S.nextTrash) { spawnTrash(SPAWN_Z); S.nextTrash = tr + gap(spot.trashPer100); }
   if (tr >= S.nextObst) { spawnObstacle(SPAWN_Z); S.nextObst = tr + gap(spot.obstPer100); }
-  if (tr >= S.nextHotspot) { spawnHotspot(); S.nextHotspot = tr + rand(200, 280); }
+  if (tr >= S.nextHotspot) { spawnHotspot(); S.nextHotspot = tr + rand(120, 170); }
 
   const surfY = surfaceY(S.x, 0);
   const sY = surfY + S.h;
@@ -1857,17 +1945,19 @@ function renderThumbs() {
     const c = document.createElement('canvas');
     r = new THREE.WebGLRenderer({ canvas: c, antialias: true, alpha: true, preserveDrawingBuffer: true });
     r.setPixelRatio(1);
-    r.setSize(220, 220, false);
+    r.setSize(300, 300, false);
     const sc = new THREE.Scene();
     sc.add(new THREE.HemisphereLight(0xffffff, 0x445566, 1.4));
     const dl = new THREE.DirectionalLight(0xffffff, 2.2); dl.position.set(-3, 5, 4); sc.add(dl);
     const water = new THREE.Mesh(new THREE.CircleGeometry(1.6, 7), new THREE.MeshLambertMaterial({ color: 0x2fb8c8, flatShading: true }));
     water.rotation.x = -Math.PI / 2; sc.add(water);
     const cam = new THREE.PerspectiveCamera(32, 1, 0.1, 50);
-    cam.position.set(-3.0, 1.75, 3.3); cam.lookAt(0, 1.0, 0);
     for (const ch of CHARACTERS) {
+      // cadrage buste + visage (taille propre à chaque surfeur)
+      const headH = 0.55 + 1.08 * (ch.height || 1);
+      cam.position.set(-1.75, headH + 0.1, 1.55); cam.lookAt(0, headH - 0.42, 0);
       const s = buildSurfer(ch);
-      s.userData.yaw.rotation.y = 0.5;
+      s.userData.yaw.rotation.y = 0.75;
       s.userData.arms[0].rotation.x = 0.4; s.userData.arms[1].rotation.x = -0.4;
       sc.add(s);
       r.setClearColor(0x000000, 0);
@@ -1885,7 +1975,8 @@ function renderThumbs() {
 
 let thumbCache = null;
 function buildCharCards() {
-  const thumbs = thumbCache || (thumbCache = renderThumbs());
+  if (!thumbCache || thumbsDirty) { thumbsDirty = false; thumbCache = renderThumbs(); }
+  const thumbs = thumbCache;
   const grid = $('#char-grid');
   grid.innerHTML = '';
   for (const ch of CHARACTERS) {
