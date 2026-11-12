@@ -3,6 +3,8 @@
  * Three.js (r160) uniquement, toute la géométrie est générée dans le code.
  */
 import * as THREE from 'three';
+import { createFight } from './fight.js?v=20261123';
+import { Net } from './net.js?v=20261123';
 
 const GAME_DURATION = 30; // secondes
 const STORAGE_BEST = 'sba-game-best-v1';
@@ -67,6 +69,17 @@ const I18N = {
       rTricks: 'Figures', rClean: 'Bières', rCount: 'Bouteilles ramenées', rKg: 'Volume sauvé', rCombo: 'Meilleur combo',
       lesson: 'Le toast de la session', replay: 'Remettre une tournée', discover: '',
       waterNote: 'L’abus d’alcool est dangereux pour la santé : à consommer avec modération. Et après la session, on ne conduit pas, on se fait raccompagner.',
+      chooseMode: 'Choisis ton mode', modeSolo: 'Solo', modeSoloTxt: 'Une session de 30 s, puis baston au Secret Bar contre l’ordi.',
+      modeLocal: 'Duo même écran', modeLocalTxt: 'Deux riders sur la même vague, puis on règle ça au bar. Chacun sa moitié d’écran.',
+      modeOnline: 'Duo en ligne', modeOnlineTxt: 'Chacun sur son téléphone, avec un code de partie.',
+      player1: 'Joueur 1', player2: 'Joueur 2', chooseP1: 'Joueur 1 : choisis ton rider', chooseP2: 'Joueur 2 : choisis ton rider',
+      onlineTitle: 'Duo en ligne', create: 'Créer une partie', join: 'Rejoindre', yourCode: 'Code de la partie', shareCode: 'Donne ce code à ton pote : il appuie sur « Rejoindre ».',
+      connecting: 'Connexion…', waitingMate: 'En attente de ton pote…', netError: 'Connexion impossible. Vérifie le code ou ta connexion.', mateLeft: 'Ton pote a quitté la partie.',
+      waitHostSpot: 'L’hôte choisit le spot…', waitHostGo: 'En attente de l’hôte…', waitMateChar: 'Ton pote choisit son rider…',
+      toBar: 'Direction le Secret Bar 🥊', barIn: 'Le Secret Bar ouvre dans {n} s…', duoWin: '{name} gagne la session !', duoDraw: 'Égalité parfaite !',
+      hFight: 'Secret Bar', hFightTxt: 'Après la session, baston au bar : poing, pied, lancer de bière, et coup spécial quand ta jauge est pleine. Ton score de surf la remplit en partie.',
+      hDuo: 'Duo', hDuoKbd: 'J1 : A/Q D, Z/W saut, 1 2 3 figures · J2 : ← →, ↑ saut, J K L figures.', hDuoTouch: 'Chacun sa moitié d’écran : glisse pour diriger, vers le haut pour sauter, tape pour une figure.',
+      menu: 'Menu',
     },
     chars: {
       luca: { role: 'Ma che Porco Dio', perk: 'Roi du barrel', perkDesc: 'Figures +25 % de points.',
@@ -146,6 +159,17 @@ const I18N = {
       rTricks: 'Tricks', rClean: 'Beers', rCount: 'Bottles saved', rKg: 'Volume saved', rCombo: 'Best combo',
       lesson: 'Toast of the session', replay: 'Another round', discover: '',
       waterNote: 'Please drink responsibly. And after the session, nobody drives: get a lift home.',
+      chooseMode: 'Pick a mode', modeSolo: 'Solo', modeSoloTxt: 'A 30-second session, then a brawl at the Secret Bar against the CPU.',
+      modeLocal: 'Duo, same screen', modeLocalTxt: 'Two riders on the same wave, then settle it at the bar. One half of the screen each.',
+      modeOnline: 'Duo online', modeOnlineTxt: 'Each on your own phone, with a game code.',
+      player1: 'Player 1', player2: 'Player 2', chooseP1: 'Player 1: pick your rider', chooseP2: 'Player 2: pick your rider',
+      onlineTitle: 'Duo online', create: 'Create a game', join: 'Join', yourCode: 'Game code', shareCode: 'Give this code to your mate: they tap “Join”.',
+      connecting: 'Connecting…', waitingMate: 'Waiting for your mate…', netError: 'Could not connect. Check the code or your connection.', mateLeft: 'Your mate left the game.',
+      waitHostSpot: 'The host is picking the spot…', waitHostGo: 'Waiting for the host…', waitMateChar: 'Your mate is picking a rider…',
+      toBar: 'Off to the Secret Bar 🥊', barIn: 'The Secret Bar opens in {n}s…', duoWin: '{name} wins the session!', duoDraw: 'Dead heat!',
+      hFight: 'Secret Bar', hFightTxt: 'After the session, brawl at the bar: punch, kick, throw a beer, and a special move when your meter is full. Your surf score fills part of it.',
+      hDuo: 'Duo', hDuoKbd: 'P1: A/Q D, W/Z jump, 1 2 3 tricks · P2: ← →, ↑ jump, J K L tricks.', hDuoTouch: 'One half of the screen each: slide to steer, swipe up to jump, tap for a trick.',
+      menu: 'Menu',
     },
     chars: {
       luca: { role: 'Ma che Porco Dio', perk: 'Barrel king', perkDesc: 'Tricks score +25%.',
@@ -720,7 +744,7 @@ function shortLeg(parent, a, b, rTop, rBot, color) {
 }
 
 const SMOOTH = { flatShading: false };
-function buildSurfer(ch, lite) {
+function buildSurfer(ch, lite, fighter) {
   const skin = ch.skin || 0x6b4430;
   const lightSkin = isLight(skin);
   const L = ch.height || 1; // facteur de taille (jambes / tronc)
@@ -728,15 +752,29 @@ function buildSurfer(ch, lite) {
   const tilt = new THREE.Group(); root.add(tilt);
   const yaw = new THREE.Group(); tilt.add(yaw);
   const boardG = new THREE.Group(); yaw.add(boardG);
-  const board = new THREE.Mesh(GEO.boardShape, mat(ch.board, SMOOTH)); board.position.y = 0.06; boardG.add(board);
-  const stripe = boxM(0.05, 0.02, 1.9, ch.stripe); stripe.position.y = 0.115; boardG.add(stripe);
-  const fin = boxM(0.04, 0.22, 0.25, 0x0B1F33); fin.position.set(0, -0.05, 0.85); boardG.add(fin);
+  if (!fighter) {
+    const board = new THREE.Mesh(GEO.boardShape, mat(ch.board, SMOOTH)); board.position.y = 0.06; boardG.add(board);
+    const stripe = boxM(0.05, 0.02, 1.9, ch.stripe); stripe.position.y = 0.115; boardG.add(stripe);
+    const fin = boxM(0.04, 0.22, 0.25, 0x0B1F33); fin.position.set(0, -0.05, 0.85); boardG.add(fin);
+  }
 
-  const rider = new THREE.Group(); rider.position.y = 0.1; yaw.add(rider);
+  const rider = new THREE.Group(); rider.position.y = fighter ? 0 : 0.1; yaw.add(rider);
   const hipY = 0.78 * L;
   const kneeY = 0.4 * L;
   const legs = [];
-  if (!lite) {
+  const legsG = [];
+  if (fighter) {
+    // debout, jambes articulées à la hanche (pour les coups de pied)
+    const shinCol = ch.leggings || skin;
+    for (const s of [-1, 1]) {
+      const lg = new THREE.Group(); lg.position.set(0, hipY, s * 0.13); rider.add(lg);
+      const knee = [-0.03, kneeY - hipY, s * 0.01], foot = [0, 0.07 - hipY, s * 0.02];
+      legs.push(limb(lg, foot, knee, 0.065, shinCol, true));
+      shortLeg(lg, [knee[0] - 0.01, knee[1] - 0.05, knee[2]], [0, 0, 0], 0.11, 0.14, ch.shorts);
+      const f = new THREE.Mesh(sphereGeo(0.06, 8, 6), mat(skin, SMOOTH)); f.scale.set(1.7, 0.6, 1); f.position.set(-0.07, foot[1] - 0.02, foot[2]); lg.add(f);
+      legsG.push(lg);
+    }
+  } else if (!lite) {
     const shinCol = ch.leggings || skin;
     for (const s of [-1, 1]) {
       const foot = [0, 0.05, s * 0.4], knee = [-0.12, kneeY, s * 0.3], hip = [0, hipY, s * 0.14];
@@ -908,8 +946,8 @@ function buildSurfer(ch, lite) {
     arm.rotation.x = s * -0.08;
     arms.push(arm);
   }
-  torso.rotation.z = 0.25; // penché vers la vague
-  root.userData = { tilt, yaw, boardG, rider, torso, arms, legs, neck };
+  torso.rotation.z = fighter ? 0.12 : 0.25; // penché vers la vague
+  root.userData = { tilt, yaw, boardG, rider, torso, arms, legs, legsG, neck, headG };
   return root;
 }
 
@@ -1474,6 +1512,151 @@ function spawnObstacle(z) {
   S.obstacles.push({ obj, type, x, p: z - W.travel, rad, top, halfZ, passed: false });
 }
 
+
+/* ------------------------------------------------------------------ */
+/* Deuxième surfeur (duo même écran) ou fantôme du pote (duo en ligne)  */
+/* ------------------------------------------------------------------ */
+const Z2 = -2.6;
+const P2 = {
+  on: false, remote: false, ch: null, model: null, tx: null,
+  x: 3, vx: 0, h: 0, vy: 0, air: false, onLip: false, wipe: 0, invuln: 0,
+  trick: null, trickT: 0, lastTrick: null, lastLaunch: -99,
+  score: 0, count: 0, chain: 0, comboT: 0, mult: 1, bestMult: 1,
+  keys: { left: false, right: false }, touchTarget: null, kicked: false,
+};
+function setP2(ch) {
+  if (P2.model) scene.remove(P2.model);
+  P2.ch = ch;
+  P2.model = ch ? buildSurfer(ch) : null;
+  if (P2.model) { P2.model.visible = false; scene.add(P2.model); }
+}
+function resetP2() {
+  Object.assign(P2, {
+    x: INTRO_X0 + 1.2, tx: null, vx: 0, h: 0, vy: 0, air: false, onLip: false, wipe: 0, invuln: 0,
+    trick: null, trickT: 0, lastTrick: null, lastLaunch: -99,
+    score: 0, count: 0, chain: 0, comboT: 0, mult: 1, bestMult: 1, touchTarget: null, kicked: false,
+  });
+  P2.keys.left = P2.keys.right = false;
+}
+function p2Jump(boost) {
+  if (!P2.on || P2.air || P2.wipe > 0) return;
+  P2.air = true;
+  P2.vy = (boost || (P2.onLip ? 10.5 : 8)) * (P2.ch.perk === 'air' ? 1.18 : 1);
+  Sound.jump();
+  emitSpray(P2.x, surfaceY(P2.x, Z2), Z2, 14, 1.1);
+}
+function p2Chain() {
+  P2.chain++;
+  P2.comboT = P2.ch.perk === 'combo' ? 5 : 3;
+  P2.mult = Math.min(5, 1 + Math.floor(P2.chain / 3) * 0.5);
+  if (P2.mult > P2.bestMult) P2.bestMult = P2.mult;
+}
+function p2Trick(id) {
+  if (!P2.on || P2.wipe > 0 || P2.trick) return;
+  let valid = P2.air || P2.onLip;
+  if (id === 'aerial' && !P2.air) { if (P2.onLip) { p2Jump(11.5); valid = true; } else valid = false; }
+  P2.trick = id; P2.trickT = 0;
+  if (!valid) return;
+  Sound.trick();
+  let pts = TRICKS[id].pts * P2.mult;
+  if (P2.ch.perk === 'tricks') pts *= 1.25;
+  if (P2.lastTrick === id) pts *= 0.5;
+  pts = Math.round(pts / 5) * 5;
+  P2.lastTrick = id;
+  P2.score += pts;
+  p2Chain();
+  floatText2('+' + fmt(pts), false);
+  emitSpray(P2.x, surfaceY(P2.x, Z2) + P2.h, Z2, 18, 1.4);
+}
+function p2Collect(it) {
+  const pts = Math.round((TRASH[it.type].pts * P2.mult) / 5) * 5;
+  P2.score += pts; P2.count++;
+  p2Chain();
+  Sound.collect();
+  floatText2('+' + fmt(pts), true);
+}
+function p2Wipe() {
+  P2.wipe = 2; P2.invuln = 3.2;
+  P2.chain = 0; P2.comboT = 0; P2.mult = 1;
+  P2.air = false; P2.h = 0; P2.vy = 0; P2.trick = null; P2.touchTarget = null;
+  Sound.wipe();
+  emitSpray(P2.x, surfaceY(P2.x, Z2) + 0.5, Z2, 40, 1.6);
+}
+function updateP2(dt) {
+  if (P2.comboT > 0) { P2.comboT -= dt; if (P2.comboT <= 0) { P2.chain = 0; P2.mult = 1; P2.lastTrick = null; } }
+  if (P2.invuln > 0) P2.invuln -= dt;
+  if (P2.wipe > 0) { P2.wipe -= dt; P2.vx *= 0.9; }
+  else if (P2.touchTarget !== null) P2.vx = clamp((P2.touchTarget - P2.x) * 9, -14, 14);
+  else {
+    const steer = (P2.keys.left ? -1 : 0) + (P2.keys.right ? 1 : 0);
+    P2.vx = lerp(P2.vx, steer * 11, Math.min(1, dt * (steer ? 6 : 3)));
+  }
+  if (!P2.air && P2.wipe <= 0 && P2.x < XT) P2.vx += 2.2 * dt * (P2.touchTarget === null ? 1 : 0.3);
+  P2.x += P2.vx * dt;
+  if (P2.x < X_MIN) {
+    if (!P2.air && P2.vx < -9.5 && P2.wipe <= 0 && S.elapsed - P2.lastLaunch > 1.2) { P2.lastLaunch = S.elapsed; p2Jump(9.5); }
+    P2.x = X_MIN; if (P2.vx < 0) P2.vx = 0;
+  }
+  if (P2.x > X_MAX) { P2.x = X_MAX; if (P2.vx > 0) P2.vx = 0; }
+  P2.onLip = !P2.air && P2.x < LIP_ZONE && P2.wipe <= 0;
+  if (P2.air) {
+    P2.vy -= 21 * dt; P2.h += P2.vy * dt;
+    if (P2.h <= 0) { P2.h = 0; P2.air = false; P2.vy = 0; emitSpray(P2.x, surfaceY(P2.x, Z2), Z2, 16, 1); }
+  }
+  if (P2.trick) {
+    P2.trickT += dt;
+    if (P2.trickT >= TRICKS[P2.trick].dur || (!P2.air && P2.trickT > 0.2 && P2.trick !== 'cutback' && !P2.onLip)) P2.trick = null;
+  }
+  const surfY = surfaceY(P2.x, Z2);
+  if (!P2.air && P2.wipe <= 0 && Math.abs(P2.vx) > 5 && Math.random() < 0.6) emitSpray(P2.x + (P2.vx > 0 ? -0.3 : 0.3), surfY, Z2 + 0.6, 2, 0.8);
+}
+function updateP2Pose(dt) {
+  const m = P2.model;
+  if (!m) return;
+  const show = P2.on && ['countdown', 'intro', 'play', 'closeout', 'over', 'paused'].includes(S.mode);
+  m.visible = show;
+  if (!show) return;
+  if (P2.remote && P2.tx !== null) P2.x = lerp(P2.x, P2.tx, Math.min(1, dt * 10));
+  if (P2.remote && P2.trick) P2.trickT += dt;
+  const u = m.userData;
+  const x = P2.x;
+  const surfY = surfaceY(x, Z2);
+  m.position.set(x, surfY + P2.h, Z2);
+  const slopeC = clamp(Math.atan(slopeAt(x, Z2)), -0.85, 0.85);
+  u.tilt.rotation.z = lerp(u.tilt.rotation.z, P2.air ? slopeC * 0.3 : slopeC, Math.min(1, dt * 8));
+  let yawT = clamp(-P2.vx * 0.045, -0.5, 0.5);
+  let spin = 0, roll = 0;
+  if (P2.trick && TRICKS[P2.trick]) {
+    const k = clamp(P2.trickT / TRICKS[P2.trick].dur, 0, 1);
+    if (P2.trick === 'spin') spin = k * Math.PI * 2;
+    if (P2.trick === 'cutback') yawT += Math.sin(k * Math.PI) * 1.4;
+    if (P2.trick === 'aerial') roll = Math.sin(k * Math.PI) * 0.9;
+  }
+  u.baseYaw = lerp(u.baseYaw || 0, yawT, Math.min(1, dt * 7));
+  u.yaw.rotation.y = u.baseYaw + spin;
+  u.boardG.rotation.x = roll; u.rider.rotation.x = roll;
+  u.rider.position.y = 0.1 + Math.sin(W.t * 3.2 + 1) * 0.03 - (P2.air ? 0.08 : 0);
+  u.torso.rotation.z = 0.25 + clamp(-P2.vx * 0.02, -0.25, 0.25);
+  u.arms[0].rotation.x = 0.1 + Math.sin(W.t * 2 + 1) * 0.08 + (P2.air ? 0.55 : 0);
+  u.arms[1].rotation.x = -0.1 - Math.sin(W.t * 2.3 + 1) * 0.08 - (P2.air ? 0.55 : 0);
+  if (P2.wipe > 0) {
+    const k = clamp((2 - P2.wipe) / 0.35, 0, 1);
+    u.rider.rotation.z = lerp(0, 1.45, k);
+    u.rider.position.y = 0.1 - k * 0.6;
+  } else u.rider.rotation.z = lerp(u.rider.rotation.z, 0, Math.min(1, dt * 8));
+}
+function floatText2(text, isTrash) {
+  projV.set(P2.x, surfaceY(P2.x, Z2) + P2.h + 2.2, Z2).project(camera);
+  const el = document.createElement('span');
+  el.className = 'float-pts is-p2' + (isTrash ? ' is-trash' : '');
+  el.textContent = text;
+  el.style.left = ((projV.x * 0.5 + 0.5) * window.innerWidth + rand(-20, 20)) + 'px';
+  el.style.top = ((-projV.y * 0.5 + 0.5) * window.innerHeight) + 'px';
+  ui.floatLayer.appendChild(el);
+  setTimeout(() => el.remove(), 850);
+}
+const isDuo = () => S.gameMode === 'local' || S.gameMode === 'online';
+
 /* ------------------------------------------------------------------ */
 /* Entrées                                                             */
 /* ------------------------------------------------------------------ */
@@ -1491,7 +1674,21 @@ window.addEventListener('keydown', (e) => {
     finishIntro();
     if (k === 'Space' || k === 'Enter') return;
   }
-  if (S.mode === 'play') {
+  if (S.mode === 'play' && S.gameMode === 'local') {
+    if (k === 'KeyA' || k === 'KeyQ') keys.left = true;
+    else if (k === 'KeyD') keys.right = true;
+    else if (!e.repeat && (k === 'KeyW' || k === 'KeyZ' || k === 'Space')) jump();
+    else if (!e.repeat && k === 'Digit1') doTrick('cutback');
+    else if (!e.repeat && k === 'Digit2') doTrick('aerial');
+    else if (!e.repeat && k === 'Digit3') doTrick('spin');
+    else if (k === 'ArrowLeft') P2.keys.left = true;
+    else if (k === 'ArrowRight') P2.keys.right = true;
+    else if (!e.repeat && (k === 'ArrowUp' || k === 'Enter' || k === 'NumpadEnter')) p2Jump();
+    else if (!e.repeat && (k === 'KeyJ' || k === 'Numpad1')) p2Trick('cutback');
+    else if (!e.repeat && (k === 'KeyK' || k === 'Numpad2')) p2Trick('aerial');
+    else if (!e.repeat && (k === 'KeyL' || k === 'Numpad3')) p2Trick('spin');
+    else if (k === 'Escape' || k === 'KeyP') pauseGame();
+  } else if (S.mode === 'play') {
     if (k === 'ArrowLeft' || k === 'KeyA' || k === 'KeyQ') keys.left = true;
     else if (k === 'ArrowRight' || k === 'KeyD') keys.right = true;
     else if (!e.repeat && (k === 'Space' || k === 'ArrowUp' || k === 'KeyW' || k === 'KeyZ')) jump();
@@ -1505,15 +1702,53 @@ window.addEventListener('keydown', (e) => {
 });
 window.addEventListener('keyup', (e) => {
   const k = e.code;
+  if (S.gameMode === 'local') {
+    if (k === 'ArrowLeft') { P2.keys.left = false; return; }
+    if (k === 'ArrowRight') { P2.keys.right = false; return; }
+  }
   if (k === 'ArrowLeft' || k === 'KeyA' || k === 'KeyQ') keys.left = false;
   else if (k === 'ArrowRight' || k === 'KeyD') keys.right = false;
 });
-window.addEventListener('blur', () => { keys.left = keys.right = false; });
+window.addEventListener('blur', () => { keys.left = keys.right = false; P2.keys.left = P2.keys.right = false; });
 
 const touch = { id: null, sx: 0, sy: 0, sxSurfer: 0, ly: 0, lt: 0, jumped: false, upStartY: 0 };
+const duoT = new Map();
+function duoDown(e) {
+  const p = e.clientX < window.innerWidth / 2 ? 1 : 2;
+  const R = p === 1 ? S : P2;
+  duoT.set(e.pointerId, { p, sx: e.clientX, sy: e.clientY, sxS: R.x, ly: e.clientY, lt: performance.now(), upY: e.clientY, moved: false, jumped: false, t0: performance.now() });
+  try { canvas.setPointerCapture(e.pointerId); } catch (err) { /* ignore */ }
+  hideHint();
+}
+function duoMove(e) {
+  const d = duoT.get(e.pointerId);
+  if (!d) return;
+  const R = d.p === 1 ? S : P2;
+  const w = Math.max(160, window.innerWidth / 2);
+  const dx = e.clientX - d.sx;
+  if (Math.abs(dx) > 10 || Math.abs(e.clientY - d.sy) > 10) d.moved = true;
+  if (d.moved) R.touchTarget = clamp(d.sxS + dx * ((X_MAX - X_MIN) / (w * 0.8)), X_MIN, X_MAX);
+  const now = performance.now();
+  const dy = e.clientY - d.ly, dtt = Math.max(1, now - d.lt);
+  if (dy > 2) d.upY = e.clientY;
+  if (!d.jumped && (d.upY - e.clientY) > 40 && dy / dtt < -0.35) { d.jumped = true; if (d.p === 1) jump(); else p2Jump(); }
+  d.ly = e.clientY; d.lt = now;
+}
+function duoUp(e) {
+  const d = duoT.get(e.pointerId);
+  if (!d) return;
+  duoT.delete(e.pointerId);
+  const R = d.p === 1 ? S : P2;
+  R.touchTarget = null;
+  if (!d.moved && performance.now() - d.t0 < 280) { // tap = figure
+    const id = R.air ? 'spin' : (R.onLip ? 'aerial' : 'cutback');
+    if (d.p === 1) doTrick(id); else p2Trick(id);
+  }
+}
 canvas.addEventListener('pointerdown', (e) => {
   if (S.mode === 'intro') finishIntro(); // un tap passe le take-off
   if (S.mode !== 'play') return;
+  if (S.gameMode === 'local') { e.preventDefault(); duoDown(e); return; }
   e.preventDefault();
   touch.id = e.pointerId;
   touch.sx = e.clientX; touch.sy = e.clientY;
@@ -1525,6 +1760,7 @@ canvas.addEventListener('pointerdown', (e) => {
   hideHint();
 });
 canvas.addEventListener('pointermove', (e) => {
+  if (S.gameMode === 'local') { if (S.mode === 'play') duoMove(e); return; }
   if (e.pointerId !== touch.id || S.mode !== 'play') return;
   const w = Math.max(320, window.innerWidth);
   const dx = e.clientX - touch.sx;
@@ -1541,6 +1777,7 @@ canvas.addEventListener('pointermove', (e) => {
   touch.ly = e.clientY; touch.lt = now;
 });
 function endTouch(e) {
+  if (S.gameMode === 'local') { duoUp(e); return; }
   if (e.pointerId !== touch.id) return;
   touch.id = null;
   S.touchTarget = null;
@@ -1721,6 +1958,9 @@ function updateGame(dt) {
 
   // déchets
   const radius = S.char.perk === 'magnet' ? 2.6 : 1.5;
+  const p2Live = P2.on && !P2.remote;
+  const r2 = p2Live && P2.ch.perk === 'magnet' ? 2.6 : 1.5;
+  const sY2 = p2Live ? surfaceY(P2.x, Z2) + P2.h : 0;
   for (let i = S.items.length - 1; i >= 0; i--) {
     const it = S.items[i];
     const z = it.p + W.travel;
@@ -1731,6 +1971,9 @@ function updateGame(dt) {
     if (z > 14) { scene.remove(it.obj); S.items.splice(i, 1); continue; }
     if (S.wipe <= 0 && Math.abs(z) < radius && Math.abs(it.x - S.x) < radius && Math.abs(sY - y) < 2.4) {
       collect(it);
+      scene.remove(it.obj); S.items.splice(i, 1);
+    } else if (p2Live && P2.wipe <= 0 && Math.abs(z - Z2) < r2 && Math.abs(it.x - P2.x) < r2 && Math.abs(sY2 - y) < 2.4) {
+      p2Collect(it);
       scene.remove(it.obj); S.items.splice(i, 1);
     }
   }
@@ -1753,6 +1996,10 @@ function updateGame(dt) {
       o.obj.rotation.x = Math.sin(W.t * 1.5 + o.p) * 0.05;
     }
     if (z > 20) { scene.remove(o.obj); S.obstacles.splice(i, 1); continue; }
+    if (p2Live && !o.passed2 && P2.wipe <= 0 && Math.abs(z - Z2) < o.halfZ + 0.5 && Math.abs(o.x - P2.x) < o.rad + 0.45) {
+      if (sY2 > o.obj.position.y + o.top + 0.15) { if (!o.jumped2) { o.jumped2 = true; P2.score += Math.round((50 * P2.mult) / 5) * 5; } }
+      else if (P2.invuln <= 0) { o.passed2 = true; p2Wipe(); }
+    }
     if (o.passed || S.wipe > 0) continue;
     if (Math.abs(z) < o.halfZ + 0.5 && Math.abs(o.x - S.x) < o.rad + 0.45) {
       const topY = o.obj.position.y + o.top;
@@ -1844,13 +2091,16 @@ const tmpV = new THREE.Vector3(), tmpL = new THREE.Vector3();
 function updateCamera(dt, menu) {
   const portrait = camera.aspect < 0.9;
   const sy = surfaceY(S.x, 0) + S.h;
+  const duoCam = !menu && P2.on && !P2.remote;
+  const cx = duoCam ? (S.x + P2.x) / 2 : S.x;
   if (menu) {
     const a = S.menuT * 0.12;
     tmpV.set(S.x + 9 + Math.sin(a) * 4, sy + 3.5 + Math.sin(a * 0.7), 9 + Math.cos(a) * 3);
     tmpL.set(S.x - 3, sy + 0.8, -6);
   } else {
-    tmpV.set(S.x * 0.55 + (portrait ? 7.5 : 9), sy * 0.45 + (portrait ? 3.4 : 2.6), portrait ? 10.5 : 9);
-    tmpL.set(S.x * 0.55 - 3, sy * 0.5 + 1.8, -12);
+    const far = duoCam ? 1.5 + Math.abs(S.x - P2.x) * 0.25 : 0;
+    tmpV.set(cx * 0.55 + (portrait ? 7.5 : 9) + far * 0.4, sy * 0.45 + (portrait ? 3.4 : 2.6) + far * 0.3, (portrait ? 10.5 : 9) + far);
+    tmpL.set(cx * 0.55 - 3, sy * 0.5 + 1.8, duoCam ? -13 : -12);
   }
   const k = Math.min(1, dt * 4);
   camPos.lerp(tmpV, k);
@@ -1872,6 +2122,7 @@ const ui = {
   comboBar: $('#hud-combo-bar'), cleanBar: $('#hud-clean-bar'), cleanPct: $('#hud-clean-pct'), cleanBox: $('.hud-clean'),
   state: $('#hud-state'), pop: $('#trick-pop'), fact: $('#fact-toast'), factText: $('#fact-text'), factKicker: $('#fact-toast .fact-kicker'),
   floatLayer: $('#float-layer'), hud: $('#hud'), pauseBtn: $('#btn-pause'), countdown: $('#countdown'),
+  score2: $('#hud-score2'), p1Name: $('#hud-p1-name'), p2Name: $('#hud-p2-name'), p2Box: $('.hud-p2'),
 };
 
 const last = {};
@@ -1879,6 +2130,7 @@ function setText(el, key, v) { if (last[key] !== v) { last[key] = v; el.textCont
 function updateHud(force) {
   if (force) for (const k in last) delete last[k];
   setText(ui.score, 'score', fmt(S.score));
+  if (P2.on) setText(ui.score2, 'score2', fmt(P2.score));
   const secs = Math.ceil(S.time);
   if (last.t !== String(secs) && S.mode === 'play' && secs <= 5 && secs > 0) Sound.tick();
   setText(ui.timer, 't', String(secs));
@@ -1992,6 +2244,7 @@ function renderThumbs() {
 let thumbCache = null;
 function buildCharCards() {
   if (!thumbCache || thumbsDirty) { thumbsDirty = false; thumbCache = renderThumbs(); }
+  $('#char-title').textContent = S.pickFor === 2 ? t('ui.chooseP2') : S.gameMode === 'local' ? t('ui.chooseP1') : t('ui.chooseSurfer');
   const thumbs = thumbCache;
   const grid = $('#char-grid');
   grid.innerHTML = '';
@@ -2007,13 +2260,13 @@ function buildCharCards() {
     b.querySelector('.role').textContent = t(`chars.${ch.id}.role`);
     b.querySelector('.perk').textContent = t(`chars.${ch.id}.perk`);
     b.addEventListener('click', () => selectChar(ch));
-    b.addEventListener('dblclick', () => { selectChar(ch); showScreen('spot'); });
+    b.addEventListener('dblclick', () => { selectChar(ch); charOk(); });
     grid.appendChild(b);
   }
-  selectChar(S.char);
+  selectChar(S.pickFor === 2 ? (S.char2 || CHARACTERS.find((c) => c !== S.char)) : S.char);
 }
 function selectChar(ch) {
-  S.char = ch;
+  if (S.pickFor === 2) S.char2 = ch; else S.char = ch;
   for (const c of $$('#char-grid .card')) c.setAttribute('aria-checked', String(c.dataset.id === ch.id));
   const d = $('#char-detail');
   d.innerHTML = '<h3></h3><p class="bio"></p><p class="perk-line"></p>';
@@ -2089,6 +2342,7 @@ function updateIntro(dt) {
   const prevX = S.x;
   S.x = lerp(INTRO_X0, 2, e);
   S.vx = (S.x - prevX) / Math.max(dt, 1e-3);
+  if (P2.on && !P2.remote) { P2.x = lerp(INTRO_X0 + 1.2, 4, e); P2.vx = S.vx; }
   if (d > 0 && d < 1 && Math.random() < 0.7) emitSpray(S.x + 0.3, surfaceY(S.x, 0), 0.5, 3, 1);
   syncEntities();
   if (k >= 1) finishIntro();
@@ -2105,17 +2359,32 @@ function updateCloseout(dt) {
   S.x = Math.max(XL - 6, S.x + S.vx * dt);
   S.vx *= Math.pow(0.6, dt);
   if (S.air) { S.vy -= 21 * dt; S.h += S.vy * dt; if (S.h <= 0) { S.h = 0; S.air = false; } }
+  if (P2.on && !P2.remote) {
+    if (!P2.kicked) { P2.kicked = true; P2.air = true; P2.h = Math.max(P2.h, 0.1); P2.vy = reducedMotion ? 6 : 9.5; P2.vx = -12; P2.trick = null; P2.wipe = 0; }
+    P2.x = Math.max(XL - 6, P2.x + P2.vx * dt); P2.vx *= Math.pow(0.6, dt);
+    if (P2.air) { P2.vy -= 21 * dt; P2.h += P2.vy * dt; if (P2.h <= 0) { P2.h = 0; P2.air = false; } }
+  }
   if (!reducedMotion) for (let n = 0; n < 5; n++) emitCloseSpray(rand(-90, 8));
   syncEntities();
   if (k >= 1) { S.mode = 'over'; showResults(); }
 }
 
 function startCountdown() {
+  clearBarTimer();
+  if (fight.active) fight.stop();
+  S.mode = 'menu';
   applySpot(S.spot);
   resetRun();
+  P2.on = isDuo() && !!P2.ch;
+  P2.remote = S.gameMode === 'online';
+  resetP2();
+  document.body.classList.toggle('is-duo', P2.on);
+  ui.p2Box.hidden = !P2.on;
+  ui.p1Name.textContent = P2.on ? S.char.name : t('ui.score');
+  if (P2.ch) ui.p2Name.textContent = P2.ch.name;
   showScreen('none');
   ui.hud.hidden = false;
-  ui.pauseBtn.hidden = false;
+  ui.pauseBtn.hidden = S.gameMode === 'online';
   $('#hint-drag').classList.remove('is-hidden');
   clearTimeout(hintTimer);
   hintTimer = setTimeout(hideHint, 6000);
@@ -2140,6 +2409,7 @@ function startCountdown() {
 }
 
 function pauseGame() {
+  if (S.gameMode === 'online') return; // en ligne : pas de pause
   if (S.mode !== 'play' && S.mode !== 'countdown' && S.mode !== 'intro') return;
   if (S.mode === 'intro') W.H = S.spot.waveH;
   clearTimeout(countdownTimer);
@@ -2155,6 +2425,10 @@ function resumeGame() {
   S.mode = 'play';
 }
 function quitToMenu(screen) {
+  clearBarTimer();
+  if (fight.active) fight.stop();
+  P2.on = false; if (P2.model) P2.model.visible = false;
+  document.body.classList.remove('is-duo');
   clearTimeout(countdownTimer);
   ui.countdown.innerHTML = '';
   S.mode = 'menu';
@@ -2202,20 +2476,213 @@ function showResults() {
   let topType = 'none', topN = 0;
   for (const k in S.collected) if (S.collected[k] > topN) { topN = S.collected[k]; topType = k; }
   $('#res-lesson').textContent = t('lessons.' + topType);
+  // duo : les deux scores
+  const duo = $('#res-duo');
+  duo.hidden = !P2.on;
+  if (P2.on) {
+    const a = Math.round(S.score), b = Math.round(P2.score);
+    const card = (ch, sc, win) => `<div class="duo-card${win ? ' is-win' : ''}"><img src="${ch.photo}" alt="" width="64" height="64"><span class="n"></span><b>${fmt(sc)}</b></div>`;
+    duo.innerHTML = `<p class="duo-title"></p><div class="duo-row">${card(S.char, a, a > b)}${card(P2.ch, b, b > a)}</div>`;
+    const names = duo.querySelectorAll('.n'); names[0].textContent = S.char.name; names[1].textContent = P2.ch.name;
+    duo.querySelector('.duo-title').textContent = a === b ? t('ui.duoDraw') : t('ui.duoWin').replace('{name}', a > b ? S.char.name : P2.ch.name);
+  }
+  const guest = S.gameMode === 'online' && Net.role === 'guest';
+  $('#btn-fight').hidden = guest;
+  $('#btn-replay').hidden = guest;
+  $('#btn-spot-change').hidden = S.gameMode === 'online';
   showScreen('results');
+  startBarTimer(guest);
+}
+
+/* ---------------- Secret Bar (jeu de combat) ---------------- */
+let barTimer = 0;
+function clearBarTimer() { clearInterval(barTimer); barTimer = 0; const el = $('#bar-auto'); if (el) el.textContent = ''; }
+function startBarTimer(guest) {
+  clearBarTimer();
+  const el = $('#bar-auto');
+  if (guest) { el.textContent = t('ui.waitHostGo'); return; }
+  let n = 7;
+  const upd = () => { el.textContent = t('ui.barIn').replace('{n}', n); };
+  upd();
+  barTimer = setInterval(() => { n--; if (n <= 0) { clearBarTimer(); goFight(); } else upd(); }, 1000);
+}
+const barBonus = (sc) => Math.round(clamp(sc / 120, 0, 60));
+function goFight() {
+  clearBarTimer();
+  if (S.gameMode === 'online' && Net.role !== 'host') return;
+  let chars, names, bonus;
+  if (S.gameMode === 'solo' || !P2.ch) {
+    const cpu = pick(CHARACTERS.filter((c) => c !== S.char));
+    chars = [S.char, cpu];
+    names = [S.char.name, cpu.name + (LANG === 'en' ? ' (CPU)' : ' (Ordi)')];
+    bonus = [barBonus(S.score), 15];
+  } else {
+    chars = [S.char, P2.ch];
+    names = [S.char.name, P2.ch.name];
+    bonus = [barBonus(S.score), barBonus(P2.score)];
+  }
+  if (S.gameMode === 'online') Net.send({ t: 'fight', c: chars.map((c) => c.id), b: bonus });
+  launchFight(chars, names, bonus, S.gameMode === 'online' ? 'host' : 'local', 0);
+}
+function launchFight(chars, names, bonus, role, me) {
+  clearBarTimer();
+  showScreen('none');
+  ui.hud.hidden = true; ui.pauseBtn.hidden = true;
+  ui.fact.classList.remove('is-show');
+  S.mode = 'fight';
+  fight.start({
+    chars, names, bonus, role, me,
+    mode: S.gameMode === 'online' ? 'online' : (S.gameMode === 'local' && P2.ch ? 'local' : 'solo'),
+    net: S.gameMode === 'online' ? Net : null,
+    onExit: (a) => {
+      S.mode = 'menu';
+      if (a === 'surf') startCountdown();
+      else { if (S.gameMode === 'online') Net.close(); quitToMenu('mode'); }
+    },
+  });
 }
 
 /* ---------------- Boutons ---------------- */
-$('#btn-start').addEventListener('click', () => { buildCharCards(); showScreen('char'); });
-$('#btn-char-ok').addEventListener('click', () => { buildSpotCards(); showScreen('spot'); });
-$('#btn-spot-ok').addEventListener('click', () => showScreen('howto'));
-$('#btn-go').addEventListener('click', startCountdown);
+S.gameMode = 'solo'; S.pickFor = 1; S.char2 = null;
+function setMode(m) {
+  S.gameMode = m;
+  document.body.classList.toggle('mode-local', m === 'local');
+  document.body.classList.toggle('mode-online', m === 'online');
+}
+function openChars(pickFor) { S.pickFor = pickFor; buildCharCards(); showScreen('char'); }
+function charOk() {
+  if (S.gameMode === 'local' && S.pickFor === 1) {
+    if (!S.char2 || S.char2 === S.char) S.char2 = CHARACTERS.find((c) => c !== S.char);
+    openChars(2);
+    return;
+  }
+  S.pickFor = 1;
+  setSurfer(S.char);
+  if (S.gameMode === 'local') setP2(S.char2);
+  if (S.gameMode === 'online') {
+    Net.send({ t: 'char', id: S.char.id });
+    if (Net.role !== 'host') { showWait(t('ui.waitHostSpot')); return; }
+  }
+  buildSpotCards(); showScreen('spot');
+}
+function enterHowto() {
+  const go = $('#btn-go');
+  const guest = S.gameMode === 'online' && Net.role === 'guest';
+  go.disabled = guest;
+  go.textContent = guest ? t('ui.waitHostGo') : (S.gameMode === 'online' && !P2.ch ? t('ui.waitMateChar') : t('ui.go'));
+  showScreen('howto');
+}
+function showWait(text) {
+  $('#wait-text').textContent = text;
+  showScreen('wait');
+}
+$('#btn-start').addEventListener('click', () => showScreen('mode'));
+for (const b of $$('.mode-btn')) {
+  b.addEventListener('click', () => {
+    setMode(b.dataset.mode);
+    if (b.dataset.mode === 'online') { $('#online-status').textContent = ''; $('#online-code').hidden = true; showScreen('online'); }
+    else openChars(1);
+  });
+}
+$('#btn-char-back').addEventListener('click', () => {
+  if (S.pickFor === 2) { openChars(1); return; }
+  if (S.gameMode === 'online') { Net.close(); showScreen('online'); return; }
+  showScreen('mode');
+});
+$('#btn-char-ok').addEventListener('click', charOk);
+$('#btn-spot-ok').addEventListener('click', () => {
+  if (S.gameMode === 'online') Net.send({ t: 'spot', id: S.spot.id });
+  enterHowto();
+});
+$('#btn-go').addEventListener('click', () => {
+  if (S.gameMode === 'online') {
+    if (Net.role !== 'host') return;
+    if (!P2.ch) { $('#btn-go').textContent = t('ui.waitMateChar'); return; }
+    Net.send({ t: 'go' });
+  }
+  startCountdown();
+});
+$('#btn-fight').addEventListener('click', goFight);
+
+/* ---------------- Duo en ligne ---------------- */
+const onlineStatus = (txt) => { $('#online-status').textContent = txt; };
+$('#btn-host').addEventListener('click', async () => {
+  onlineStatus(t('ui.connecting'));
+  try { await Net.host(); } catch (e) { onlineStatus(t('ui.netError')); }
+});
+$('#btn-join').addEventListener('click', async () => {
+  const code = $('#join-code').value.trim().toUpperCase();
+  if (code.length !== 4) { $('#join-code').focus(); return; }
+  onlineStatus(t('ui.connecting'));
+  try { await Net.join(code); } catch (e) { onlineStatus(t('ui.netError')); }
+});
+$('#join-code').addEventListener('keydown', (e) => { if (e.key === 'Enter') $('#btn-join').click(); });
+$('#btn-online-back').addEventListener('click', () => { Net.close(); showScreen('mode'); });
+$('#btn-wait-quit').addEventListener('click', () => { Net.close(); quitToMenu('mode'); });
+Net.onStatus = (st, d) => {
+  if (st === 'waiting') {
+    $('#online-code').hidden = false;
+    $('#online-code-val').textContent = d;
+    onlineStatus(t('ui.waitingMate'));
+  } else if (st === 'connected') {
+    setP2(null);
+    openChars(1);
+  } else if (st === 'error') {
+    if (S.gameMode === 'online' && currentScreen !== 'online') quitToMenu('online');
+    onlineStatus(t('ui.netError'));
+  } else if (st === 'closed') {
+    if (S.gameMode === 'online' && !['online', 'mode', 'title'].includes(currentScreen)) {
+      quitToMenu('wait');
+      showWait(t('ui.mateLeft'));
+    }
+  }
+};
+let netSendT = 0;
+Net.onMessage = (m) => {
+  if (!m || typeof m !== 'object') return;
+  if (fight.onNet(m)) return;
+  switch (m.t) {
+    case 'char': {
+      const ch = CHARACTERS.find((c) => c.id === m.id);
+      if (ch) { setP2(ch); if (currentScreen === 'howto' && Net.role === 'host') $('#btn-go').textContent = t('ui.go'); }
+      break;
+    }
+    case 'spot': {
+      const sp = SPOTS.find((x) => x.id === m.id);
+      if (sp) applySpot(sp);
+      if (Net.role === 'guest') enterHowto();
+      break;
+    }
+    case 'go': if (Net.role === 'guest') startCountdown(); break;
+    case 's':
+      P2.tx = m.x; P2.h = m.h; P2.air = !!m.a; P2.wipe = m.w || 0; P2.score = m.sc || 0; P2.count = m.c || 0; P2.vx = m.vx || 0;
+      if ((m.tr || null) !== P2.trick) { P2.trick = m.tr || null; P2.trickT = m.tt || 0; }
+      break;
+    case 'fight': {
+      const c = (m.c || []).map((id) => CHARACTERS.find((x) => x.id === id));
+      if (c.length === 2 && c[0] && c[1]) launchFight(c, c.map((x) => x.name), m.b || [0, 0], 'guest', 1);
+      break;
+    }
+    default: break;
+  }
+};
+function netSurf(dt) {
+  netSendT -= dt;
+  if (netSendT > 0) return;
+  netSendT = 0.08;
+  const r = (v) => Math.round(v * 100) / 100;
+  Net.send({ t: 's', x: r(S.x), h: r(S.h), a: S.air ? 1 : 0, tr: S.trick || '', tt: r(S.trickT), w: r(S.wipe), sc: Math.round(S.score), c: S.count, vx: r(S.vx) });
+}
 $('#btn-pause').addEventListener('click', pauseGame);
 $('#btn-resume').addEventListener('click', resumeGame);
 $('#btn-restart').addEventListener('click', () => { showScreen('none'); startCountdown(); });
 $('#btn-quit').addEventListener('click', () => quitToMenu('spot'));
-$('#btn-replay').addEventListener('click', startCountdown);
+$('#btn-replay').addEventListener('click', () => {
+  if (S.gameMode === 'online') { if (Net.role !== 'host') return; Net.send({ t: 'go' }); }
+  startCountdown();
+});
 $('#btn-spot-change').addEventListener('click', () => quitToMenu('spot'));
+$('#btn-results-menu').addEventListener('click', () => { if (S.gameMode === 'online') Net.close(); quitToMenu('mode'); });
 for (const b of $$('[data-go]')) {
   b.addEventListener('click', () => {
     const to = b.dataset.go;
@@ -2264,12 +2731,14 @@ function frame() {
   tick(Math.min(0.05, clock.getDelta()));
 }
 function tick(dt) {
+  if (S.mode === 'fight') { fight.tick(dt); return; }
   const playing = S.mode === 'play';
   const frozen = S.mode === 'paused';
   if (!frozen) {
     W.t += dt;
     if (playing) {
       updateGame(dt);
+      if (P2.on && !P2.remote) updateP2(dt);
     } else if (S.mode === 'intro') {
       updateIntro(dt);
     } else if (S.mode === 'closeout') {
@@ -2294,6 +2763,8 @@ function tick(dt) {
     if (S.spot.lipSpray) for (let k = 0; k < 3; k++) if (Math.random() < S.spot.lipSpray * 0.8) emitLipSpray(rand(-60, 6));
     updateSpray(dt, spd);
     updateSurferPose(dt, !riding && S.mode !== 'over' && S.mode !== 'countdown');
+    updateP2Pose(dt);
+    if (S.gameMode === 'online' && riding) netSurf(dt);
   }
   updateCamera(dt, S.mode === 'menu' || S.mode === 'loading');
   if (playing || S.mode === 'countdown' || S.mode === 'intro') updateHud();
@@ -2329,11 +2800,14 @@ window.addEventListener('storage', (e) => {
   if (e.key === 'sba-lang' && LANGS.includes(e.newValue) && e.newValue !== LANG) { LANG = e.newValue; applyLang(); }
 });
 
+const fight = createFight({ THREE, renderer, buildSurfer, buildTrash, buildPalm, Sound, getLang: () => LANG, isTouch, reducedMotion });
+
 // Démarrage
 applyLang();
 setSurfer(S.char);
 applySpot(SPOTS[0]);
 S.mode = 'menu';
 window.__srGameReady = true;
+if (new URLSearchParams(location.search).has('debug')) window.__sba = { tick, S, P2, fight, goFight, launchFight, startCountdown, setMode, setP2, CHARACTERS, Net };
 showScreen('title');
 frame();

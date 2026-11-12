@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800&family=Barlow:wght@400;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="sba.css?v=20261117">
+  <link rel="stylesheet" href="sba.css?v=20261123">
   <script type="importmap">
     { "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js" } }
   </script>
@@ -33,7 +33,7 @@
     <div id="hud" hidden>
       <div class="hud-top">
         <div class="hud-box hud-score">
-          <span class="lbl" data-i18n="ui.score">Score</span>
+          <span class="lbl" id="hud-p1-name">Score</span>
           <span id="hud-score" class="val">0</span>
         </div>
         <div class="hud-box hud-timer">
@@ -44,6 +44,10 @@
           <span class="lbl" data-i18n="ui.combo">Combo</span>
           <span id="hud-mult" class="val">x1</span>
           <span class="combo-bar"><i id="hud-combo-bar"></i></span>
+        </div>
+        <div class="hud-box hud-p2" hidden>
+          <span class="lbl" id="hud-p2-name">J2</span>
+          <span id="hud-score2" class="val">0</span>
         </div>
       </div>
       <div class="hud-clean">
@@ -95,15 +99,62 @@
       </div>
     </section>
 
+    <!-- Choix du mode -->
+    <section id="screen-mode" class="screen">
+      <div class="panel">
+        <h2 data-i18n="ui.chooseMode">Choisis ton mode</h2>
+        <div class="mode-list">
+          <button type="button" class="mode-btn" data-mode="solo"><span class="mode-ico" aria-hidden="true">🏄</span><span class="mode-txt"><b data-i18n="ui.modeSolo">Solo</b><small data-i18n="ui.modeSoloTxt"></small></span></button>
+          <button type="button" class="mode-btn" data-mode="local"><span class="mode-ico" aria-hidden="true">🏄🏄</span><span class="mode-txt"><b data-i18n="ui.modeLocal">Duo</b><small data-i18n="ui.modeLocalTxt"></small></span></button>
+          <button type="button" class="mode-btn" data-mode="online"><span class="mode-ico" aria-hidden="true">📱📱</span><span class="mode-txt"><b data-i18n="ui.modeOnline">En ligne</b><small data-i18n="ui.modeOnlineTxt"></small></span></button>
+        </div>
+        <div class="row-actions">
+          <button class="btn btn-ghost" type="button" data-go="title" data-i18n="ui.back">Retour</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Duo en ligne -->
+    <section id="screen-online" class="screen">
+      <div class="panel panel-small">
+        <h2 data-i18n="ui.onlineTitle">Duo en ligne</h2>
+        <div class="stack">
+          <button id="btn-host" class="btn btn-primary" type="button" data-i18n="ui.create">Créer une partie</button>
+          <div class="join-row">
+            <input id="join-code" type="text" maxlength="4" inputmode="text" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="CODE" aria-label="Code">
+            <button id="btn-join" class="btn btn-ghost" type="button" data-i18n="ui.join">Rejoindre</button>
+          </div>
+        </div>
+        <div id="online-code" class="online-code" hidden>
+          <span class="lbl" data-i18n="ui.yourCode">Code de la partie</span>
+          <b id="online-code-val"></b>
+          <span class="tiny muted" data-i18n="ui.shareCode"></span>
+        </div>
+        <p id="online-status" class="muted center" aria-live="polite"></p>
+        <div class="row-actions">
+          <button id="btn-online-back" class="btn btn-ghost" type="button" data-i18n="ui.back">Retour</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Attente (duo en ligne) -->
+    <section id="screen-wait" class="screen screen-center">
+      <div class="panel panel-small">
+        <img class="logo" src="img/logo-sba.png" alt="" width="120" height="120">
+        <p id="wait-text" aria-live="polite"></p>
+        <button id="btn-wait-quit" class="btn btn-ghost" type="button" data-i18n="ui.menu">Menu</button>
+      </div>
+    </section>
+
     <!-- Choix du surfeur -->
     <section id="screen-char" class="screen">
       <div class="panel panel-wide">
         <p class="step" data-i18n="ui.step1">Étape 1 / 2</p>
-        <h2 data-i18n="ui.chooseSurfer">Choisis ton surfeur</h2>
+        <h2 id="char-title">Choisis ton surfeur</h2>
         <div id="char-grid" class="card-grid" role="radiogroup"></div>
         <div id="char-detail" class="detail"></div>
         <div class="row-actions">
-          <button class="btn btn-ghost" type="button" data-go="title" data-i18n="ui.back">Retour</button>
+          <button id="btn-char-back" class="btn btn-ghost" type="button" data-i18n="ui.back">Retour</button>
           <button id="btn-char-ok" class="btn btn-primary" type="button" data-i18n="ui.choose">Choisir</button>
         </div>
       </div>
@@ -133,6 +184,8 @@
           <li><b class="pill pill-sand" data-i18n="ui.hTrash"></b><span data-i18n="ui.hTrashTxt"></span></li>
           <li><b class="pill pill-red" data-i18n="ui.hObst"></b><span data-i18n="ui.hObstTxt"></span></li>
           <li><b class="pill pill-navy" data-i18n="ui.combo"></b><span data-i18n="ui.hComboTxt"></span></li>
+          <li class="only-duo"><b class="pill pill-blue" data-i18n="ui.hDuo"></b><span><span class="only-touch" data-i18n="ui.hDuoTouch"></span><span class="only-kbd" data-i18n="ui.hDuoKbd"></span></span></li>
+          <li><b class="pill pill-red" data-i18n="ui.hFight"></b><span data-i18n="ui.hFightTxt"></span></li>
         </ul>
         <div class="row-actions">
           <button class="btn btn-ghost" type="button" data-go="spot" data-i18n="ui.back">Retour</button>
@@ -158,6 +211,7 @@
       <div class="panel">
         <p class="step" id="res-spot"></p>
         <h2 data-i18n="ui.sessionOver">Session terminée !</h2>
+        <div id="res-duo" class="res-duo" hidden></div>
         <div class="res-score">
           <span class="lbl" data-i18n="ui.finalScore">Score final</span>
           <span id="res-total" class="big"></span>
@@ -179,9 +233,12 @@
             <p class="tiny" data-i18n="ui.waterNote"></p>
           </div>
         </div>
+        <button id="btn-fight" class="btn btn-primary btn-fight" type="button" data-i18n="ui.toBar">Direction le Secret Bar</button>
+        <p id="bar-auto" class="tiny muted center" aria-live="polite"></p>
         <div class="row-actions">
+          <button id="btn-results-menu" class="btn btn-ghost" type="button" data-i18n="ui.menu">Menu</button>
           <button id="btn-spot-change" class="btn btn-ghost" type="button" data-i18n="ui.changeSpot">Changer de spot</button>
-          <button id="btn-replay" class="btn btn-primary" type="button" data-i18n="ui.replay">Rejouer</button>
+          <button id="btn-replay" class="btn btn-ghost" type="button" data-i18n="ui.replay">Rejouer</button>
         </div>
       </div>
     </section>
@@ -203,6 +260,6 @@
       }
     }, 12000);
   </script>
-  <script type="module" src="sba.js?v=20261117"></script>
+  <script type="module" src="sba.js?v=20261123"></script>
 </body>
 </html>
