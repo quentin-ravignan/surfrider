@@ -485,3 +485,4 @@ p { margin: 0 0 1em; }
 .partner-link:focus-visible { outline: 3px solid var(--header-blue); outline-offset: 2px; }
 .partner small { display: block; }
 .partner .go { color: var(--header-blue); font-weight: 600; margin-top: 2px; }
+.progress.is-over span { background: #E31B23; }

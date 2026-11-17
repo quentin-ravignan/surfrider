@@ -79,7 +79,7 @@ window.SF_CONFIG = {
      demandes avec le compte Google de l'admin connecté (éditeur requis).
      Tant que ce champ est vide, chaque admin peut coller le lien de la
      feuille dans la partie Finances (retenu sur son appareil). */
-  financeSheetId: "",
+  financeSheetId: "1qj5tL9HSJdLF490mYYIY3NKdlxZKndmnsRUPiunpR64", // « App Surfrider Foundation - BDD »
   financeSheetTab: "Décaissements",
   projectsSheetTab: "Projets",
 

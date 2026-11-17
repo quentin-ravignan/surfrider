@@ -135,7 +135,7 @@
     if (has("finances")) jobs.push(guard("finances", load("finance", interactive).then((f) => {
       if (!f) return setKpi("finances", "—", "Feuille des finances à relier");
       const m = financeModel(f);
-      setKpi("finances", money(m.total), `${m.rows.length} demandes · ${m.pending.length} en attente`);
+      setKpi("finances", money(m.total), `de dépenses · ${m.out.length} demandes · ${m.pending.length} en attente`);
     })));
     if (has("projets")) jobs.push(guard("projets", projectsModel(interactive).then((p) => {
       setKpi("projets", String(p.live.length), `en cours · ${p.done.length} réalisés${p.avg != null ? ` · avancement moyen ${p.avg} %` : ""}`);
@@ -398,15 +398,28 @@
     const head = f.rows[0] || [];
     const c = {
       ts: findCol(head, /horodateur|timestamp/i), date: findCol(head, /^date/i), amount: findCol(head, /montant|amount|somme|co[uû]t/i),
-      status: findCol(head, /statut|status|[ée]tat/i), project: findCol(head, /projet|project/i), cat: findCol(head, /cat[ée]gorie|type|poste|ligne/i),
+      status: findCol(head, /statut|status|[ée]tat/i), project: findCol(head, /^projet|project/i), cat: findCol(head, /cat[ée]gorie|poste|ligne budg/i),
       who: findCol(head, /demandeur|nom|qui|e-?mail|adresse/i), what: findCol(head, /objet|motif|description|libell|d[ée]tail|pourquoi/i),
+      type: findCol(head, /^type/i), method: findCol(head, /m[ée]thode|moyen de paiement/i), payee: findCol(head, /b[ée]n[ée]ficiaire/i),
     };
-    const rows = f.rows.slice(1).map((r, i) => ({ r, row: i + 2, amount: c.amount >= 0 ? num(r[c.amount]) : 0, status: tidy(r[c.status]), date: parseDate(r[c.date >= 0 ? c.date : c.ts]) || parseDate(r[c.ts]) }))
+    // sens du mouvement : « Entrée » / « Sortie » (colonne Type) ; les réapprovisionnements entre comptes ne comptent pas
+    const kindOf = (r) => {
+      const t = tidy(r[c.type]), mth = tidy(r[c.method]);
+      if (/r[ée]app?ro/i.test(mth)) return "transfer";
+      if (/entr[ée]e/i.test(t) || /entrant|d[ée]p[oô]t/i.test(mth)) return "in";
+      return "out";
+    };
+    const all = f.rows.slice(1).map((r, i) => ({ r, row: i + 2, amount: c.amount >= 0 ? num(r[c.amount]) : 0, status: tidy(r[c.status]), kind: kindOf(r), date: parseDate(r[c.date >= 0 ? c.date : c.ts]) || parseDate(r[c.ts]) }))
       .filter((x) => x.r.some((v) => tidy(v)));
     const isPending = (s) => !s || /attente|demand|nouveau|soumis|à valider|a valider|en cours/i.test(s);
     const isPaid = (s) => /pay|vers|d[ée]caiss[ée]|r[ée]gl|effectu|termin/i.test(s);
     const isRefused = (s) => /refus|rejet|annul/i.test(s);
-    return { head, c, rows, total: rows.reduce((a, x) => a + x.amount, 0), pending: rows.filter((x) => isPending(x.status) && !isPaid(x.status) && !isRefused(x.status)), isPaid, isRefused, isPending };
+    const out = all.filter((x) => x.kind === "out");
+    return {
+      head, c, rows: all, out, ins: all.filter((x) => x.kind === "in"),
+      total: out.filter((x) => !isRefused(x.status)).reduce((a, x) => a + x.amount, 0),
+      pending: out.filter((x) => isPending(x.status) && !isPaid(x.status) && !isRefused(x.status)), isPaid, isRefused, isPending,
+    };
   }
 
   async function panelFinances(panel) {
@@ -449,34 +462,39 @@
 
   function financeDash(body, f) {
     const m = financeModel(f);
-    const paid = m.rows.filter((x) => m.isPaid(x.status));
+    const paid = m.out.filter((x) => m.isPaid(x.status));
     const year = new Date().getFullYear();
-    const thisYear = m.rows.filter((x) => x.date && x.date.getFullYear() === year);
-    const byStatus = {}; m.rows.forEach((x) => { const s = x.status || "Sans statut"; byStatus[s] = byStatus[s] || [0, 0]; byStatus[s][0]++; byStatus[s][1] += x.amount; });
+    const thisYear = m.out.filter((x) => x.date && x.date.getFullYear() === year && !m.isRefused(x.status));
+    const sum = (L) => L.reduce((a, x) => a + x.amount, 0);
+    const byStatus = {}; m.out.forEach((x) => { const s = m.isPaid(x.status) ? "Payé" : m.isRefused(x.status) ? "Refusé" : (x.status || "Sans statut"); byStatus[s] = byStatus[s] || [0, 0]; byStatus[s][0]++; byStatus[s][1] += x.amount; });
     const months = []; for (let i = 11; i >= 0; i--) { const d = new Date(); d.setDate(1); d.setMonth(d.getMonth() - i); months.push([d.getFullYear(), d.getMonth()]); }
-    const perMonth = months.map(([y, mo]) => [new Date(y, mo, 1).toLocaleDateString("fr-FR", { month: "short", year: "2-digit" }), m.rows.filter((x) => x.date && x.date.getFullYear() === y && x.date.getMonth() === mo).reduce((a, x) => a + x.amount, 0)]);
+    const perMonth = months.map(([y, mo]) => [new Date(y, mo, 1).toLocaleDateString("fr-FR", { month: "short", year: "2-digit" }), sum(m.out.filter((x) => x.date && x.date.getFullYear() === y && x.date.getMonth() === mo && !m.isRefused(x.status)))]);
     const maxM = Math.max(1, ...perMonth.map((p) => p[1]));
     body.innerHTML = `
       <div class="kpis">
-        <div class="kpi"><span>Total des demandes</span><strong>${money(m.total)}</strong></div>
-        <div class="kpi"><span>Décaissé / payé</span><strong>${money(paid.reduce((a, x) => a + x.amount, 0))}</strong></div>
-        <div class="kpi"><span>En attente (${m.pending.length})</span><strong>${money(m.pending.reduce((a, x) => a + x.amount, 0))}</strong></div>
-        <div class="kpi"><span>En ${year} (${thisYear.length} demandes)</span><strong>${money(thisYear.reduce((a, x) => a + x.amount, 0))}</strong></div>
+        <div class="kpi"><span>Décaissé / payé (${paid.length})</span><strong>${money(sum(paid))}</strong></div>
+        <div class="kpi"><span>En attente (${m.pending.length})</span><strong>${money(sum(m.pending))}</strong></div>
+        <div class="kpi"><span>Dépenses ${year} (${thisYear.length})</span><strong>${money(sum(thisYear))}</strong></div>
+        <div class="kpi"><span>Entrées enregistrées (${m.ins.length})</span><strong>${money(sum(m.ins))}</strong></div>
       </div>
       ${m.c.amount < 0 ? `<p class="notice">Aucune colonne « Montant » trouvée dans l'onglet ${esc(f.tab)} : les totaux sont à 0.</p>` : ""}
       <div class="grid grid-2 fin-grid">
         <div class="card"><h3>Par statut</h3>${bars(Object.entries(byStatus).sort((a, b) => b[1][1] - a[1][1]).map(([k, v]) => [`${k} (${v[0]})`, v[1]]))}</div>
         <div class="card"><h3>12 derniers mois</h3><div class="month-chart">${perMonth.map(([l, v]) => `<div class="mcol" title="${l} : ${money(v)}"><span class="mbar" style="height:${(v / maxM) * 100}%"></span><small>${l}</small></div>`).join("")}</div></div>
-        ${m.c.project >= 0 ? `<div class="card"><h3>Par projet</h3>${bars(sumBy(m.rows, m.c.project).slice(0, 10))}</div>` : ""}
-        ${m.c.cat >= 0 ? `<div class="card"><h3>Par catégorie</h3>${bars(sumBy(m.rows, m.c.cat).slice(0, 10))}</div>` : ""}
+        ${m.c.project >= 0 ? `<div class="card"><h3>Dépenses par projet</h3>${bars(sumBy(m.out.filter((x) => !m.isRefused(x.status)), m.c.project).slice(0, 10))}</div>` : ""}
+        ${m.c.cat >= 0 ? `<div class="card"><h3>Par catégorie</h3>${bars(sumBy(m.out, m.c.cat).slice(0, 10))}</div>`
+          : m.c.method >= 0 ? `<div class="card"><h3>Par moyen de paiement</h3>${bars(sumBy(m.out.filter((x) => !m.isRefused(x.status)), m.c.method).slice(0, 8))}</div>` : ""}
       </div>`;
   }
 
   function financeSuivi(body, f) {
     const m = financeModel(f);
-    const statuses = [...new Set(m.rows.map((x) => x.status).filter(Boolean))];
-    ["En attente", "Validé", "Payé", "Refusé"].forEach((s) => { if (!statuses.some((x) => x.toLowerCase() === s.toLowerCase())) statuses.push(s); });
-    const show = m.head.map((h, i) => i).filter((i) => tidy(m.head[i]) && i !== m.c.status).slice(0, 8);
+    // statuts proposés : les 4 usuels + ceux employés au moins 3 fois (les « Payé par Wave le … » restent affichés tels quels)
+    const freq = {}; m.rows.forEach((x) => { if (x.status) freq[x.status] = (freq[x.status] || 0) + 1; });
+    const statuses = ["En attente", "Validé", "Payé", "Refusé"];
+    Object.keys(freq).forEach((s) => { if (freq[s] >= 3 && !statuses.some((x) => x.toLowerCase() === s.toLowerCase())) statuses.push(s); });
+    const wanted = [m.c.ts, m.c.who, m.c.type, m.c.project, m.c.what, m.c.payee, m.c.method, m.c.amount].filter((i) => i >= 0);
+    const show = wanted.length >= 4 ? wanted : m.head.map((h, i) => i).filter((i) => tidy(m.head[i]) && i !== m.c.status).slice(0, 8);
     body.innerHTML = `
       <div class="controls">
         <input type="search" placeholder="Rechercher (objet, projet, demandeur…)" aria-label="Rechercher">
@@ -490,12 +508,12 @@
     const fmt = (i, v) => (i === m.c.amount ? money(num(v)) : /^https?:\/\//.test(tidy(v)) ? `<a href="${esc(tidy(v))}" target="_blank" rel="noopener">Ouvrir ↗</a>` : esc(v));
     const draw = () => {
       const term = q.value.toLowerCase().trim();
-      const L = m.rows.filter((x) => (filt === "Tous" || (filt === "En attente" ? m.pending.includes(x) : x.status.toLowerCase() === filt.toLowerCase())) && (!term || x.r.join(" ").toLowerCase().includes(term)))
+      const L = m.rows.filter((x) => (filt === "Tous" || (filt === "En attente" ? m.pending.includes(x) : filt === "Payé" ? m.isPaid(x.status) : filt === "Refusé" ? m.isRefused(x.status) : x.status.toLowerCase() === filt.toLowerCase())) && (!term || x.r.join(" ").toLowerCase().includes(term)))
         .sort((a, b) => (b.date || 0) - (a.date || 0));
       body.querySelector("[data-count]").textContent = L.length + " demande(s)";
-      body.querySelector("[data-total]").textContent = money(L.reduce((a, x) => a + x.amount, 0));
+      body.querySelector("[data-total]").textContent = money(L.filter((x) => x.kind === "out").reduce((a, x) => a + x.amount, 0)) + " de sorties";
       body.querySelector("tbody").innerHTML = L.map((x) => `<tr data-row="${x.row}">${show.map((i) => `<td class="${i === m.c.what ? "cell-long" : ""}">${fmt(i, x.r[i])}</td>`).join("")}
-        <td>${m.c.status >= 0 ? `<select class="status-sel ${m.isPaid(x.status) ? "is-paid" : m.isRefused(x.status) ? "is-refused" : "is-pending"}" aria-label="Statut">${(x.status && !statuses.includes(x.status) ? [x.status, ...statuses] : statuses).map((s) => `<option${s === x.status ? " selected" : ""}>${esc(s)}</option>`).join("")}${x.status ? "" : '<option selected value="">—</option>'}</select>` : "—"}</td></tr>`).join("") || `<tr><td colspan="${show.length + 1}">Aucune demande.</td></tr>`;
+        <td>${x.kind === "in" ? '<span class="tag tag-live">Entrée</span> ' : ""}${m.c.status >= 0 ? `<select class="status-sel ${m.isPaid(x.status) ? "is-paid" : m.isRefused(x.status) ? "is-refused" : "is-pending"}" aria-label="Statut">${(x.status && !statuses.includes(x.status) ? [x.status, ...statuses] : statuses).map((s) => `<option${s === x.status ? " selected" : ""}>${esc(s)}</option>`).join("")}${x.status ? "" : '<option selected value="">—</option>'}</select>` : "—"}</td></tr>`).join("") || `<tr><td colspan="${show.length + 1}">Aucune demande.</td></tr>`;
       body.querySelectorAll(".status-sel").forEach((sel) => sel.addEventListener("change", async () => {
         const tr = sel.closest("tr"), row = +tr.dataset.row, x = m.rows.find((y) => y.row === row);
         sel.disabled = true;
@@ -517,7 +535,10 @@
   /* Formulaire généré à partir des colonnes de l'onglet Décaissements */
   function financeForm(body, f, open) {
     const m = financeModel(f);
-    const projects = f.prows ? [...new Set(f.prows.slice(1).map((r) => tidy(r[0])).filter(Boolean))] : [];
+    const pTitle = f.prows ? Math.max(0, findCol(f.prows[0] || [], /^projet|^nom/i)) : 0;
+    const projects = f.prows ? [...new Set(f.prows.slice(1).map((r) => tidy(r[pTitle])).filter((t) => t && !/^totale?s?$/i.test(t)))] : [];
+    // colonnes calculées ou gérées par le bureau : jamais demandées dans le formulaire
+    const SKIP = /d[ée]pens[ée] sur|restant|solde|validation|^buyer|classe de compte|date du mouvement|photos? [23]|fichier [23]/i;
     const statusDefault = m.rows.map((x) => x.status).find((s) => /attente|demand|nouveau|soumis/i.test(s)) || "En attente";
     const fields = m.head.map((h, i) => {
       const l = label(h);
@@ -525,6 +546,7 @@
       if (i === m.c.ts) return { i, auto: () => stamp() };
       if (i === m.c.status) return { i, auto: () => statusDefault };
       if (/^id$|row ?id|_rownumber|cl[ée] ?unique/i.test(l)) return { i, auto: () => Math.random().toString(36).slice(2, 10) };
+      if (SKIP.test(l)) return null;
       const distinct = [...new Set(m.rows.map((x) => tidy(x.r[i])).filter(Boolean))];
       let type = "text", opts = null;
       if (i === m.c.amount) type = "money";
@@ -536,7 +558,8 @@
       else if (distinct.length && distinct.length <= 15 && m.rows.length >= 5) { type = "list"; opts = distinct; }
       let value = "";
       if (type === "email") value = S.user.email;
-      else if (i === m.c.who && !/mail/i.test(l)) value = S.user.name || S.user.email;
+      else if (i === m.c.who && !/mail/i.test(l)) value = (S.user.name || S.user.email).split(/\s+/)[0]; // prénom, comme dans la feuille
+      else if (i === m.c.type && opts && opts.includes("Sortie")) value = "Sortie";
       return { i, l, type, opts, value, required: i === m.c.amount || i === m.c.what || i === m.c.project };
     }).filter(Boolean);
     const input = (fd) => {
@@ -606,11 +629,22 @@
     let list;
     if (f && f.prows && f.prows.length > 1) {
       const h = f.prows[0];
-      const ci = { status: findCol(h, /statut|status|[ée]tat/i), prog: findCol(h, /avancement|progress|%/i), budget: findCol(h, /budget/i), period: findCol(h, /date|p[ée]riode|d[ée]but/i), desc: findCol(h, /description|objectif|r[ée]sum/i), owner: findCol(h, /responsable|r[ée]f[ée]rent|chef/i) };
-      list = f.prows.slice(1).filter((r) => tidy(r[0])).map((r) => {
+      const ci = {
+        title: Math.max(0, findCol(h, /^projet|^nom/i)), status: findCol(h, /statut|status|[ée]tat/i), prog: findCol(h, /avancement|progress|%/i),
+        budget: findCol(h, /budget/i), spent: findCol(h, /d[ée]penses/i), rest: findCol(h, /^reste/i),
+        start: findCol(h, /d[ée]but/i), end: findCol(h, /fin/i), desc: findCol(h, /description|objectif|r[ée]sum/i),
+        owner: findCol(h, /responsable|r[ée]f[ée]rent|chef/i), funder: findCol(h, /buyer|bailleur|financeur/i),
+      };
+      const today = new Date();
+      list = f.prows.slice(1).filter((r) => tidy(r[ci.title]) && !/^(total|autre)s?$/i.test(tidy(r[ci.title]))).map((r) => { // lignes de synthèse exclues
         const st = tidy(r[ci.status]);
+        const end = parseDate(r[ci.end]);
         const prog = ci.prog >= 0 && tidy(r[ci.prog]) ? Math.max(0, Math.min(100, num(r[ci.prog]) <= 1 && /\./.test(String(r[ci.prog])) ? num(r[ci.prog]) * 100 : num(r[ci.prog]))) : null;
-        return { title: tidy(r[0]), status: /termin|r[ée]alis|clos|fini/i.test(st) || prog === 100 ? "done" : "live", statusLabel: st, progress: prog, budget: ci.budget >= 0 ? num(r[ci.budget]) : null, period: tidy(r[ci.period]), text: tidy(r[ci.desc]), owner: tidy(r[ci.owner]), src: "sheet" };
+        const done = /termin|r[ée]alis|clos|fini/i.test(st) || prog === 100 || (!st && end && end < today);
+        const budget = ci.budget >= 0 ? num(r[ci.budget]) : null;
+        const sheetSpent = ci.spent >= 0 && tidy(r[ci.spent]) ? num(r[ci.spent]) : null;
+        const period = [tidy(r[ci.start]), tidy(r[ci.end])].filter(Boolean).join(" → ");
+        return { title: tidy(r[ci.title]), status: done ? "done" : "live", statusLabel: st || (done ? "Terminé" : "En cours"), progress: prog, budget, sheetSpent, rest: ci.rest >= 0 && tidy(r[ci.rest]) ? num(r[ci.rest]) : null, period, text: tidy(r[ci.desc]), owner: tidy(r[ci.owner]), funder: tidy(r[ci.funder]), src: "sheet" };
       });
     } else {
       list = (window.SF_PROJECTS || []).map((p) => Object.assign({}, p, { statusLabel: p.status === "live" ? "En cours" : "Réalisé", progress: p.progress ?? (p.status === "done" ? 100 : null), src: "site" }));
@@ -619,6 +653,8 @@
       const spent = {}; fin.rows.filter((x) => !fin.isRefused(x.status)).forEach((x) => { const k = tidy(x.r[fin.c.project]).toLowerCase(); spent[k] = (spent[k] || 0) + x.amount; });
       list.forEach((p) => { p.spent = spent[p.title.toLowerCase()] || 0; });
     }
+    // dépenses de l'onglet Projets (calculées par la feuille) prioritaires ; budget consommé en %
+    list.forEach((p) => { if (p.sheetSpent) p.spent = p.sheetSpent; if (p.budget && p.spent != null) p.consumed = Math.round((p.spent / p.budget) * 100); });
     const withP = list.filter((p) => p.progress != null && p.status === "live");
     return { list, live: list.filter((p) => p.status === "live"), done: list.filter((p) => p.status === "done"), avg: withP.length ? Math.round(withP.reduce((a, p) => a + p.progress, 0) / withP.length) : null, fromSheet: list[0]?.src === "sheet" };
   }
@@ -628,17 +664,19 @@
     const card = (p) => `<article class="card proj-card ${p.status}">
       <div class="meta"><span class="tag ${p.status === "live" ? "tag-live" : "tag-done"}">${esc(p.statusLabel || (p.status === "live" ? "En cours" : "Réalisé"))}</span>${p.theme ? `<span class="tag">${esc(p.theme)}</span>` : ""}${p.period ? `<span class="muted">${esc(p.period)}</span>` : ""}</div>
       <h3>${esc(p.title)}</h3>
-      ${p.progress != null ? `<div class="progress" role="progressbar" aria-valuenow="${Math.round(p.progress)}" aria-valuemin="0" aria-valuemax="100"><span style="width:${p.progress}%"></span></div><small class="muted">Avancement : ${Math.round(p.progress)} %</small>` : `<small class="muted">Avancement non renseigné</small>`}
+      ${p.progress != null ? `<div class="progress" role="progressbar" aria-valuenow="${Math.round(p.progress)}" aria-valuemin="0" aria-valuemax="100"><span style="width:${p.progress}%"></span></div><small class="muted">Avancement : ${Math.round(p.progress)} %</small>`
+        : p.consumed != null ? `<div class="progress${p.consumed > 100 ? " is-over" : ""}" role="progressbar" aria-valuenow="${p.consumed}" aria-valuemin="0" aria-valuemax="100" aria-label="Budget consommé"><span style="width:${Math.min(100, p.consumed)}%"></span></div><small class="muted">Budget consommé : ${p.consumed} %${p.consumed > 100 ? " (dépassement)" : ""}</small>`
+        : `<small class="muted">Avancement non renseigné</small>`}
       ${p.text ? `<p>${esc(p.text.length > 220 ? p.text.slice(0, 217) + "…" : p.text)}</p>` : ""}
-      <div class="proj-figs">${p.owner ? `<span>👤 ${esc(p.owner)}</span>` : ""}${p.budget ? `<span>Budget : ${money(p.budget)}</span>` : ""}${p.spent ? `<span>Décaissé : ${money(p.spent)}</span>` : ""}</div>
+      <div class="proj-figs">${p.funder ? `<span>Financeur : ${esc(p.funder)}</span>` : ""}${p.owner ? `<span>👤 ${esc(p.owner)}</span>` : ""}${p.budget ? `<span>Budget : ${money(p.budget)}</span>` : ""}${p.spent ? `<span>Dépensé : ${money(p.spent)}</span>` : ""}${p.rest != null && p.rest !== 0 ? `<span>Reste : ${money(p.rest)}</span>` : ""}</div>
     </article>`;
     panel.innerHTML = `
       <div class="panel-head"><h2>Projets</h2></div>
       <div class="kpis">
         <div class="kpi"><span>En cours</span><strong>${pm.live.length}</strong></div>
         <div class="kpi"><span>Réalisés</span><strong>${pm.done.length}</strong></div>
-        <div class="kpi"><span>Avancement moyen</span><strong>${pm.avg != null ? pm.avg + " %" : "—"}</strong></div>
-        <div class="kpi"><span>Décaissé sur projets</span><strong>${pm.list.some((p) => p.spent != null) ? money(pm.list.reduce((a, p) => a + (p.spent || 0), 0)) : "—"}</strong></div>
+        <div class="kpi"><span>${pm.avg != null ? "Avancement moyen" : "Budgets cumulés"}</span><strong>${pm.avg != null ? pm.avg + " %" : pm.list.some((p) => p.budget) ? money(pm.list.reduce((a, p) => a + (p.budget || 0), 0)) : "—"}</strong></div>
+        <div class="kpi"><span>Dépensé sur projets</span><strong>${pm.list.some((p) => p.spent != null) ? money(pm.list.reduce((a, p) => a + (p.spent || 0), 0)) : "—"}</strong></div>
       </div>
       ${pm.fromSheet ? "" : `<p class="notice notice-blue">Liste issue de la page publique « Nos projets ». Une fois la Google Sheet des finances reliée (partie Finances), les projets et leur avancement viendront de son onglet « Projets ». En attendant, l'avancement se renseigne dans <code>data/projects.js</code> (champ <code>progress</code>).</p>`}
       <h3>En cours</h3><div class="grid grid-2">${pm.live.map(card).join("") || "<p class='muted'>Aucun projet en cours.</p>"}</div>
