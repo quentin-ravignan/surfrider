@@ -1,6 +1,21 @@
 {
- "updated": "2026-11-17T16:10:02Z",
+ "updated": "2026-11-17T16:15:27Z",
  "items": [
+  {
+   "id": "gn-caa9823bcee5",
+   "title": "Call for Applications: OceanHub Africa Acceleration Program Cohort 8 Supports Blue Economy Startups",
+   "funder": "MSME Africa",
+   "source": "Google Actualités",
+   "url": "https://news.google.com/rss/articles/CBMixwFBVV95cUxPSzNRRkhBdHZuZ1Y4ZF93cDlvdzVCekhpejJxUjhtbzlqeTUzNGxRVUdFSVY0MVRyMmI4Y0ctQXhqejBmZGJ3aWtjTGRQSlZncnVoeFlfZTBaOGowX0NTWTA1MDRTUEZNd0hMcU5wNzdITTJzVWYwRWl6ZzNOVnp6S1FyQnNST1Zwc2tHcDFyWjlCUXlPNzBrdGFlMkRkMkRLSHNtOXBKbms4MWpIX2E1Vm9hYjd5eU9abjdVM0hRU2NONWdiUFJj?oc=5",
+   "region": "",
+   "amount": "",
+   "deadline": null,
+   "summary": "Article du 2026-11-02 (MSME Africa) annonçant un appel ou un financement.",
+   "eligibility": "",
+   "published": "2026-11-02",
+   "score": 9,
+   "first_seen": "2026-11-17"
+  },
   {
    "id": "fn-b19f6218f253",
    "title": "Open Call: Humboldt Residency Programme",
@@ -171,6 +186,21 @@
    "deadline": "2027-09-21",
    "summary": "HORIZON-MISS-2027-03-OCEAN-05 · HORIZON Innovation Actions",
    "eligibility": "Consortium avec partenaires UE / pays associés : vérifier l'éligibilité des pays tiers",
+   "score": 6,
+   "first_seen": "2026-11-17"
+  },
+  {
+   "id": "gn-2321ae8646fe",
+   "title": "Cétacés : un appel à projets européen pour lutter contre les captures accidentelles",
+   "funder": "Mer et Marine",
+   "source": "Google Actualités",
+   "url": "https://news.google.com/rss/articles/CBMi0wFBVV95cUxQRmU4QlU4M1U0dzdwMnc5YjNhalFiQXMyU2pFVFUyRl9ob2xNUDh6b3FXOUZfTmE4X3NJcV9IZXYzVjVNSEJTWkRMdy1xdEtiSjVYWVNSSlFXQ0VhcDhfZzB2T1pSSEREWG00WGxZTnhhanlSdDhWeXF3bmRPSlZFTm1IQjUzenRnWGd1Q1RGaEhpVHJCVFd0YzZFRFlCekc4UW1Ra3lpSWJuNWhfVmZJZFJDVUZnTDVVQVFtY0d1WS1ua3ZMbXJPZ2Rzd0hhdzN1cU00?oc=5",
+   "region": "",
+   "amount": "",
+   "deadline": null,
+   "summary": "Article du 2026-11-15 (Mer et Marine) annonçant un appel ou un financement.",
+   "eligibility": "",
+   "published": "2026-11-15",
    "score": 6,
    "first_seen": "2026-11-17"
   },
