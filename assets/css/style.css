@@ -467,3 +467,21 @@ p { margin: 0 0 1em; }
 .progress span { display: block; height: 100%; background: #6D28D9; border-radius: 999px; }
 .proj-card.done .progress span { background: #1E9E55; }
 .proj-figs { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: .9rem; font-weight: 600; color: var(--muted); }
+
+/* Shop : photos produits, modèles, retour de paiement */
+.product .visual.has-photo { padding: 0; }
+.product .visual.has-photo img { width: 100%; height: 100%; object-fit: contain; transition: transform .4s ease; }
+.product:hover .visual.has-photo img { transform: scale(1.03); }
+.product .opts.variants button { display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px; font-weight: 600; }
+.product .opts.variants i { width: 16px; height: 16px; border-radius: 50%; border: 1px solid #C9D1D9; flex: none; }
+.product .opts.variants button[aria-pressed="true"] i { border-color: #fff; }
+.pay-status { margin-bottom: 28px; font-size: 1.05rem; }
+
+/* Partenaires : logos et liens */
+.partner .logo { flex: 0 0 96px; height: 64px; display: grid; place-items: center; background: var(--white); border-radius: 10px; border: 1px solid var(--line); padding: 4px; overflow: hidden; }
+.partner .logo img { display: block; max-width: 86px; max-height: 54px; width: auto; height: auto; object-fit: contain; }
+.partner-link { color: inherit; text-decoration: none; transition: transform .15s ease, box-shadow .15s ease; }
+.partner-link:hover { transform: translateY(-2px); box-shadow: 0 10px 24px rgba(11,31,51,.12); }
+.partner-link:focus-visible { outline: 3px solid var(--header-blue); outline-offset: 2px; }
+.partner small { display: block; }
+.partner .go { color: var(--header-blue); font-weight: 600; margin-top: 2px; }

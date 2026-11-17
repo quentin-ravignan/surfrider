@@ -19,7 +19,7 @@
   if (lang !== "fr") {
     html.classList.add("i18n-pending");
     document.write('<style>.i18n-pending body{visibility:hidden}</style>');
-    document.write('<script src="assets/i18n/' + lang + '.js?v=20261112"><\/script>');
+    document.write('<script src="assets/i18n/' + lang + '.js?v=20261119"><\/script>');
     setTimeout(() => html.classList.remove("i18n-pending"), 2500); // filet de sécurité
   }
 

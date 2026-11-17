@@ -4,17 +4,17 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Shop – Surfrider Sénégal</title>
-  <meta name="description" content="T-shirts, sweats, casquettes et goodies Surfrider Foundation Sénégal. Paiement par Wave. Chaque achat soutient la protection de l'océan.">
+  <meta name="description" content="T-shirts et sweats Surfrider Foundation Sénégal. Paiement par Wave. Chaque achat soutient la protection de l'océan.">
   <meta name="theme-color" content="#0073BE">
   <link rel="icon" href="assets/img/logo-symbole-bleu.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/css/style.css?v=20261118">
-  <script src="assets/js/config.js?v=20261112"></script>
-  <script src="assets/js/i18n.js?v=20261112"></script>
+  <link rel="stylesheet" href="assets/css/style.css?v=20261121">
+  <script src="assets/js/config.js?v=20261119"></script>
+  <script src="assets/js/i18n.js?v=20261119"></script>
   <script src="assets/js/main.js?v=20261117" defer></script>
-  <script src="assets/js/shop.js?v=20261112" defer></script>
+  <script src="assets/js/shop.js?v=20261120" defer></script>
 </head>
 <body>
   <div data-site-header></div>
@@ -24,7 +24,7 @@
       <div class="container">
         <span class="eyebrow">Porte les couleurs de l'océan</span>
         <h1>Le shop</h1>
-        <p class="lead">T-shirts, sweats, casquettes et goodies aux couleurs de la Surfrider Sénégal. Chaque achat finance directement nos actions pour l'océan. Paiement simple et rapide avec Wave.</p>
+        <p class="lead">T-shirts et sweats aux couleurs de la Surfrider Sénégal. Chaque achat finance directement nos actions pour l'océan. Paiement simple et rapide avec Wave.</p>
       </div>
       <svg class="hero-waves" viewBox="0 0 1440 120" preserveAspectRatio="none" aria-hidden="true">
         <path d="M0 60 C 240 120 480 0 720 50 S 1200 110 1440 40 V120 H0Z" fill="#FFFFFF" opacity=".35"/>
@@ -34,9 +34,10 @@
 
     <section class="section">
       <div class="container">
+        <div id="pay-status" class="notice pay-status" role="status" aria-live="polite" hidden></div>
         <div class="grid grid-3" id="products"></div>
         <div class="notice notice-blue" style="margin-top:32px">
-          <strong>Comment ça marche ?</strong> Ajoute tes articles au panier, puis clique sur « Payer avec Wave ». Tu règles le montant total dans l'app Wave, puis tu nous envoies ta commande par WhatsApp pour organiser le retrait à Dakar ou la livraison.
+          <strong>Comment ça marche ?</strong> Ajoute tes articles au panier, indique ton nom et ton téléphone, puis clique sur « Payer avec Wave ». Tu règles le montant exact dans l'app Wave, puis nous te contactons sur WhatsApp pour le retrait à Dakar ou la livraison.
         </div>
       </div>
     </section>

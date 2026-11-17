@@ -29,6 +29,12 @@ window.SF_CONFIG = {
      Tant que ce champ est vide, la commande est envoyée par WhatsApp. */
   waveMerchantLink: "",
 
+  /* Paiement Wave Business automatique (API Checkout) : URL « /exec » du
+     script Google Apps Script qui garde la clé API Wave et enregistre les
+     commandes. Installation : voir wave/README.md. Prioritaire sur
+     waveMerchantLink une fois renseigné. */
+  waveCheckoutUrl: "",
+
   /* ---- Espace membres (connexion Google) --------------------------------
      1. Créer un « ID client OAuth » (type Application Web) sur
         https://console.cloud.google.com/apis/credentials
