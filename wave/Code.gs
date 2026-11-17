@@ -24,6 +24,8 @@ var PRICES = {
 var DON_MIN = 500;              // don libre : montant minimum
 var SITE_SHOP_URL = 'https://quentin-ravignan.github.io/surfrider/shop.html';
 var NOTIFY_EMAIL = 'contact@surfrider.sn';
+/* Google Sheet des commandes (laisser vide si le script est créé depuis la feuille : Extensions › Apps Script) */
+var ORDERS_SHEET_ID = '1JQG2yATVnCgDdsA9ra04cibUQVkUC-uNr6v1c1YlBCg';
 var SHEET_NAME = 'Commandes';
 var HEADERS = ['Date', 'Référence', 'Statut', 'Total (FCFA)', 'Nom', 'Téléphone', 'Livraison / retrait', 'Articles', 'Session Wave', 'Payé le', 'ID transaction Wave'];
 
@@ -111,7 +113,7 @@ function status_(ref) {
       MailApp.sendEmail(NOTIFY_EMAIL, 'Shop : nouvelle commande payée ' + ref,
         'Commande ' + ref + ' payée par Wave (' + row[3] + ' FCFA).\n\n' +
         'Nom : ' + row[4] + '\nTéléphone : ' + String(row[5]) + '\nLivraison / retrait : ' + row[6] + '\n\n' + row[7] +
-        '\n\nToutes les commandes : ' + SpreadsheetApp.getActiveSpreadsheet().getUrl());
+        '\n\nToutes les commandes : ' + book_().getUrl());
     } catch (e) { /* l'email est un bonus : la commande reste enregistrée */ }
   }
   return { ref: ref, status: status, total: row[3] };
@@ -131,8 +133,10 @@ function wave_(method, path, body) {
   return data;
 }
 
+function book_() { return ORDERS_SHEET_ID ? SpreadsheetApp.openById(ORDERS_SHEET_ID) : SpreadsheetApp.getActiveSpreadsheet(); }
+
 function sheet_() {
-  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var ss = book_();
   var sh = ss.getSheetByName(SHEET_NAME);
   if (!sh) {
     sh = ss.insertSheet(SHEET_NAME);
@@ -146,6 +150,13 @@ function sheet_() {
 function clean_(v, max) { return String(v == null ? '' : v).replace(/[\u0000-\u001f]/g, ' ').trim().slice(0, max); }
 
 function json_(o) { return ContentService.createTextOutput(JSON.stringify(o)).setMimeType(ContentService.MimeType.JSON); }
+
+/* À lancer une fois à l'installation : crée l'onglet « Commandes » (et fait autoriser le script) */
+function setup() {
+  sheet_();
+  Logger.log('Onglet « ' + SHEET_NAME + ' » prêt : ' + book_().getUrl());
+  Logger.log(PropertiesService.getScriptProperties().getProperty('WAVE_API_KEY') ? 'Clé API Wave présente.' : 'Clé API Wave à ajouter (Paramètres du projet › Propriétés du script › WAVE_API_KEY).');
+}
 
 /* À lancer une fois depuis l'éditeur pour vérifier la clé : Exécuter › testWave */
 function testWave() {
