@@ -22,17 +22,18 @@
   function roleOf(email) {
     email = (email || "").toLowerCase();
     if (lower(C.admins).includes(email)) return "admin";
+    if (lower(C.ca).includes(email)) return "ca";
     const s = lower(C.saytoukat);
     if (s.includes("*") || s.includes(email)) return "saytoukat";
-    return "visitor";
+    return "adherent";
   }
-  // "member" : tout compte connecté (la page d'accueil de l'espace adapte ce qu'elle montre)
-  const allowed = (role, need) => need === "member" ? true : need === "admin" ? role === "admin" : role === "admin" || role === "saytoukat";
+  // "member" : tout compte connecté (le tableau de bord adapte ce qu'il montre au rôle)
+  const allowed = (role, need) => need === "member" ? true : need === "admin" ? role === "admin" : need === "ca" ? role === "admin" || role === "ca" : role === "admin" || role === "saytoukat";
 
   function getUser() {
     try {
       const u = JSON.parse(sessionStorage.getItem(KEY) || "null");
-      if (u && u.exp * 1000 > Date.now()) return u;
+      if (u && u.exp * 1000 > Date.now()) return Object.assign(u, { role: roleOf(u.email) }); // rôle recalculé à chaque visite
     } catch (e) {}
     return null;
   }
@@ -53,7 +54,7 @@
     });
   }
 
-  const ROLE_LABEL = { get admin() { return T("Administrateur·rice"); }, saytoukat: "Saytoukat Géej", get visitor() { return T("Visiteur"); } };
+  const ROLE_LABEL = { get admin() { return T("Administrateur·rice"); }, get ca() { return T("Membre du CA"); }, saytoukat: "Saytoukat Géej", get adherent() { return T("Adhérent·e"); } };
 
   function memberBar(u) {
     return `<div class="member-bar">

@@ -43,11 +43,12 @@
     projets: '<svg viewBox="0 0 24 24"><path d="M4 20V5h10l-1.5 3.5L14 12H6" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M4 20h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>',
   };
   const MODULES = [
+    // admin : tout · ca (membres du CA) : Finances, Membres, Projets · saytoukat : dépôt d'un prélèvement · adherent : rien
     { id: "prelevements", title: "Prélèvements", roles: ["admin", "saytoukat"] },
-    { id: "membres", title: "Membres", roles: ["admin"] },
-    { id: "communication", title: "Communication", roles: ["admin", "saytoukat"] },
-    { id: "finances", title: "Finances", roles: ["admin"] },
-    { id: "projets", title: "Projets", roles: ["admin"] },
+    { id: "membres", title: "Membres", roles: ["admin", "ca"] },
+    { id: "communication", title: "Communication", roles: ["admin"] },
+    { id: "finances", title: "Finances", roles: ["admin", "ca"] },
+    { id: "projets", title: "Projets", roles: ["admin", "ca"] },
   ];
 
   const S = { user: null, data: {}, el: null, current: null };
@@ -79,7 +80,10 @@
     S.el = el; S.user = user;
     const mods = MODULES.filter((m) => m.roles.includes(user.role));
     if (!mods.length) {
-      el.innerHTML = `<div class="notice">Bienvenue ${esc(user.name || "")} ! Ton compte n'a pas encore de rôle dans l'espace membres. Si tu es Saytoukat Géej ou membre du bureau, demande l'accès à un·e administrateur·rice.</div>`;
+      el.innerHTML = `<div class="card adherent-card"><h3>Bienvenue ${esc(user.name || "")} !</h3>
+        <p>Ton compte est un compte <strong>adhérent·e</strong> : merci de soutenir la Surfrider Foundation Sénégal. Toutes nos actions, la qualité de l'eau et les projets sont à retrouver sur le site.</p>
+        <div class="form-actions"><a class="btn btn-blue" href="qualite-eau.html">Qualité de l'eau</a><a class="btn btn-outline" href="projets.html">Nos projets</a><a class="btn btn-outline" href="shop.html">Le shop</a></div>
+        <p class="muted" style="margin-top:12px">Saytoukat Géej ou membre du CA ? Demande à l'administrateur d'ajouter ton adresse Google.</p></div>`;
       return;
     }
     el.innerHTML = `
@@ -125,7 +129,7 @@
     if (has("membres")) jobs.push(guard("membres", Promise.all([load("saytoukat", interactive), load("members", interactive)]).then(([say, mem]) => {
       const nSay = say ? Math.max(0, say.slice(1).filter((r) => tidy(r[0])).length) : 0;
       const nMem = mem ? Math.max(0, mem.slice(1).filter((r) => tidy(r[0])).length) : 0;
-      setKpi("membres", nf.format(C.admins.length + nSay + nMem), `${C.admins.length} admins · ${nSay} Saytoukat${mem ? ` · ${nMem} adhérent·e·s` : ""}`);
+      setKpi("membres", nf.format(nMem || C.ca.length + nSay), `${(C.ca || []).length} membres du CA · ${nSay} Saytoukat${mem ? ` · ${nMem} adhérent·e·s` : ""}`);
     })));
     if (has("communication")) jobs.push(guard("communication", load("news").then((n) => {
       const recent = n.items.filter((a) => daysAgo(new Date(a.date)) <= 30);
@@ -201,7 +205,9 @@
   }
 
   function panelPrelevements(panel) {
-    subTabs(panel, "Prélèvements", [["new", "Nouveau prélèvement", prelevForm], ["suivi", "Suivi des prélèvements", prelevSuivi]], S.user.role === "admin" ? "suivi" : "new");
+    const tabs = [["new", "Nouveau prélèvement", prelevForm]];
+    if (S.user.role === "admin") tabs.push(["suivi", "Suivi des prélèvements", prelevSuivi]); // les Saytoukat déposent seulement
+    subTabs(panel, "Prélèvements", tabs, S.user.role === "admin" ? "suivi" : "new");
   }
 
   const chips = (name, opts, multi) => `<div class="chips" data-name="${name}">${opts.map((o) => `<label class="chip"><input type="${multi ? "checkbox" : "radio"}" name="${name}" value="${esc(o)}"><span>${esc(o)}</span></label>`).join("")}</div>`;
@@ -292,10 +298,10 @@
         body.innerHTML = "";
         toast(body, `<strong>Merci ! Prélèvement de ${esc(val("site") || "")} enregistré</strong> dans la feuille « Surfrider Prélèvements ».`);
         const again = document.createElement("div"); again.className = "form-actions";
-        again.innerHTML = `<button class="btn btn-blue" type="button">Saisir un autre prélèvement</button><button class="btn btn-outline" type="button">Voir le suivi</button>`;
+        again.innerHTML = `<button class="btn btn-blue" type="button">Saisir un autre prélèvement</button>${S.user.role === "admin" ? `<button class="btn btn-outline" type="button">Voir le suivi</button>` : ""}`;
         body.append(again);
         again.children[0].addEventListener("click", () => open("new"));
-        again.children[1].addEventListener("click", () => open("suivi"));
+        if (again.children[1]) again.children[1].addEventListener("click", () => open("suivi"));
       } catch (err) {
         btn.disabled = false;
         msg.className = "form-msg is-err";

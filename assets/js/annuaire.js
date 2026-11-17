@@ -1,87 +1,96 @@
-/* Page « Membres » (admins uniquement) : administrateurs, Saytoukat Géej, adhérent·e·s.
-   Les annuaires sont lus dans les Google Sheets avec le compte Google de l'admin
-   connecté : rien n'est stocké dans le site. Les colonnes sensibles (CNI, Wave)
-   ne sont jamais affichées. */
+/* Espace membres › Membres (admin et membres du CA)
+   Ordre : administrateur · membres du CA · Saytoukat Géej · adhérent·e·s.
+   Les rôles viennent de assets/js/config.js (admins, ca, saytoukat) ; les listes
+   Saytoukat et adhérent·e·s sont lues dans les Google Sheets avec le compte
+   Google de la personne connectée : rien n'est stocké dans le site.
+   Les colonnes sensibles (CNI, Wave, date de naissance…) ne sont jamais affichées. */
 (function () {
   const C = window.SF_CONFIG;
   const t = (s, v) => (window.T ? window.T(s, v) : s);
   const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
-  const HIDDEN = /cni|carte d'identit|wave|passeport|password|mot de passe/i;
-  const NAMES = {
-    "babacar@surfrider.sn": ["Babacar Thiaw", "Président"],
-    "claire@surfrider.sn": ["Claire Stragier", "Directrice générale"],
-    "paulele@surfrider.sn": ["Paulèle Cissé", "Trésorière"],
-    "adama@surfrider.sn": ["Adama Samba", "Secrétaire"],
-    "quentin@surfrider.sn": ["Quentin de Ravignan", "Responsable partenariats"],
-    "quentin.ravignan@gmail.com": ["Quentin de Ravignan", "Responsable partenariats"],
-    "marlene@surfrider.sn": ["Marlène Menoux", "Responsable projets"],
-    "contact@surfrider.sn": ["Surfrider Sénégal", "Compte de l'association"]
-  };
+  const HIDDEN = /cni|carte d'identit|wave|passeport|password|mot de passe|naissance/i;
   const tidy = (s) => String(s || "").trim().replace(/\s+/g, " ");
   const siteName = (s) => { s = tidy(s); return s ? s.charAt(0).toUpperCase() + s.slice(1).toLowerCase().replace(/ngor/, "Ngor") : "—"; };
-  let token = null;
+  const PEOPLE = C.people || {};
 
-  async function getToken() {
-    if (token) return token;
-    token = await SF_DATA.token(true);
-    return token;
+  const ROLES = {
+    admin: { label: "Administrateur", tag: "tag-admin", rights: "Voit et peut tout faire : prélèvements, membres, communication, finances, projets." },
+    ca: { label: "Membre du CA", tag: "tag-ca", rights: "Voit les parties Finances, Membres (adhérent·e·s) et Projets." },
+    saytoukat: { label: "Saytoukat Géej", tag: "tag-say", rights: "Peut déposer un prélèvement de qualité de l'eau." },
+    adherent: { label: "Adhérent·e", tag: "tag-adh", rights: "Accès au site public uniquement." },
+  };
+
+  /* Regroupe les adresses d'une même personne (ex. adresse pro + Gmail) */
+  function persons(emails) {
+    const by = new Map();
+    (emails || []).filter((e) => e && e !== "*").forEach((e) => {
+      const [name, fn] = PEOPLE[e.toLowerCase()] || ["", ""];
+      const key = name || e;
+      if (!by.has(key)) by.set(key, { name, fn, emails: [] });
+      by.get(key).emails.push(e);
+    });
+    return [...by.values()];
   }
+  const initials = (n) => (n || "?").split(/\s+/).filter(Boolean).slice(0, 2).map((w) => w[0]).join("").toUpperCase();
+  const personCard = (p, role) => `
+    <article class="person-card">
+      <span class="person-ini" aria-hidden="true">${esc(initials(p.name || p.emails[0]))}</span>
+      <div><strong>${esc(p.name || p.emails[0])}</strong>${p.fn ? `<small>${esc(t(p.fn))}</small>` : ""}
+        <span class="person-mails">${p.emails.map((e) => `<a href="mailto:${esc(e)}">${esc(e)}</a>`).join(" · ")}</span></div>
+      <span class="tag ${ROLES[role].tag}">${ROLES[role].label}</span>
+    </article>`;
 
-  function adminsPanel(el) {
-    const rows = C.admins.map((e) => [e, ...(NAMES[e.toLowerCase()] || ["", ""])]);
-    const say = (C.saytoukat || []);
-    el.innerHTML = `
-      <div class="kpis">
-        <div class="kpi"><span>${t("Administrateur·rice·s")}</span><strong>${C.admins.length}</strong></div>
-        <div class="kpi"><span>${t("Comptes Saytoukat autorisés")}</span><strong>${say.includes("*") ? t("Tous") : say.length}</strong></div>
-      </div>
-      <div class="table-scroll"><table class="data-table">
-        <thead><tr><th>${t("Nom")}</th><th>${t("Rôle")}</th><th>${t("Email")}</th><th>${t("Accès")}</th></tr></thead>
-        <tbody>${rows.map(([e, n, r]) => `<tr><td>${esc(n || "—")}</td><td>${esc(r ? t(r) : "")}</td><td><a href="mailto:${esc(e)}">${esc(e)}</a></td><td><span class="tag tag-live">Admin</span></td></tr>`).join("")}
-        ${say.filter((e) => e !== "*").map((e) => `<tr><td>—</td><td>Saytoukat Géej</td><td><a href="mailto:${esc(e)}">${esc(e)}</a></td><td><span class="tag">Saytoukat</span></td></tr>`).join("")}</tbody>
-      </table></div>
-      <p class="notice notice-blue" style="margin-top:16px">${t("Pour donner ou retirer un accès, modifier les listes <code>admins</code> et <code>saytoukat</code> dans <code>assets/js/config.js</code>. Penser aussi à partager les Google Sheets concernées avec la personne (éditeur pour saisir des prélèvements ou des demandes).")}</p>`;
+  function section(role, title, count, body) {
+    return `<section class="role-sec role-${role}">
+      <div class="role-head"><h3>${title}${count != null ? ` <span class="count">${count}</span>` : ""}</h3><p>${ROLES[role].rights}</p></div>
+      ${body}
+    </section>`;
   }
 
   async function sheetPanel(el, sheetId, tab, kind) {
     if (!sheetId) {
-      el.innerHTML = `<div class="card"><h3>${t("Liste des adhérent·e·s")}</h3><p>${t("Aucune liste d'adhérent·e·s n'est encore reliée. Créer une Google Sheet avec un onglet « Membres » (colonnes : Nom, Email, Téléphone, Date d'adhésion, Cotisation…), puis renseigner son identifiant dans <code>membersSheetId</code> (assets/js/config.js).")}</p></div>`;
+      el.innerHTML = `<p class="muted">${t("Aucune liste reliée.")}</p>`;
       return;
     }
-    if (!C.googleClientId) { el.innerHTML = `<p class="notice">${t("La connexion Google doit être configurée pour lire les annuaires.")}</p>`; return; }
     if (!(await SF_DATA.token(false))) {
-      el.innerHTML = `<div class="card" style="text-align:center"><p>${t("Autorise la lecture de la feuille pour afficher l'annuaire.")}</p><button class="btn btn-blue" type="button">${t("Charger les données")}</button></div>`;
+      el.innerHTML = `<div class="card" style="text-align:center"><p>${t("Autorise la lecture de la feuille pour afficher la liste.")}</p><button class="btn btn-blue" type="button">${t("Charger les données")}</button></div>`;
       await new Promise((r) => el.querySelector("button").addEventListener("click", r, { once: true }));
     }
     el.innerHTML = `<p>${t("Chargement…")}</p>`;
     let rows;
-    try { rows = await SF_AUTH.readSheet(await getToken(), sheetId, `'${tab}'`); }
-    catch (e) { token = null; el.innerHTML = `<p class="notice">${t("Impossible de lire la feuille : {err}", { err: esc(e.message || e.error || e) })}</p>`; return; }
+    try { rows = await SF_DATA.read(sheetId, tab); }
+    catch (e) { el.innerHTML = `<p class="notice">${t("Impossible de lire la feuille : {err}", { err: esc(e.message || e) })}</p>`; return; }
     if (!rows || rows.length < 2) { el.innerHTML = `<p class="notice">${t("L'onglet est vide.")}</p>`; return; }
 
     const head = rows[0].map(tidy);
-    const keep = head.map((h, i) => (h && !HIDDEN.test(h) ? i : -1)).filter((i) => i >= 0);
-    const data = rows.slice(1).filter((r) => tidy(r[0]));
+    // adhésions (formulaire) : seulement l'essentiel ; Saytoukat : toutes les colonnes non sensibles
+    const ADH = /horodateur|e-?mail|pr[ée]nom|^nom|t[ée]l[ée]phone|p[ôo]le/i;
+    const keep = head.map((h, i) => (h && !HIDDEN.test(h) && (kind !== "adherent" || ADH.test(h)) ? i : -1)).filter((i) => i >= 0);
+    const label = (h) => (kind === "adherent" && /horodateur/i.test(h) ? "Adhésion le" : kind === "adherent" && /p[ôo]le/i.test(h) ? "Pôle souhaité" : h.replace(/\s*\(.*$/, "").replace(/\s*:\s*$/, ""));
+    let data = rows.slice(1).filter((r) => r.some((v) => tidy(v)));
+    const cTs = head.findIndex((h) => /horodateur/i.test(h));
+    if (cTs >= 0) { // adhésions les plus récentes d'abord
+      const d = (s) => { const m = tidy(s).match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/); return m ? new Date(+m[3], m[2] - 1, +m[1]).getTime() : 0; };
+      data = data.sort((a, b) => d(b[cTs]) - d(a[cTs]));
+    }
     const cSite = head.findIndex((h) => /^site/i.test(h));
     const isPhone = (h) => /whatsapp|t[ée]l[ée]phone|num[ée]ro sn|portable/i.test(h);
+    const isMail = (h) => /e-?mail/i.test(h);
     const bySite = {};
     if (cSite >= 0) data.forEach((r) => { const s = siteName(r[cSite]); bySite[s] = (bySite[s] || 0) + 1; });
 
     el.innerHTML = `
-      <div class="kpis">
-        <div class="kpi"><span>${kind === "saytoukat" ? "Saytoukat Géej" : t("Adhérent·e·s")}</span><strong>${data.length}</strong></div>
-        ${Object.entries(bySite).sort((a, b) => b[1] - a[1]).slice(0, 3).map(([s, n]) => `<div class="kpi"><span>${esc(s)}</span><strong>${n}</strong></div>`).join("")}
-      </div>
       <div class="controls">
-        <input type="search" placeholder="${t("Rechercher un nom, un site…")}" aria-label="${t("Rechercher")}" style="font:inherit;padding:10px 14px;border-radius:12px;border:2px solid var(--line);min-width:min(320px,100%)">
+        <input type="search" placeholder="${t("Rechercher un nom, un site…")}" aria-label="${t("Rechercher")}">
         ${cSite >= 0 ? `<select aria-label="Site"><option value="">${t("Tous les sites")}</option>${Object.keys(bySite).sort().map((s) => `<option>${esc(s)}</option>`).join("")}</select>` : ""}
         <span class="tag" data-count></span>
+        <a class="btn btn-outline btn-sm" href="https://docs.google.com/spreadsheets/d/${sheetId}/edit" target="_blank" rel="noopener">${t("Ouvrir la feuille ↗")}</a>
       </div>
       <div class="table-scroll"><table class="data-table">
-        <thead><tr>${keep.map((i) => `<th>${esc(head[i])}</th>`).join("")}</tr></thead>
+        <thead><tr>${keep.map((i) => `<th>${esc(label(head[i]))}</th>`).join("")}</tr></thead>
         <tbody></tbody>
-      </table></div>
-      <p style="font-size:.9rem;color:var(--muted);margin-top:8px">${t("Données personnelles : usage interne à l'association uniquement. Les colonnes CNI et Wave sont masquées.")}</p>`;
+      </table></div>`;
+    el.closest(".role-sec").querySelector(".count").textContent = data.length;
 
     const tbody = el.querySelector("tbody"), q = el.querySelector("input"), sel = el.querySelector("select");
     function draw() {
@@ -95,36 +104,31 @@
           const intl = digits.startsWith("00") ? digits.slice(2) : digits.length === 9 ? "221" + digits : digits;
           return `<td><a href="https://wa.me/${intl}" target="_blank" rel="noopener">${esc(v)}</a></td>`;
         }
+        if (v && isMail(head[i])) return `<td><a href="mailto:${esc(v)}">${esc(v)}</a></td>`;
+        if (kind === "adherent" && i === cTs) return `<td>${esc(v.slice(0, 10))}</td>`;
         return `<td>${esc(i === cSite ? siteName(v) : v)}</td>`;
-      }).join("")}</tr>`).join("");
+      }).join("")}</tr>`).join("") || `<tr><td colspan="${keep.length}">${t("Aucun résultat.")}</td></tr>`;
     }
     q.addEventListener("input", draw); if (sel) sel.addEventListener("change", draw);
     draw();
   }
 
-  /* Monte l'annuaire (onglets Admins / Saytoukat / Adhérent·e·s) dans un élément */
+  /* Monte la partie Membres dans un élément */
   function mount(el) {
-        el.innerHTML = `
-          <div class="tabs" role="tablist">
-            <button role="tab" aria-selected="true" data-tab="admins">Admins</button>
-            <button role="tab" aria-selected="false" data-tab="saytoukat">Saytoukat Géej</button>
-            <button role="tab" aria-selected="false" data-tab="membres">Adhérent·e·s</button>
-          </div>
-          <div data-panel="admins"></div>
-          <div data-panel="saytoukat" hidden></div>
-          <div data-panel="membres" hidden></div>`;
-        const loaded = {};
-        const open = (k) => {
-          el.querySelectorAll("[data-tab]").forEach((x) => x.setAttribute("aria-selected", x.dataset.tab === k));
-          el.querySelectorAll("[data-panel]").forEach((p) => (p.hidden = p.dataset.panel !== k));
-          if (loaded[k]) return; loaded[k] = true;
-          const p = el.querySelector(`[data-panel="${k}"]`);
-          if (k === "admins") adminsPanel(p);
-          if (k === "saytoukat") sheetPanel(p, C.saytoukatSheetId, C.saytoukatTab, "saytoukat");
-          if (k === "membres") sheetPanel(p, C.membersSheetId, C.membersTab, "membres");
-        };
-        el.querySelectorAll("[data-tab]").forEach((b) => b.addEventListener("click", () => open(b.dataset.tab)));
-        open("saytoukat");
+    const admins = persons(C.admins), ca = persons(C.ca);
+    const sayAccounts = (C.saytoukat || []).filter((e) => e !== "*");
+    el.innerHTML = `
+      ${section("admin", "Administrateur", null, `<div class="people">${admins.map((p) => personCard(p, "admin")).join("")}</div>`)}
+      ${section("ca", "Membres du CA", ca.length, `<div class="people">${ca.map((p) => personCard(p, "ca")).join("")}</div>`)}
+      ${section("saytoukat", "Saytoukat Géej", "…", `
+        <p class="muted small-print">${sayAccounts.length
+          ? t("Comptes Google autorisés à déposer : {list}", { list: sayAccounts.map(esc).join(", ") })
+          : t("Aucun compte Google Saytoukat n'est encore autorisé : ajouter leurs adresses dans <code>saytoukat</code> (assets/js/config.js).")}</p>
+        <div data-list="saytoukat"></div>`)}
+      ${section("adherent", "Adhérent·e·s", "…", `<div data-list="adherent"></div>`)}
+      <p class="notice notice-blue" style="margin-top:20px">${t("Pour changer le rôle de quelqu'un : listes <code>admins</code>, <code>ca</code> et <code>saytoukat</code> dans <code>assets/js/config.js</code> (tout autre compte connecté est adhérent·e). Penser aussi à partager les Google Sheets concernées avec la personne.")}</p>`;
+    sheetPanel(el.querySelector('[data-list="saytoukat"]'), C.saytoukatSheetId, C.saytoukatTab, "saytoukat");
+    sheetPanel(el.querySelector('[data-list="adherent"]'), C.membersSheetId, C.membersTab, "adherent");
   }
   window.SF_ANNUAIRE = { mount };
 })();

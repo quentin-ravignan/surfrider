@@ -486,3 +486,28 @@ p { margin: 0 0 1em; }
 .partner small { display: block; }
 .partner .go { color: var(--header-blue); font-weight: 600; margin-top: 2px; }
 .progress.is-over span { background: #E31B23; }
+
+/* Espace membres › Membres : rôles */
+.role-sec { margin-bottom: 30px; }
+.role-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 16px; margin-bottom: 12px; padding-left: 12px; border-left: 5px solid var(--line); }
+.role-head h3 { margin: 0; }
+.role-head p { margin: 0; color: var(--muted); }
+.role-head .count { display: inline-block; min-width: 28px; padding: 1px 8px; margin-left: 6px; border-radius: 999px; background: var(--sand-2); font-size: .9rem; text-align: center; vertical-align: 3px; }
+.role-admin .role-head { border-left-color: #0273BE; }
+.role-ca .role-head { border-left-color: #0B7A47; }
+.role-saytoukat .role-head { border-left-color: #C2410C; }
+.role-adherent .role-head { border-left-color: #6D28D9; }
+.people { display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
+.person-card { display: grid; grid-template-columns: auto 1fr; gap: 4px 12px; align-items: center; background: var(--white); border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px; box-shadow: var(--shadow); }
+.person-card > div { min-width: 0; }
+.person-card strong { display: block; }
+.person-card small { display: block; color: var(--muted); }
+.person-mails { display: block; font-size: .88rem; overflow-wrap: anywhere; margin-top: 2px; }
+.person-card .tag { grid-column: 2; justify-self: start; }
+.person-ini { grid-row: span 2; width: 46px; height: 46px; border-radius: 50%; display: grid; place-items: center; background: var(--header-blue); color: #fff; font-family: var(--font-display); font-weight: 800; }
+.role-ca .person-ini { background: #0B7A47; }
+.tag-admin { background: #E7F2FB; color: #0273BE; }
+.tag-ca { background: #E8F6EE; color: #0B6B36; }
+.tag-say { background: #FFF1E6; color: #C2410C; }
+.tag-adh { background: #F1EBFE; color: #6D28D9; }
+.adherent-card { max-width: 720px; }

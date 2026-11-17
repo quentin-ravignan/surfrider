@@ -43,23 +43,38 @@ window.SF_CONFIG = {
      3. Coller l'ID ci-dessous. */
   googleClientId: "835654071271-9ol5lii5u1gkhtsnfr22dso679jtr6uf.apps.googleusercontent.com",
 
-  /* Administrateurs : accès aux pages Finances et Projets (gestion) */
+  /* ---- Rôles de l'espace membres (adresse du compte Google) -------------
+     • admins    : tout voir, tout faire
+     • ca        : membres du Conseil d'administration → Finances, Membres (adhérent·e·s), Projets
+     • saytoukat : Saytoukat Géej → dépôt d'un prélèvement
+     • tout autre compte connecté = adhérent·e → seulement le site public
+     Le rôle est recalculé à chaque visite : une modification ici s'applique
+     dès la publication. Penser aussi à partager les Google Sheets concernées
+     (éditeur) avec les personnes. */
   admins: [
+    "quentin@surfrider.sn",
+    "quentin.ravignan@gmail.com",
+    "contact@surfrider.sn"            // compte de l'association (propriétaire des feuilles et du script Wave)
+  ],
+  ca: [
     "babacar@surfrider.sn",
     "claire@surfrider.sn",
     "paulele@surfrider.sn",
-    "quentin@surfrider.sn",
-    "marlene@surfrider.sn",
     "adama@surfrider.sn",
-    "contact@surfrider.sn",
-    "quentin.ravignan@gmail.com"
+    "marlene@surfrider.sn"
   ],
-
-  /* Saytoukat Géej : accès à la page Prélèvements.
-     Ajouter ici les adresses Gmail des gardien·ne·s de la mer.
-     Les administrateurs y ont aussi accès. Pour ouvrir à tout compte
-     connecté, mettre ["*"]. */
   saytoukat: [],
+  /* Noms et fonctions affichés dans la partie Membres */
+  people: {
+    "quentin@surfrider.sn": ["Quentin de Ravignan", "Responsable partenariats"],
+    "quentin.ravignan@gmail.com": ["Quentin de Ravignan", "Responsable partenariats"],
+    "contact@surfrider.sn": ["Surfrider Foundation Sénégal", "Compte de l'association"],
+    "babacar@surfrider.sn": ["Babacar Thiaw", "Président"],
+    "claire@surfrider.sn": ["Claire Stragier", "Directrice générale"],
+    "paulele@surfrider.sn": ["Paulèle Cissé", "Trésorière"],
+    "adama@surfrider.sn": ["Adama Samba", "Secrétaire"],
+    "marlene@surfrider.sn": ["Marlène Menoux", "Responsable projets"]
+  },
 
   /* ---- Applications AppSheet ------------------------------------------- */
   appsheet: {
@@ -90,6 +105,6 @@ window.SF_CONFIG = {
   /* Liste des adhérent·e·s de l'association (Google Sheet avec une ligne
      d'en-tête : Nom, Email, Téléphone, Date d'adhésion…). Laisser vide si
      elle n'existe pas encore. */
-  membersSheetId: "",
-  membersTab: "Membres"
+  membersSheetId: "1qj5tL9HSJdLF490mYYIY3NKdlxZKndmnsRUPiunpR64", // « App Surfrider Foundation - BDD »
+  membersTab: "Adhésions"
 };
