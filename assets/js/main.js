@@ -36,11 +36,10 @@
       Object.keys(I.LANGS).map((l) => `<button type="button" lang="${l}" data-lang="${l}" aria-pressed="${l === I.lang}" title="${I.NAMES[l]}">${I.LANGS[l]}</button>`).join("")
     }</div></li>` : "";
     header.outerHTML = `
-      <div class="flag-bar" aria-hidden="true"></div>
       <header class="site-header">
         <nav class="container nav" aria-label="Navigation principale">
           <a class="brand" href="index.html" aria-label="Surfrider Foundation Sénégal — accueil">
-            <img src="assets/img/logo-horizontal-bleu.png" alt="Surfrider Foundation Sénégal" width="119" height="46">
+            <img src="assets/img/logo-horizontal-blanc.png" alt="Surfrider Foundation Sénégal" width="119" height="46">
           </a>
           <button class="nav-toggle" aria-expanded="false" aria-controls="nav-links" aria-label="Ouvrir le menu">${ICONS.menu}</button>
           <ul class="nav-links" id="nav-links">${links}${langSwitch}</ul>
