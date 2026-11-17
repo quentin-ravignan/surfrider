@@ -23,7 +23,7 @@
 
   async function getToken() {
     if (token) return token;
-    token = await SF_AUTH.sheetsToken(SF_AUTH.getUser()?.email);
+    token = await SF_DATA.token(true);
     return token;
   }
 
@@ -40,7 +40,7 @@
         <tbody>${rows.map(([e, n, r]) => `<tr><td>${esc(n || "—")}</td><td>${esc(r ? t(r) : "")}</td><td><a href="mailto:${esc(e)}">${esc(e)}</a></td><td><span class="tag tag-live">Admin</span></td></tr>`).join("")}
         ${say.filter((e) => e !== "*").map((e) => `<tr><td>—</td><td>Saytoukat Géej</td><td><a href="mailto:${esc(e)}">${esc(e)}</a></td><td><span class="tag">Saytoukat</span></td></tr>`).join("")}</tbody>
       </table></div>
-      <p class="notice notice-blue" style="margin-top:16px">${t("Pour donner ou retirer un accès, modifier les listes <code>admins</code> et <code>saytoukat</code> dans <code>assets/js/config.js</code>. Penser aussi à partager l'application AppSheet correspondante avec la personne.")}</p>`;
+      <p class="notice notice-blue" style="margin-top:16px">${t("Pour donner ou retirer un accès, modifier les listes <code>admins</code> et <code>saytoukat</code> dans <code>assets/js/config.js</code>. Penser aussi à partager les Google Sheets concernées avec la personne (éditeur pour saisir des prélèvements ou des demandes).")}</p>`;
   }
 
   async function sheetPanel(el, sheetId, tab, kind) {
@@ -49,8 +49,10 @@
       return;
     }
     if (!C.googleClientId) { el.innerHTML = `<p class="notice">${t("La connexion Google doit être configurée pour lire les annuaires.")}</p>`; return; }
-    el.innerHTML = `<div class="card" style="text-align:center"><p>${t("Autorise la lecture de la feuille pour afficher l'annuaire.")}</p><button class="btn btn-blue" type="button">${t("Charger les données")}</button></div>`;
-    await new Promise((r) => el.querySelector("button").addEventListener("click", r, { once: true }));
+    if (!(await SF_DATA.token(false))) {
+      el.innerHTML = `<div class="card" style="text-align:center"><p>${t("Autorise la lecture de la feuille pour afficher l'annuaire.")}</p><button class="btn btn-blue" type="button">${t("Charger les données")}</button></div>`;
+      await new Promise((r) => el.querySelector("button").addEventListener("click", r, { once: true }));
+    }
     el.innerHTML = `<p>${t("Chargement…")}</p>`;
     let rows;
     try { rows = await SF_AUTH.readSheet(await getToken(), sheetId, `'${tab}'`); }
@@ -100,10 +102,8 @@
     draw();
   }
 
-  document.addEventListener("DOMContentLoaded", () => {
-    SF_AUTH.guard({
-      need: "admin", root: "#app", title: t("Accès administrateurs"),
-      render: (el) => {
+  /* Monte l'annuaire (onglets Admins / Saytoukat / Adhérent·e·s) dans un élément */
+  function mount(el) {
         el.innerHTML = `
           <div class="tabs" role="tablist">
             <button role="tab" aria-selected="true" data-tab="admins">Admins</button>
@@ -124,8 +124,7 @@
           if (k === "membres") sheetPanel(p, C.membersSheetId, C.membersTab, "membres");
         };
         el.querySelectorAll("[data-tab]").forEach((b) => b.addEventListener("click", () => open(b.dataset.tab)));
-        open("admins");
-      }
-    });
-  });
+        open("saytoukat");
+  }
+  window.SF_ANNUAIRE = { mount };
 })();

@@ -67,10 +67,12 @@ window.SF_CONFIG = {
       "https://www.appsheet.com/start/4cde05a3-3a38-416e-87f9-9d2f474f0912#appName=SurfriderFoundation-5302107&group=%5B%5D&page=deck&sort=%5B%5D&table=Projets&view=Projets"
   },
 
-  /* Tableau de bord financier : ID de la Google Sheet qui alimente l'app
-     AppSheet « SurfriderFoundation » (onglet Décaissements).
-     Les données sont lues avec le compte Google de l'admin connecté :
-     elles ne sont jamais publiques. Laisser vide pour masquer le tableau. */
+  /* Finances (espace membres) : ID de la Google Sheet des décaissements
+     (celle qui alimentait l'app AppSheet « SurfriderFoundation », onglets
+     Décaissements et Projets). Le site y lit le suivi et y ajoute les
+     demandes avec le compte Google de l'admin connecté (éditeur requis).
+     Tant que ce champ est vide, chaque admin peut coller le lien de la
+     feuille dans la partie Finances (retenu sur son appareil). */
   financeSheetId: "",
   financeSheetTab: "Décaissements",
   projectsSheetTab: "Projets",
