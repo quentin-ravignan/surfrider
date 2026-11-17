@@ -96,6 +96,23 @@
       method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ values: [[value]] })
     });
   }
+  /* Remplace une ligne entière (à partir de la colonne A) */
+  function setRow(sheetId, tab, row, values) {
+    return api(`${SHEETS}${sheetId}/values/${encodeURIComponent(q(tab) + "!A" + row)}?valueInputOption=USER_ENTERED`, {
+      method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ values: [values] })
+    });
+  }
+  /* Crée l'onglet s'il n'existe pas, avec sa ligne d'en-tête */
+  async function ensureTab(sheetId, title, headers) {
+    const info = await tabs(sheetId);
+    if (info.tabs.includes(title)) return false;
+    await api(`${SHEETS}${sheetId}:batchUpdate`, {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ requests: [{ addSheet: { properties: { title, gridProperties: { frozenRowCount: 1 } } } }] })
+    });
+    await setRow(sheetId, title, 1, headers);
+    return true;
+  }
   function colName(n) { let s = ""; while (n > 0) { const m = (n - 1) % 26; s = String.fromCharCode(65 + m) + s; n = Math.floor((n - 1) / 26); } return s; }
 
   /* Photo → Google Drive (dossier créé par le site), renvoie le lien */
@@ -141,5 +158,5 @@
   }
   function setFinanceSheet(v) { try { localStorage.setItem("sf-finance-sheet", sheetIdFrom(v)); } catch (e) {} }
 
-  window.SF_DATA = { token, forget, read, tabs, append, setCell, uploadPhoto, sheetIdFrom, financeSheet, setFinanceSheet, colName };
+  window.SF_DATA = { token, forget, read, tabs, append, setCell, setRow, ensureTab, uploadPhoto, sheetIdFrom, financeSheet, setFinanceSheet, colName };
 })();

@@ -42,6 +42,7 @@
     finances: '<svg viewBox="0 0 24 24"><rect x="2.5" y="6" width="19" height="13" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M2.5 10h19" stroke="currentColor" stroke-width="2"/><circle cx="16.5" cy="14.5" r="1.6" fill="currentColor"/></svg>',
     projets: '<svg viewBox="0 0 24 24"><path d="M4 20V5h10l-1.5 3.5L14 12H6" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M4 20h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>',
   };
+  ICON.recherche = '<svg viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M15.5 15.5 21 21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M7.5 10.5h6M10.5 7.5v6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
   const MODULES = [
     // admin : tout · ca (membres du CA) : Finances, Membres, Projets · saytoukat : dépôt d'un prélèvement · adherent : rien
     { id: "prelevements", title: "Prélèvements", roles: ["admin", "saytoukat"] },
@@ -49,6 +50,7 @@
     { id: "communication", title: "Communication", roles: ["admin"] },
     { id: "finances", title: "Finances", roles: ["admin", "ca"] },
     { id: "projets", title: "Projets", roles: ["admin", "ca"] },
+    { id: "recherche", title: "Recherche de projets", roles: ["admin", "ca"] },
   ];
 
   const S = { user: null, data: {}, el: null, current: null };
@@ -144,6 +146,7 @@
     if (has("projets")) jobs.push(guard("projets", projectsModel(interactive).then((p) => {
       setKpi("projets", String(p.live.length), `en cours · ${p.done.length} réalisés${p.avg != null ? ` · avancement moyen ${p.avg} %` : ""}`);
     })));
+    if (has("recherche") && window.SF_RECHERCHE) jobs.push(guard("recherche", SF_RECHERCHE.kpi(interactive).then((k) => setKpi("recherche", String(k.n), k.sub))));
     await Promise.all(jobs);
     S.el.querySelector(".dash-auth").hidden = !needAuth;
   }
@@ -156,7 +159,7 @@
     const panel = S.el.querySelector(".dash-panel");
     panel.className = "dash-panel dash-panel-" + id;
     panel.innerHTML = `<p class="muted">Chargement…</p>`;
-    const run = { prelevements: panelPrelevements, membres: panelMembres, communication: panelCommunication, finances: panelFinances, projets: panelProjets }[id];
+    const run = { prelevements: panelPrelevements, membres: panelMembres, communication: panelCommunication, finances: panelFinances, projets: panelProjets, recherche: (p) => SF_RECHERCHE.mount(p, S.user, subTabs) }[id];
     Promise.resolve(run(panel)).catch((e) => {
       panel.innerHTML = e.code === "auth"
         ? `<div class="notice">Autorise l'accès Google (bouton au-dessus) pour afficher cette partie.</div>`
