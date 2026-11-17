@@ -33,7 +33,7 @@ window.SF_CONFIG = {
      script Google Apps Script qui garde la clé API Wave et enregistre les
      commandes. Installation : voir wave/README.md. Prioritaire sur
      waveMerchantLink une fois renseigné. */
-  waveCheckoutUrl: "",
+  waveCheckoutUrl: "https://script.google.com/macros/s/AKfycbxW-uZzbtDc3GGdUE2ZWnAcfnUnHezOUlFW2oDfaNpezqz1OZtI2-RTPBzoDmS4hJQF/exec",
 
   /* ---- Espace membres (connexion Google) --------------------------------
      1. Créer un « ID client OAuth » (type Application Web) sur
