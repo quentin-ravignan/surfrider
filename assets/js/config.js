@@ -13,11 +13,26 @@ window.SF_CONFIG = {
   facebook: "https://www.facebook.com/surfridersenegal",
   linkedin: "https://www.linkedin.com/company/surfrider-foundation-senegal",
 
-  /* ---- Qualité de l'eau (Google Sheet « Surfrider Prélèvements ») -------
-     La feuille doit être partagée « Tous les utilisateurs disposant du lien »
-     en lecture pour que la carte se mette à jour automatiquement.
-     Sinon, le site utilise l'instantané data/water-quality.json. */
-  waterSheetId: "1Xlvqgqq6q4tiKu8tO3GrhI3ddBcH2ToRTxeHRWHADWM",
+  /* ---- Données du site : Google Sheet « Site Web 2.0 Data » ------------
+     Toutes les données de l'espace membres sont lues et écrites ici :
+     prélèvements, Saytoukat, décaissements, projets, adhésions, soldes des
+     comptes, recherche de financements, communauté. Elle contient des
+     données personnelles et financières : ne JAMAIS la partager
+     publiquement. La partager (éditeur) avec les admins, le CA et les
+     Saytoukat. Les anciennes feuilles (« Surfrider Prélèvements » et
+     « App Surfrider Foundation - BDD ») restent en archive pour AppSheet. */
+  dataSheetId: "1QVJnesri0SoOlpadunoAcIrQlIbCc80jMRdFEWUBaGg",
+
+  /* ---- Qualité de l'eau : carte publique ------------------------------
+     La carte lit l'onglet « Synthèse ». Comme la feuille de données n'est
+     pas publique, on publie SEULEMENT cet onglet : dans la feuille,
+     Fichier > Partager > Publier sur le Web > onglet « Synthèse » > CSV,
+     puis coller le lien ci-dessous (https://docs.google.com/…/pub?…output=csv).
+     Tant que ce lien est vide, la carte lit l'ancienne feuille publique
+     « Surfrider Prélèvements » (waterSheetId), puis l'instantané
+     data/water-quality.json. */
+  waterPublicCsv: "",
+  waterSheetId: "1Xlvqgqq6q4tiKu8tO3GrhI3ddBcH2ToRTxeHRWHADWM", // ancienne feuille publique (archive)
   waterSheetTab: "Synthèse",
   waterSheetRange: "A2:FM11",
 
@@ -94,17 +109,17 @@ window.SF_CONFIG = {
      demandes avec le compte Google de l'admin connecté (éditeur requis).
      Tant que ce champ est vide, chaque admin peut coller le lien de la
      feuille dans la partie Finances (retenu sur son appareil). */
-  financeSheetId: "1qj5tL9HSJdLF490mYYIY3NKdlxZKndmnsRUPiunpR64", // « App Surfrider Foundation - BDD »
+  financeSheetId: "1QVJnesri0SoOlpadunoAcIrQlIbCc80jMRdFEWUBaGg", // « Site Web 2.0 Data »
   financeSheetTab: "Décaissements",
   projectsSheetTab: "Projets",
 
   /* Page « Membres » (admins) : annuaires lus avec le compte Google connecté.
      Les colonnes sensibles (CNI, numéro Wave) ne sont jamais affichées. */
-  saytoukatSheetId: "1Xlvqgqq6q4tiKu8tO3GrhI3ddBcH2ToRTxeHRWHADWM",
+  saytoukatSheetId: "1QVJnesri0SoOlpadunoAcIrQlIbCc80jMRdFEWUBaGg", // « Site Web 2.0 Data »
   saytoukatTab: "Saytoukat",
   /* Liste des adhérent·e·s de l'association (Google Sheet avec une ligne
      d'en-tête : Nom, Email, Téléphone, Date d'adhésion…). Laisser vide si
      elle n'existe pas encore. */
-  membersSheetId: "1qj5tL9HSJdLF490mYYIY3NKdlxZKndmnsRUPiunpR64", // « App Surfrider Foundation - BDD »
+  membersSheetId: "1QVJnesri0SoOlpadunoAcIrQlIbCc80jMRdFEWUBaGg", // « Site Web 2.0 Data »
   membersTab: "Adhésions"
 };

@@ -59,7 +59,7 @@
 
   /* ---------------- Chargement des données (avec cache) ---------------- */
   const loaders = {
-    async prelevements(i) { return D.read(C.waterSheetId, "Prélèvements", "", i); },
+    async prelevements(i) { return D.read((C.dataSheetId || C.waterSheetId), "Prélèvements", "", i); },
     async saytoukat(i) { return D.read(C.saytoukatSheetId, C.saytoukatTab, "", i); },
     async members(i) { return C.membersSheetId ? D.read(C.membersSheetId, C.membersTab, "", i) : null; },
     async news() { const r = await fetch("data/news.json?t=" + Math.floor(Date.now() / 36e5)); if (!r.ok) throw new Error("Revue de presse indisponible"); return r.json(); },
@@ -299,7 +299,7 @@
         const ORDER = Object.keys(set);
         ORDER.forEach((k, i) => { if (!label(head[i] || "") && !row[i]) row[i] = set[k]; });
         while (row.length < ORDER.length) row.push(set[ORDER[row.length]]);
-        await D.append(C.waterSheetId, "Prélèvements", row);
+        await D.append((C.dataSheetId || C.waterSheetId), "Prélèvements", row);
         load("prelevements", true, true); refreshKpis(false);
         body.innerHTML = "";
         toast(body, `<strong>Merci ! Prélèvement de ${esc(val("site") || "")} enregistré</strong> dans la feuille « Surfrider Prélèvements ».`);
@@ -337,7 +337,7 @@
         <select data-f="site" aria-label="Site"><option value="">Tous les sites</option>${Object.keys(bySite).sort().map((s) => `<option>${esc(s)}</option>`).join("")}</select>
         <select data-f="year" aria-label="Année"><option value="">Toutes les années</option>${years.map((y) => `<option>${y}</option>`).join("")}</select>
         <span class="tag" data-count></span>
-        <a class="btn btn-outline btn-sm" href="https://docs.google.com/spreadsheets/d/${C.waterSheetId}/edit" target="_blank" rel="noopener">Ouvrir la feuille ↗</a>
+        <a class="btn btn-outline btn-sm" href="https://docs.google.com/spreadsheets/d/${(C.dataSheetId || C.waterSheetId)}/edit" target="_blank" rel="noopener">Ouvrir la feuille ↗</a>
       </div>
       <div class="table-scroll"><table class="data-table">
         <thead><tr><th>Date</th><th>Site</th><th>Watertester</th><th>Marée</th><th>Couleur</th><th>Odeur</th><th>Déchets eau</th><th>Photos</th><th>Commentaire</th></tr></thead>

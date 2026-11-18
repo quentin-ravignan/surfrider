@@ -65,11 +65,22 @@
   async function load() {
     const status = document.getElementById("data-status");
     try {
-      const url = `https://docs.google.com/spreadsheets/d/${C.waterSheetId}/gviz/tq?tqx=out:csv&headers=0&sheet=${encodeURIComponent(C.waterSheetTab)}&range=${C.waterSheetRange}`;
-      const res = await fetch(url, { cache: "no-store" });
-      if (!res.ok) throw new Error(res.status);
-      const sites = fromSheet(parseCSV(await res.text()));
-      if (!sites.length || !sites.some((s) => s.samples.length)) throw new Error("vide");
+      /* 1. onglet « Synthèse » publié sur le Web (feuille de données privée),
+         2. ancienne feuille publique, 3. instantané JSON (plus bas) */
+      const gviz = `https://docs.google.com/spreadsheets/d/${C.waterSheetId}/gviz/tq?tqx=out:csv&headers=0&sheet=${encodeURIComponent(C.waterSheetTab)}&range=${C.waterSheetRange}`;
+      let sites = null;
+      for (const [url, published] of [[C.waterPublicCsv, true], [gviz, false]]) {
+        if (!url) continue;
+        try {
+          const res = await fetch(url, { cache: "no-store" });
+          if (!res.ok) throw new Error(res.status);
+          let rows = parseCSV(await res.text());
+          if (published) rows = rows.slice(1, 11); // l'onglet entier est publié : même plage que A2:…11
+          const got = fromSheet(rows);
+          if (got.length && got.some((s) => s.samples.length)) { sites = got; break; }
+        } catch (err) { /* source suivante */ }
+      }
+      if (!sites) throw new Error("vide");
       status.textContent = t("Données en direct"); status.className = "tag tag-live";
       return sites;
     } catch (e) {
