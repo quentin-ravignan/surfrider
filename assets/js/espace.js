@@ -439,7 +439,7 @@
     let f = await load("finance", true);
     if (!f) f = await load("finance", true, true);
     if (!f) return financeSetup(panel);
-    subTabs(panel, "Finances", [["dash", "Tableau de bord", (b) => financeDash(b, f)], ["suivi", "Suivi des décaissements", (b) => financeSuivi(b, f)], ["new", "Demande de décaissement", (b, open) => financeForm(b, f, open)]], "dash");
+    subTabs(panel, "Finances", [["comptes", "Comptes Wave & NSIA", (b) => financeComptes(b, f)], ["dash", "Tableau de bord", (b) => financeDash(b, f)], ["suivi", "Suivi des décaissements", (b) => financeSuivi(b, f)], ["new", "Demande de décaissement", (b, open) => financeForm(b, f, open)]], "comptes");
     const foot = document.createElement("p");
     foot.className = "muted small-print";
     foot.innerHTML = `Feuille : <a href="https://docs.google.com/spreadsheets/d/${f.id}/edit" target="_blank" rel="noopener">${esc(f.title)} › ${esc(f.tab)} ↗</a>${C.financeSheetId ? "" : ` · <button type="button" class="linklike" data-unlink>changer de feuille</button>`}`;
@@ -497,6 +497,166 @@
         ${m.c.cat >= 0 ? `<div class="card"><h3>Par catégorie</h3>${bars(sumBy(m.out, m.c.cat).slice(0, 10))}</div>`
           : m.c.method >= 0 ? `<div class="card"><h3>Par moyen de paiement</h3>${bars(sumBy(m.out.filter((x) => !m.isRefused(x.status)), m.c.method).slice(0, 8))}</div>` : ""}
       </div>`;
+  }
+
+
+  /* ---------- Comptes Wave & NSIA : soldes, réconciliation ----------
+     Chaque mouvement de l'onglet Décaissements est rattaché à un compte d'après
+     sa colonne « Méthode » : Wave… → Wave ; Virement / Chèque → NSIA ;
+     « Réapro Wave » = virement de NSIA vers Wave. Les soldes partent du dernier
+     relevé saisi dans l'onglet « Soldes comptes » (relevé Wave / relevé NSIA),
+     puis ajoutent les mouvements effectués depuis. */
+  const ACCTS = {
+    wave: { name: "Wave", sub: "Wave Business", logo: "assets/img/banques/wave.png", color: "#1DC8FF" },
+    nsia: { name: "NSIA Banque", sub: "Compte bancaire", logo: "assets/img/banques/nsia.png", color: "#B8892B" },
+  };
+  const SOLDES_TAB = "Soldes comptes";
+  const SOLDES_HEAD = ["Date du relevé", "Compte", "Solde relevé", "Saisi par", "Saisi le", "Note"];
+
+  function accountMoves(m) {
+    const moves = [];
+    m.rows.forEach((x) => {
+      const mth = tidy(x.r[m.c.method]);
+      const done = x.kind === "out" ? m.isPaid(x.status) : !m.isRefused(x.status) && !(x.status && m.isPending(x.status) && !m.isPaid(x.status));
+      const base = { x, date: x.date, done, what: tidy(x.r[m.c.what]).split(/\n| {2,}/)[0], who: tidy(x.r[m.c.payee]) };
+      if (x.kind === "transfer") {
+        moves.push({ ...base, acct: "nsia", delta: -x.amount, transfer: true });
+        moves.push({ ...base, acct: "wave", delta: x.amount, transfer: true });
+        return;
+      }
+      const acct = /wave/i.test(mth) ? "wave" : /virement|ch[eè]que|nsia|banque/i.test(mth) ? "nsia" : null;
+      moves.push({ ...base, acct, delta: x.kind === "in" ? x.amount : -x.amount });
+    });
+    return moves;
+  }
+
+  async function loadSoldes(f) {
+    try {
+      const info = await D.tabs(f.id, false);
+      if (!info.tabs.includes(SOLDES_TAB)) return [];
+      const rows = await D.read(f.id, SOLDES_TAB, "", false);
+      return rows.slice(1).map((r) => {
+        const acct = /wave/i.test(r[1]) ? "wave" : /nsia|banque/i.test(r[1]) ? "nsia" : null;
+        return { date: parseDate(r[0]), acct, amount: num(r[2]), who: tidy(r[3]), note: tidy(r[5]) };
+      }).filter((s) => s.date && s.acct).sort((a, b) => a.date - b.date);
+    } catch (e) { return []; }
+  }
+
+  /* fin de journée du relevé : les mouvements du même jour sont réputés inclus */
+  const endOfDay = (d) => new Date(d.getFullYear(), d.getMonth(), d.getDate(), 23, 59, 59);
+  const between = (mv, from, to) => mv.done && mv.date && (!from || mv.date > endOfDay(from)) && (!to || mv.date <= endOfDay(to));
+
+  function accountState(key, moves, soldes) {
+    const mv = moves.filter((x) => x.acct === key);
+    const refs = soldes.filter((s) => s.acct === key);
+    const last = refs[refs.length - 1] || null, prev = refs[refs.length - 2] || null;
+    const since = mv.filter((x) => between(x, last && last.date));
+    const sum = (L, sign) => L.filter((x) => sign > 0 ? x.delta > 0 : x.delta < 0).reduce((a, x) => a + Math.abs(x.delta), 0);
+    const balance = last ? last.amount + since.reduce((a, x) => a + x.delta, 0) : null;
+    let gap = null;
+    if (last && prev) {
+      const expected = prev.amount + mv.filter((x) => between(x, prev.date, last.date)).reduce((a, x) => a + x.delta, 0);
+      gap = { expected, actual: last.amount, diff: last.amount - expected, from: prev.date, to: last.date };
+    }
+    const year = new Date().getFullYear();
+    const yearMv = mv.filter((x) => x.done && x.date && x.date.getFullYear() === year);
+    const recent = mv.filter((x) => x.date).sort((a, b) => b.date - a.date).slice(0, 8);
+    return { key, mv, last, balance, gap, since, inSince: sum(since, 1), outSince: sum(since, -1),
+      inYear: sum(yearMv, 1), outYear: sum(yearMv, -1), pending: mv.filter((x) => !x.done && x.delta < 0 && !m_isRefused(x)), recent };
+  }
+  const m_isRefused = (x) => /refus|rejet|annul/i.test(x.x.status);
+
+  function pie(parts) {
+    const total = parts.reduce((a, p) => a + Math.max(0, p.value), 0);
+    if (!total) return `<div class="pie pie-empty" aria-hidden="true"></div>`;
+    let acc = 0;
+    const stops = parts.map((p) => { const a = acc; acc += Math.max(0, p.value) / total * 100; return `${p.color} ${a}% ${acc}%`; }).join(", ");
+    const label = parts.map((p) => `${p.label} ${Math.round(Math.max(0, p.value) / total * 100)} %`).join(", ");
+    return `<div class="pie" role="img" aria-label="${esc(label)}" style="background:conic-gradient(${stops})"></div>`;
+  }
+
+  async function financeComptes(body, f) {
+    body.innerHTML = `<p class="muted">Chargement des comptes…</p>`;
+    const m = financeModel(f);
+    const moves = accountMoves(m);
+    const soldes = await loadSoldes(f);
+    const st = { wave: accountState("wave", moves, soldes), nsia: accountState("nsia", moves, soldes) };
+    const unassigned = moves.filter((x) => !x.acct && x.done);
+    const known = st.wave.balance != null && st.nsia.balance != null;
+    const share = known
+      ? { title: "Répartition des fonds", note: "D'après les soldes calculés de chaque compte.", parts: ["wave", "nsia"].map((k) => ({ label: ACCTS[k].name, color: ACCTS[k].color, value: st[k].balance })) }
+      : { title: "Répartition des dépenses payées", note: `Année ${new Date().getFullYear()}. Saisis un solde de relevé pour chaque compte pour voir la répartition des fonds.`, parts: ["wave", "nsia"].map((k) => ({ label: ACCTS[k].name, color: ACCTS[k].color, value: st[k].outYear })) };
+    const tot = share.parts.reduce((a, p) => a + Math.max(0, p.value), 0) || 1;
+    const fmtDelta = (d) => `<span class="${d < 0 ? "neg" : "pos"}">${d < 0 ? "−" : "+"} ${money(Math.abs(d))}</span>`;
+    const gapLine = (s) => !s.gap ? `<li class="muted">Pas encore deux relevés : l'écart sera calculé au prochain relevé.</li>`
+      : Math.abs(s.gap.diff) < 1 ? `<li class="rec-ok">✓ Rapproché : le relevé du ${frDate(s.gap.to)} correspond aux mouvements saisis.</li>`
+      : `<li class="rec-gap">Écart de <strong>${money(Math.abs(s.gap.diff))}</strong> au relevé du ${frDate(s.gap.to)} (${s.gap.diff > 0 ? "plus" : "moins"} d'argent que prévu par les mouvements saisis depuis le ${frDate(s.gap.from)}).</li>`;
+
+    const card = (k) => {
+      const s = st[k], A = ACCTS[k];
+      return `<article class="card acct acct-${k}">
+        <header class="acct-head"><img src="${A.logo}" alt="Logo ${A.name}"><div><h3>${A.name}</h3><small class="muted">${A.sub}</small></div></header>
+        <div class="acct-bal"><span>Solde calculé</span><strong>${s.balance == null ? "—" : money(s.balance)}</strong>
+          <small class="muted">${s.last ? `Relevé du ${frDate(s.last.date)} : ${money(s.last.amount)}, puis ${s.since.length} mouvement${s.since.length > 1 ? "s" : ""}` : "Aucun relevé saisi pour ce compte"}</small></div>
+        <div class="acct-figs">
+          <div><span>Entrées ${s.last ? "depuis le relevé" : new Date().getFullYear()}</span><strong class="pos">${money(s.last ? s.inSince : s.inYear)}</strong></div>
+          <div><span>Sorties ${s.last ? "depuis le relevé" : new Date().getFullYear()}</span><strong class="neg">${money(s.last ? s.outSince : s.outYear)}</strong></div>
+          <div><span>En attente</span><strong>${money(s.pending.reduce((a, x) => a + Math.abs(x.delta), 0))}</strong></div>
+        </div>
+        <h4>Derniers mouvements</h4>
+        <ul class="acct-moves">${s.recent.map((x) => `<li${x.done ? "" : ' class="is-pending"'}><span class="d">${frDate(x.date)}</span><span class="w">${x.transfer ? "↔ Réapprovisionnement Wave" : esc(x.who || x.what || "—")}${x.done ? "" : ' <em class="muted">(en attente)</em>'}</span>${fmtDelta(x.delta)}</li>`).join("") || "<li class='muted'>Aucun mouvement.</li>"}</ul>
+      </article>`;
+    };
+
+    body.innerHTML = `
+      <section class="card rec">
+        <div class="rec-pie">
+          ${pie(share.parts)}
+          <div>
+            <h3>${share.title}</h3>
+            <ul class="rec-legend">${share.parts.map((p) => `<li><i style="background:${p.color}"></i>${p.label} <strong>${Math.round(Math.max(0, p.value) / tot * 100)} %</strong> <span class="muted">${money(p.value)}</span></li>`).join("")}</ul>
+            <p class="muted small-print">${share.note}</p>
+          </div>
+        </div>
+        <div class="rec-body">
+          <h3>Réconciliation</h3>
+          <div class="kpis kpis-3">
+            <div class="kpi"><span>Total des deux comptes</span><strong>${known ? money(st.wave.balance + st.nsia.balance) : "—"}</strong></div>
+            <div class="kpi"><span>Réappros NSIA → Wave (${new Date().getFullYear()})</span><strong>${money(moves.filter((x) => x.transfer && x.acct === "wave" && x.done && x.date && x.date.getFullYear() === new Date().getFullYear()).reduce((a, x) => a + x.delta, 0))}</strong></div>
+            <div class="kpi"><span>Mouvements sans compte</span><strong>${unassigned.length}</strong></div>
+          </div>
+          <ul class="rec-list">
+            <li><strong>Wave</strong></li>${gapLine(st.wave)}
+            <li><strong>NSIA</strong></li>${gapLine(st.nsia)}
+            ${unassigned.length ? `<li class="muted">${unassigned.length} mouvement${unassigned.length > 1 ? "s" : ""} payé${unassigned.length > 1 ? "s" : ""} sans méthode Wave / Virement / Chèque (${money(unassigned.reduce((a, x) => a + Math.abs(x.delta), 0))}) : non comptés dans les soldes.</li>` : ""}
+          </ul>
+          <details class="add-opp">
+            <summary>+ Saisir un solde de relevé</summary>
+            <form class="form row-inline" data-solde>
+              <label>Compte <select name="acct"><option value="Wave">Wave</option><option value="NSIA">NSIA</option></select></label>
+              <label>Date du relevé <input type="date" name="date" required value="${new Date().toISOString().slice(0, 10)}"></label>
+              <label>Solde (FCFA) <input name="amount" inputmode="numeric" required placeholder="1 250 000"></label>
+              <label style="flex:1;min-width:180px">Note <input name="note" placeholder="Relevé mensuel, capture Wave…"></label>
+              <button class="btn btn-blue" type="submit">Enregistrer</button><span class="form-msg" role="status"></span>
+            </form>
+            <p class="muted small-print">Relève le solde affiché dans Wave Business ou sur le relevé NSIA. Il sert de point de départ au solde calculé, et le relevé suivant montre l'écart avec les mouvements saisis. Enregistré dans l'onglet « ${SOLDES_TAB} » de la feuille des finances.</p>
+          </details>
+        </div>
+      </section>
+      <div class="grid grid-2 acct-grid">${card("wave")}${card("nsia")}</div>`;
+
+    body.querySelector("[data-solde]").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const fm = e.target, msg = fm.querySelector(".form-msg");
+      const amount = num(fm.amount.value);
+      const [y, mo, d] = fm.date.value.split("-");
+      msg.textContent = "Enregistrement…";
+      try {
+        await D.ensureTab(f.id, SOLDES_TAB, SOLDES_HEAD);
+        await D.append(f.id, SOLDES_TAB, [`${d}/${mo}/${y}`, fm.acct.value, amount, S.user.name || S.user.email, stamp(), fm.note.value]);
+        financeComptes(body, f);
+      } catch (err) { msg.textContent = "Erreur : " + err.message; }
+    });
   }
 
   function financeSuivi(body, f) {
