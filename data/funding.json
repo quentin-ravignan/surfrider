@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-17T16:15:27Z",
+ "updated": "2026-11-18T15:37:40Z",
  "items": [
   {
    "id": "gn-caa9823bcee5",
@@ -245,6 +245,20 @@
    "eligibility": "Consortium avec partenaires UE / pays associés : vérifier l'éligibilité des pays tiers",
    "score": 5,
    "first_seen": "2026-11-17"
+  },
+  {
+   "id": "fn-75f644f3f107",
+   "title": "Call 4 Collaborative Blue Research and Innovation for Societal Impact (Portugal)",
+   "funder": "",
+   "source": "fundsforNGOs",
+   "url": "https://www2.fundsforngos.org/innovation/collaborative-blue-research-and-innovation-for-societal-impact-funding/",
+   "region": "Portugal",
+   "amount": "",
+   "deadline": "2027-02-16",
+   "summary": "The EEA Grants Portugal invites applications for the \"Collaborative Blue Research and Innovation for Societal Impact\" initiative, aimed at fostering ocean research excellence and enhancing scientific cooperation between Portugal and the Donor States. This call supports projects that span fundamental research to innovation, with a submission deadline of 16 February 2027. The post Call 4 Collaborati",
+   "eligibility": "",
+   "score": 5,
+   "first_seen": "2026-11-18"
   },
   {
    "id": "eu-HORIZON-CL5-2027-01-D1-12",
@@ -901,6 +915,21 @@
    "published": "2026-10-10",
    "score": 3,
    "first_seen": "2026-11-17"
+  },
+  {
+   "id": "gn-4f1dc5870acb",
+   "title": "Call for Proposals: The Commonwealth Blue Charter Incubator Round II (£50,000 in funding)",
+   "funder": "Opportunities For Africans",
+   "source": "Google Actualités",
+   "url": "https://news.google.com/rss/articles/CBMixAFBVV95cUxNVFVUbGNqU1hqUS1JN3FLZmhmN19pOWlwbExUeGVPX2RFOThpYzhpdjk5NTFvcUtiQkg1YmlPUV9PZEdBQlgtMU5vRHJZV21ua3ZrQWpQMUxMSXBtT2RlbEM3LXZxZ2ZOUi1IMkZWOXNGRnFPaldUNS1LQ0c3bWFrdjhPdWZMMldmSTgyS2YwekRLN0JfS2ZvQnc0Njk4dVFicVRIcU9lQng0V0NzU2Q2a2QzVXhLaHNZaGpCRUVweG52S2kz?oc=5",
+   "region": "",
+   "amount": "£50,000",
+   "deadline": null,
+   "summary": "Article du 2026-10-21 (Opportunities For Africans) annonçant un appel ou un financement.",
+   "eligibility": "",
+   "published": "2026-10-21",
+   "score": 3,
+   "first_seen": "2026-11-18"
   }
  ]
 }
