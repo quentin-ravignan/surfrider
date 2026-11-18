@@ -27,7 +27,7 @@ var DON_MIN = 500;              // don libre : montant minimum
 var SITE_SHOP_URL = 'https://quentin-ravignan.github.io/surfrider/shop.html';
 var NOTIFY_EMAIL = 'contact@surfrider.sn';
 /* Google Sheet des commandes (laisser vide si le script est créé depuis la feuille : Extensions › Apps Script) */
-var ORDERS_SHEET_ID = '1uWqcCE6GEGt3Ob_bfql3lpUE3B0t2SfX2jPLvhh_aQY';
+var ORDERS_SHEET_ID = '1QVJnesri0SoOlpadunoAcIrQlIbCc80jMRdFEWUBaGg'; // « Site Web 2.0 Data » (onglet Commandes)
 var SHEET_NAME = 'Commandes';
 var HEADERS = ['Date', 'Référence', 'Statut', 'Total (FCFA)', 'Nom', 'Téléphone', 'Livraison / retrait', 'Articles', 'Session Wave', 'Payé le', 'ID transaction Wave'];
 

@@ -31,7 +31,7 @@ window.SF_CONFIG = {
      Tant que ce lien est vide, la carte lit l'ancienne feuille publique
      « Surfrider Prélèvements » (waterSheetId), puis l'instantané
      data/water-quality.json. */
-  waterPublicCsv: "",
+  waterPublicCsv: "https://docs.google.com/spreadsheets/d/e/2PACX-1vSekpbHJ4ktWnnjxmq3UF1Rth-UDAgbkDEfpfbG5I0olnRXbIQVVQ259CtaqjLV0L01_iTbYY9g5JWE/pub?gid=744359313&single=true&output=csv",
   waterSheetId: "1Xlvqgqq6q4tiKu8tO3GrhI3ddBcH2ToRTxeHRWHADWM", // ancienne feuille publique (archive)
   waterSheetTab: "Synthèse",
   waterSheetRange: "A2:FM11",
