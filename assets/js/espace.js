@@ -43,6 +43,7 @@
     projets: '<svg viewBox="0 0 24 24"><path d="M4 20V5h10l-1.5 3.5L14 12H6" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M4 20h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>',
   };
   ICON.recherche = '<svg viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M15.5 15.5 21 21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M7.5 10.5h6M10.5 7.5v6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
+  ICON.communaute = '<svg viewBox="0 0 24 24"><path d="M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0C18.5 15.4 12 21 12 21z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><circle cx="12" cy="10" r="2.4" fill="currentColor"/></svg>';
   const MODULES = [
     // admin : tout · ca (membres du CA) : Finances, Membres, Projets · saytoukat : dépôt d'un prélèvement · adherent : rien
     { id: "prelevements", title: "Prélèvements", roles: ["admin", "saytoukat"] },
@@ -51,6 +52,7 @@
     { id: "finances", title: "Finances", roles: ["admin", "ca"] },
     { id: "projets", title: "Projets", roles: ["admin", "ca"] },
     { id: "recherche", title: "Recherche de projets", roles: ["admin", "ca"] },
+    { id: "communaute", title: "Communauté", roles: ["admin", "ca"] },
   ];
 
   const S = { user: null, data: {}, el: null, current: null };
@@ -147,6 +149,7 @@
       setKpi("projets", String(p.live.length), `en cours · ${p.done.length} réalisés${p.avg != null ? ` · avancement moyen ${p.avg} %` : ""}`);
     })));
     if (has("recherche") && window.SF_RECHERCHE) jobs.push(guard("recherche", SF_RECHERCHE.kpi(interactive).then((k) => setKpi("recherche", String(k.n), k.sub))));
+    if (has("communaute") && window.SF_COMMUNAUTE_UI) jobs.push(guard("communaute", SF_COMMUNAUTE_UI.kpi(interactive).then((k) => setKpi("communaute", k.n, k.sub))));
     await Promise.all(jobs);
     S.el.querySelector(".dash-auth").hidden = !needAuth;
   }
@@ -159,7 +162,7 @@
     const panel = S.el.querySelector(".dash-panel");
     panel.className = "dash-panel dash-panel-" + id;
     panel.innerHTML = `<p class="muted">Chargement…</p>`;
-    const run = { prelevements: panelPrelevements, membres: panelMembres, communication: panelCommunication, finances: panelFinances, projets: panelProjets, recherche: (p) => SF_RECHERCHE.mount(p, S.user, subTabs) }[id];
+    const run = { prelevements: panelPrelevements, membres: panelMembres, communication: panelCommunication, finances: panelFinances, projets: panelProjets, recherche: (p) => SF_RECHERCHE.mount(p, S.user, subTabs), communaute: (p) => SF_COMMUNAUTE_UI.mount(p, S.user, subTabs) }[id];
     Promise.resolve(run(panel)).catch((e) => {
       panel.innerHTML = e.code === "auth"
         ? `<div class="notice">Autorise l'accès Google (bouton au-dessus) pour afficher cette partie.</div>`
