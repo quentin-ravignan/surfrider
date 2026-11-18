@@ -45,3 +45,18 @@ dans la feuille et un email part vers contact@surfrider.sn.
 - Remboursement : depuis le portail Wave Business.
 - Tant que `waveCheckoutUrl` est vide, le shop envoie la commande sur WhatsApp
   (comme avant).
+
+## Hall of Fame du jeu « Surf & Nettoie »
+
+Le même script enregistre les scores du jeu (game.html) dans l'onglet
+« Hall of Fame » de la feuille des commandes (créé automatiquement au premier score).
+
+Mise à jour du script (une fois, compte contact@surfrider.sn) :
+1. Ouvrir le projet Apps Script « Shop Surfrider – Paiement Wave ».
+2. Remplacer tout le contenu de `Code.gs` par celui de `wave/Code.gs`, puis Enregistrer.
+3. Déployer › Gérer les déploiements › crayon sur « Shop - paiement Wave v1 »
+   › Version : « Nouvelle version » › Déployer. L'URL `/exec` ne change pas.
+
+Tant que ce n'est pas fait, le jeu garde les scores sur l'appareil du joueur.
+Pour retirer un pseudo déplacé : supprimer sa ligne dans l'onglet « Hall of Fame »
+(le classement se met à jour en une minute).

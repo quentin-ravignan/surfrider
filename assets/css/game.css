@@ -645,3 +645,39 @@ body.is-touch .ctl small.kbd { display: none; }
   .fact-toast { bottom: calc(var(--safe-b) + 84px); width: min(360px, 50%); }
 }
 @media (max-width: 360px) { .hud-box .val { font-size: 16px; } .hud-timer .val { font-size: 20px; } }
+
+/* ---------- Hall of Fame, surnom, partage ---------- */
+.hof { margin: 16px 0 4px; text-align: left; }
+.hof-compact { max-width: 380px; margin: 18px auto 0; }
+.hof-head { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; margin-bottom: 8px; }
+.hof-head h3 { margin: 0; font-family: var(--font-title); font-size: 1.35rem; text-transform: uppercase; letter-spacing: .02em; color: var(--yellow); }
+.hof-count { font-size: .82rem; opacity: .75; }
+.hof-tabs { display: flex; gap: 6px; margin-bottom: 8px; }
+.hof-tabs button { flex: 1; border: 1px solid var(--panel-border); background: rgba(255,255,255,.06); color: var(--white); border-radius: 999px; padding: 6px 10px; font: 600 .9rem var(--font-body); cursor: pointer; }
+.hof-tabs button[aria-selected="true"] { background: var(--white); color: var(--navy); }
+.hof-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
+.hof-list li { display: grid; grid-template-columns: 2.2em 1fr auto auto; gap: 10px; align-items: center; padding: 7px 10px; border-radius: 10px; background: rgba(255,255,255,.06); font-size: .95rem; }
+.hof-list li.is-me { background: rgba(253,239,66,.18); outline: 1px solid rgba(253,239,66,.6); }
+.hof-rank { text-align: center; font-weight: 700; }
+.hof-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 600; }
+.hof-name em { font-style: normal; font-weight: 400; opacity: .75; }
+.hof-spot { font-size: .8rem; opacity: .7; }
+.hof-score { font-family: var(--font-title); font-weight: 800; font-size: 1.15rem; }
+.hof-empty, .hof-note { margin: 4px 0; font-size: .9rem; opacity: .8; }
+.hof-compact .hof-spot { display: none; }
+.hof-compact .hof-list li { grid-template-columns: 2.2em 1fr auto; }
+.hof-form { margin: 14px 0 6px; text-align: left; }
+.hof-form[hidden], .share-row[hidden] { display: none; }
+.hof-form label { display: block; font-weight: 600; margin-bottom: 6px; }
+.hof-row { display: flex; gap: 8px; flex-wrap: wrap; }
+.hof-row input { flex: 1 1 180px; min-width: 0; padding: 12px 14px; border-radius: 12px; border: 2px solid var(--panel-border); background: rgba(255,255,255,.95); color: var(--navy); font: 600 1rem var(--font-body); }
+.hof-row input:focus { outline: 3px solid var(--yellow); outline-offset: 1px; }
+.hof-msg { min-height: 1.2em; margin: 8px 0 0; font-size: .92rem; }
+.hof-msg.is-ok { color: #7CE3A6; }
+.hof-msg.is-err { color: #FF9C9C; }
+.share-row { display: grid; justify-items: center; gap: 8px; margin: 10px 0; }
+.share-links { display: none; flex-wrap: wrap; justify-content: center; gap: 6px; }
+.share-links.is-open { display: flex; }
+.share-links a, .share-links button { border: 1px solid var(--panel-border); background: rgba(255,255,255,.08); color: var(--white); border-radius: 999px; padding: 7px 12px; font: 600 .9rem var(--font-body); text-decoration: none; cursor: pointer; }
+.share-links a:hover, .share-links button:hover { background: rgba(255,255,255,.18); }
+@media (max-width: 480px) { .hof-list li { grid-template-columns: 2em 1fr auto; } .hof-spot { display: none; } }

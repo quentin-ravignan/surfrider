@@ -54,6 +54,14 @@ const I18N = {
       wave: 'Vague', trash: 'Déchets', rocks: 'Rochers', pirogues: 'Pirogues', record: 'Record : ', newRecord: 'Nouveau record sur ce spot !',
       perk: 'Atout', sessionOver: 'Session terminée !', finalScore: 'Score final',
       rTricks: 'Figures', rClean: 'Nettoyage', rCount: 'Déchets ramassés', rKg: 'Poids estimé', rCombo: 'Meilleur combo',
+      hofTitle: 'Hall of Fame', hofAll: 'Tous les spots', hofEmpty: 'Personne encore : sois la première légende du Hall of Fame !',
+      hofLoading: 'Chargement du Hall of Fame…', hofOffline: 'Hall of Fame indisponible pour le moment (scores de cet appareil).',
+      hofPlayers: '{n} joueurs classés', hofYou: 'toi',
+      nickLabel: 'Ton surnom pour le Hall of Fame', nickPh: 'ex : Doudou du Virage', saveScore: 'Enregistrer mon score', saving: 'Enregistrement…',
+      saved: 'Score enregistré ! Tu es {all}ᵉ tous spots et {spot}ᵉ à {spotName}.', savedLocal: 'Score gardé sur cet appareil (Hall of Fame en ligne indisponible).',
+      nickShort: 'Ton surnom doit faire au moins 2 caractères.',
+      share: 'Partager mon score', copy: 'Copier le lien', copied: 'Lien copié !',
+      shareText: "J'ai fait {score} pts à {spot} sur « Surf & Nettoie », le jeu de la Surfrider Foundation Sénégal. Viens battre mon score !",
       lesson: 'La leçon de la session', replay: 'Rejouer', discover: 'Découvrir les actions de la Surfrider Sénégal',
       waterNote: "Avant de te baigner, renseigne-toi sur la qualité de l'eau et évite la baignade dans les 48 h qui suivent une forte pluie.",
     },
@@ -149,6 +157,14 @@ const I18N = {
       wave: 'Wave', trash: 'Trash', rocks: 'Rocks', pirogues: 'Pirogues', record: 'Best: ', newRecord: 'New record on this spot!',
       perk: 'Perk', sessionOver: 'Session over!', finalScore: 'Final score',
       rTricks: 'Tricks', rClean: 'Cleaning', rCount: 'Trash collected', rKg: 'Estimated weight', rCombo: 'Best combo',
+      hofTitle: 'Hall of Fame', hofAll: 'All spots', hofEmpty: 'Nobody yet: be the first legend in the Hall of Fame!',
+      hofLoading: 'Loading the Hall of Fame…', hofOffline: 'Hall of Fame unavailable for now (scores on this device).',
+      hofPlayers: '{n} ranked players', hofYou: 'you',
+      nickLabel: 'Your nickname for the Hall of Fame', nickPh: 'e.g. Virage Doudou', saveScore: 'Save my score', saving: 'Saving…',
+      saved: 'Score saved! You are #{all} on all spots and #{spot} at {spotName}.', savedLocal: 'Score kept on this device (online Hall of Fame unavailable).',
+      nickShort: 'Your nickname needs at least 2 characters.',
+      share: 'Share my score', copy: 'Copy link', copied: 'Link copied!',
+      shareText: 'I scored {score} pts at {spot} in “Surf & Clean”, the Surfrider Foundation Senegal game. Come and beat my score!',
       lesson: 'Lesson of the session', replay: 'Play again', discover: 'Discover Surfrider Senegal’s actions',
       waterNote: 'Before swimming, check the water quality and avoid swimming for 48 hours after heavy rain.',
     },
@@ -244,6 +260,14 @@ const I18N = {
       wave: 'Duus', trash: 'Mbalit', rocks: 'Doj', pirogues: 'Gaal', record: 'Record : ', newRecord: 'Record bu bees ci spot bii !',
       perk: 'Mbiiru', sessionOver: 'Session bi jeex na !', finalScore: 'Poñ yi mujj',
       rTricks: 'Figure yi', rClean: 'Setal', rCount: 'Mbalit mi nga dajale', rKg: 'Diisaay (limu)', rCombo: 'Combo bi gën',
+      hofTitle: 'Hall of Fame', hofAll: 'Spot yépp', hofEmpty: 'Kenn amagul : nekkal ki jëkk ci Hall of Fame bi !',
+      hofLoading: 'Hall of Fame bi ngi ubbiku…', hofOffline: 'Hall of Fame bi amul fi léegi (poñ yu appareil bii).',
+      hofPlayers: '{n} fowkat', hofYou: 'yow',
+      nickLabel: 'Sa tur ci Hall of Fame bi', nickPh: 'misaal : Doudou Virage', saveScore: 'Denc sama poñ', saving: 'Mungi denc…',
+      saved: 'Poñ yi denc nañu ! Yaa ngi {all}eel ci spot yépp, {spot}eel ci {spotName}.', savedLocal: 'Poñ yi ngi ci appareil bii (Hall of Fame bi amul fi léegi).',
+      nickShort: 'Sa tur war na am lu mu néew néew 2 araf.',
+      share: 'Séddoo sama poñ', copy: 'Copie lien bi', copied: 'Lien bi copie na !',
+      shareText: 'Def naa {score} poñ ci {spot} ci « Surf & Nettoie », fo wu Surfrider Foundation Senegaal. Kaayal dóor sama poñ !',
       lesson: 'Njàngat bi', replay: 'Fowaat', discover: 'Xam jëf yu Surfrider Senegaal',
       waterNote: 'Bala ngay sangu, seetal ndoxu géej gi te bul sangu 48 waxtu ginnaaw taw bu bare.',
     },
@@ -2237,8 +2261,143 @@ function showResults() {
   let topType = 'none', topN = 0;
   for (const k in S.collected) if (S.collected[k] > topN) { topN = S.collected[k]; topType = k; }
   $('#res-lesson').textContent = t('lessons.' + topType);
+  prepareResultsHof(total);
   showScreen('results');
 }
+
+
+/* ---------------- Hall of Fame & partage ----------------
+   Scores partagés via le script Google Apps Script de l'association (onglet
+   « Hall of Fame » de la feuille des commandes du shop, voir wave/Code.gs).
+   Sans réseau, le jeu garde un classement local sur l'appareil. */
+const HOF_URL = (window.SF_CONFIG && window.SF_CONFIG.gameScoresUrl) ||
+  'https://script.google.com/macros/s/AKfycbxW-uZzbtDc3GGdUE2ZWnAcfnUnHezOUlFW2oDfaNpezqz1OZtI2-RTPBzoDmS4hJQF/exec';
+const GAME_URL = 'https://quentin-ravignan.github.io/surfrider/game.html';
+const STORAGE_NICK = 'srsn-game-nick';
+const STORAGE_LOCAL_HOF = 'srsn-game-hof-v1';
+const tf = (path, vars) => t(path).replace(/\{(\w+)\}/g, (m, k) => (vars && vars[k] != null ? vars[k] : m));
+const escH = (v) => String(v ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+let hofCache = null, lastResult = null, myNick = '';
+try { myNick = localStorage.getItem(STORAGE_NICK) || ''; } catch (e) { /* ignore */ }
+
+function localHof() { try { return JSON.parse(localStorage.getItem(STORAGE_LOCAL_HOF) || '[]') || []; } catch (e) { return []; } }
+function saveLocalHof(row) {
+  const list = localHof(); list.push(row);
+  list.sort((a, b) => b.score - a.score);
+  try { localStorage.setItem(STORAGE_LOCAL_HOF, JSON.stringify(list.slice(0, 50))); } catch (e) { /* ignore */ }
+}
+function bestPerName(list, spot) {
+  const by = {};
+  for (const r of list) {
+    if (spot && r.spot !== spot) continue;
+    const k = r.name.toLowerCase();
+    if (!by[k] || r.score > by[k].score) by[k] = r;
+  }
+  return Object.values(by).sort((a, b) => b.score - a.score).slice(0, 10);
+}
+async function fetchHof(spot) {
+  const r = await fetch(HOF_URL + '?action=hof' + (spot ? '&spot=' + encodeURIComponent(spot) : ''), { cache: 'no-store' });
+  const d = await r.json();
+  if (!d || !d.ok || !Array.isArray(d.all)) throw new Error((d && d.error) || 'hof');
+  return d;
+}
+const spotName = (id) => (SPOTS.find((s) => s.id === id) || {}).name || id;
+function hofList(list, highlight) {
+  if (!list.length) return `<p class="hof-empty">${escH(t('ui.hofEmpty'))}</p>`;
+  const medal = ['🥇', '🥈', '🥉'];
+  return `<ol class="hof-list">${list.map((r, i) => {
+    const me = highlight && r.name.toLowerCase() === highlight.toLowerCase();
+    return `<li class="${me ? 'is-me' : ''}"><span class="hof-rank">${medal[i] || i + 1}</span><span class="hof-name">${escH(r.name)}${me ? ` <em>(${escH(t('ui.hofYou'))})</em>` : ''}</span><span class="hof-spot">${escH(spotName(r.spot))}</span><span class="hof-score">${fmt(r.score)}</span></li>`;
+  }).join('')}</ol>`;
+}
+function renderHof(el, data, opts = {}) {
+  if (!el || !data) return;
+  const tabs = opts.spot ? [['all', t('ui.hofAll')], ['spot', spotName(opts.spot)]] : null;
+  const view = el.dataset.view || (opts.spot ? 'spot' : 'all');
+  const list = (view === 'spot' && opts.spot ? data.spotTop : data.all) || [];
+  el.innerHTML = `<div class="hof-head"><h3>🏆 ${escH(t('ui.hofTitle'))}</h3>${data.players ? `<span class="hof-count">${escH(tf('ui.hofPlayers', { n: fmt(data.players) }))}</span>` : ''}</div>
+    ${tabs ? `<div class="hof-tabs" role="tablist">${tabs.map(([k, l]) => `<button type="button" role="tab" data-v="${k}" aria-selected="${k === view}">${escH(l)}</button>`).join('')}</div>` : ''}
+    ${hofList(opts.limit ? list.slice(0, opts.limit) : list, myNick)}
+    ${data.offline ? `<p class="hof-note">${escH(t('ui.hofOffline'))}</p>` : ''}`;
+  for (const b of el.querySelectorAll('[data-v]')) b.addEventListener('click', () => { el.dataset.view = b.dataset.v; renderHof(el, data, opts); });
+  el._hof = [data, opts];
+}
+function offlineData(spot) {
+  const l = localHof();
+  return { ok: true, offline: true, all: bestPerName(l, ''), spotTop: bestPerName(l, spot), players: 0 };
+}
+async function loadTitleHof() {
+  const el = $('#hof-title'); if (!el) return;
+  el.innerHTML = `<p class="hof-note">${escH(t('ui.hofLoading'))}</p>`;
+  try { hofCache = await fetchHof(''); } catch (e) { hofCache = offlineData(''); }
+  renderHof(el, hofCache, { limit: 5 });
+}
+async function loadResultsHof(spot) {
+  const el = $('#hof-results'); el.dataset.view = 'spot';
+  el.innerHTML = `<p class="hof-note">${escH(t('ui.hofLoading'))}</p>`;
+  let d;
+  try { d = await fetchHof(spot); } catch (e) { d = offlineData(spot); }
+  renderHof(el, d, { spot });
+}
+function prepareResultsHof(total) {
+  lastResult = { score: total, spot: S.spot.id, char: S.char.id, clean: Math.round(S.clean * 100), saved: false };
+  const form = $('#hof-form'), input = $('#hof-name'), msg = $('#hof-msg');
+  form.hidden = total <= 0;
+  input.value = myNick; input.placeholder = t('ui.nickPh');
+  input.disabled = false; $('#hof-save').disabled = false;
+  msg.textContent = ''; msg.className = 'hof-msg';
+  $('.share-row').hidden = total <= 0;
+  $('#share-links').classList.remove('is-open');
+  updateShareLinks();
+  loadResultsHof(S.spot.id);
+}
+$('#hof-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  if (!lastResult || lastResult.saved) return;
+  const input = $('#hof-name'), msg = $('#hof-msg'), btn = $('#hof-save');
+  const name = input.value.replace(/[<>"`]/g, '').trim().slice(0, 16);
+  if (name.length < 2) { msg.textContent = t('ui.nickShort'); msg.className = 'hof-msg is-err'; return; }
+  myNick = name; try { localStorage.setItem(STORAGE_NICK, name); } catch (err) { /* ignore */ }
+  btn.disabled = true; input.disabled = true; msg.textContent = t('ui.saving'); msg.className = 'hof-msg';
+  const row = { name, score: lastResult.score, spot: lastResult.spot, char: lastResult.char, clean: lastResult.clean };
+  saveLocalHof(row);
+  lastResult.saved = true;
+  const el = $('#hof-results'); el.dataset.view = 'spot';
+  try {
+    const r = await fetch(HOF_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: 'score', lang: LANG, ...row }) });
+    const d = await r.json();
+    if (!d || !d.ok) throw new Error((d && d.error) || 'hof');
+    msg.textContent = tf('ui.saved', { all: (d.rank && d.rank.all) || '–', spot: (d.rank && d.rank.spot) || '–', spotName: spotName(row.spot) });
+    msg.className = 'hof-msg is-ok';
+    renderHof(el, d, { spot: row.spot });
+    hofCache = null; loadTitleHof();
+  } catch (err) {
+    msg.textContent = t('ui.savedLocal'); msg.className = 'hof-msg is-ok';
+    renderHof(el, offlineData(row.spot), { spot: row.spot });
+  }
+});
+function shareMessage() { return tf('ui.shareText', { score: fmt(lastResult ? lastResult.score : 0), spot: spotName(lastResult ? lastResult.spot : '') }); }
+function updateShareLinks() {
+  const text = shareMessage(), u = encodeURIComponent(GAME_URL), tx = encodeURIComponent(text);
+  const href = {
+    whatsapp: `https://wa.me/?text=${encodeURIComponent(text + ' ' + GAME_URL)}`,
+    facebook: `https://www.facebook.com/sharer/sharer.php?u=${u}&quote=${tx}`,
+    x: `https://twitter.com/intent/tweet?text=${tx}&url=${u}`,
+    linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${u}`,
+  };
+  for (const a of $$('#share-links a')) a.href = href[a.dataset.net];
+}
+$('#btn-share').addEventListener('click', async () => {
+  const text = shareMessage();
+  if (navigator.share && isTouch) {
+    try { await navigator.share({ title: 'Surf & Nettoie – Surfrider Sénégal', text, url: GAME_URL }); return; } catch (e) { if (e && e.name === 'AbortError') return; }
+  }
+  $('#share-links').classList.toggle('is-open');
+});
+$('#share-links [data-net="copy"]').addEventListener('click', async (e) => {
+  const b = e.currentTarget;
+  try { await navigator.clipboard.writeText(shareMessage() + ' ' + GAME_URL); b.textContent = t('ui.copied'); setTimeout(() => { b.textContent = t('ui.copy'); }, 1800); } catch (err) { /* ignore */ }
+});
 
 /* ---------------- Boutons ---------------- */
 $('#btn-start').addEventListener('click', () => { buildCharCards(); showScreen('char'); });
@@ -2342,6 +2501,8 @@ function applyLang() {
   if ($('#char-grid').children.length) buildCharCards();
   if ($('#spot-grid').children.length) buildSpotCards();
   updateHud(true);
+  if (typeof hofCache !== 'undefined' && hofCache) renderHof($('#hof-title'), hofCache, { limit: 5 });
+  if (typeof lastResult !== 'undefined' && lastResult) updateShareLinks();
 }
 function setLang(l) {
   if (!LANGS.includes(l)) return;
@@ -2361,4 +2522,5 @@ applySpot(SPOTS[0]);
 S.mode = 'menu';
 window.__srGameReady = true;
 showScreen('title');
+loadTitleHof();
 frame();

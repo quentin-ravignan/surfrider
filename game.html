@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800&family=Barlow:wght@400;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/css/game.css?v=20261113">
+  <link rel="stylesheet" href="assets/css/game.css?v=20261118">
   <script type="importmap">
     { "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js" } }
   </script>
@@ -94,6 +94,7 @@
         <p class="subtitle" data-i18n="ui.subtitle"></p>
         <button id="btn-start" class="btn btn-primary btn-big" type="button" data-i18n="ui.play">Jouer</button>
         <p class="tiny muted" data-i18n="ui.titleHint"></p>
+        <div id="hof-title" class="hof hof-compact" aria-live="polite"></div>
       </div>
     </section>
 
@@ -165,6 +166,25 @@
           <span id="res-total" class="big"></span>
           <span id="res-record" class="record"></span>
         </div>
+        <form id="hof-form" class="hof-form" autocomplete="off">
+          <label for="hof-name" data-i18n="ui.nickLabel">Ton surnom</label>
+          <div class="hof-row">
+            <input id="hof-name" name="name" maxlength="16" minlength="2" required>
+            <button id="hof-save" class="btn btn-primary" type="submit" data-i18n="ui.saveScore">Enregistrer mon score</button>
+          </div>
+          <p id="hof-msg" class="hof-msg" role="status"></p>
+        </form>
+        <div class="share-row">
+          <button id="btn-share" class="btn btn-ghost" type="button" data-i18n="ui.share">Partager mon score</button>
+          <div id="share-links" class="share-links">
+            <a data-net="whatsapp" target="_blank" rel="noopener">WhatsApp</a>
+            <a data-net="facebook" target="_blank" rel="noopener">Facebook</a>
+            <a data-net="x" target="_blank" rel="noopener">X</a>
+            <a data-net="linkedin" target="_blank" rel="noopener">LinkedIn</a>
+            <button type="button" data-net="copy" data-i18n="ui.copy">Copier le lien</button>
+          </div>
+        </div>
+        <div id="hof-results" class="hof" aria-live="polite"></div>
         <dl class="res-grid">
           <div><dt data-i18n="ui.rTricks">Figures</dt><dd id="res-tricks"></dd></div>
           <div><dt data-i18n="ui.rClean">Nettoyage</dt><dd id="res-clean"></dd></div>
@@ -207,6 +227,6 @@
       }
     }, 12000);
   </script>
-  <script type="module" src="assets/js/game.js?v=20261113"></script>
+  <script type="module" src="assets/js/game.js?v=20261118"></script>
 </body>
 </html>

@@ -9,6 +9,8 @@
  *      met à jour la commande et prévient l'équipe par email.
  * Les commandes sont enregistrées dans l'onglet « Commandes » de la Google Sheet
  * à laquelle ce script est rattaché.
+ * Il sert aussi le Hall of Fame du jeu « Surf & Nettoie » (game.html) : onglet
+ * « Hall of Fame » de la même feuille (actions « score » et « hof »).
  *
  * La clé API Wave reste ici, côté serveur (jamais dans le site) : elle se met
  * dans Paramètres du projet › Propriétés du script › WAVE_API_KEY.
@@ -33,6 +35,7 @@ function doPost(e) {
   try {
     var req = JSON.parse((e && e.postData && e.postData.contents) || '{}');
     if (req.action === 'checkout') return json_(checkout_(req));
+    if (req.action === 'score') return json_(addScore_(req));
     return json_({ error: 'Action inconnue' });
   } catch (err) {
     return json_({ error: String(err && err.message || err) });
@@ -43,6 +46,7 @@ function doGet(e) {
   try {
     var p = (e && e.parameter) || {};
     if (p.action === 'status' && p.ref) return json_(status_(String(p.ref)));
+    if (p.action === 'hof') return json_(hallOfFame_(String(p.spot || '')));
     return json_({ ok: true, service: 'Surfrider Sénégal – paiement Wave' });
   } catch (err) {
     return json_({ error: String(err && err.message || err) });
@@ -132,6 +136,93 @@ function wave_(method, path, body) {
   if (r.getResponseCode() >= 300) throw new Error('Wave : ' + (data.message || data.code || r.getResponseCode()));
   return data;
 }
+
+/* ---------- Jeu « Surf & Nettoie » : Hall of Fame ----------
+   Les scores sont enregistrés dans l'onglet « Hall of Fame » de la même feuille.
+   Le jeu affiche le meilleur score de chaque pseudo (tous spots et par spot). */
+var HOF_SHEET = 'Hall of Fame';
+var HOF_HEADERS = ['Date', 'Pseudo', 'Score', 'Spot', 'Surfeur', 'Océan propre (%)', 'Langue'];
+var HOF_MAX_SCORE = 500000;   // au-delà, score refusé (impossible en 30 secondes)
+var HOF_SPOTS = ['ouakam', 'secret', 'virage', 'ngor'];
+
+function hofSheet_() {
+  var ss = book_();
+  var sh = ss.getSheetByName(HOF_SHEET);
+  if (!sh) {
+    sh = ss.insertSheet(HOF_SHEET);
+    sh.appendRow(HOF_HEADERS);
+    sh.setFrozenRows(1);
+    sh.getRange(1, 1, 1, HOF_HEADERS.length).setFontWeight('bold');
+  }
+  return sh;
+}
+
+function addScore_(req) {
+  var name = clean_(req.name, 16).replace(/[<>"`]/g, '');
+  var score = Math.round(Number(req.score));
+  var spot = clean_(req.spot, 20).toLowerCase();
+  if (name.length < 2) throw new Error('Pseudo trop court');
+  if (!isFinite(score) || score <= 0 || score > HOF_MAX_SCORE) throw new Error('Score invalide');
+  if (HOF_SPOTS.indexOf(spot) < 0) throw new Error('Spot inconnu');
+  // anti-abus simple : 40 scores par minute au maximum pour tout le site
+  var cache = CacheService.getScriptCache();
+  var n = Number(cache.get('hof-rate') || 0);
+  if (n >= 40) throw new Error('Trop de scores en même temps, réessaie dans une minute');
+  cache.put('hof-rate', String(n + 1), 60);
+  var lock = LockService.getScriptLock(); lock.waitLock(10000);
+  try {
+    hofSheet_().appendRow([new Date(), name, score, spot, clean_(req.char, 30), Math.max(0, Math.min(100, Math.round(Number(req.clean) || 0))), clean_(req.lang, 2)]);
+  } finally { lock.releaseLock(); }
+  cache.remove('hof-all'); cache.remove('hof-' + spot);
+  var hof = hallOfFame_(spot);
+  hof.rank = rankOf_(name, score, spot);
+  return hof;
+}
+
+/* Meilleur score par pseudo : top 10 tous spots + top 10 du spot demandé */
+function hallOfFame_(spot) {
+  var cache = CacheService.getScriptCache();
+  var key = spot ? 'hof-' + spot : 'hof-all';
+  var hit = cache.get(key);
+  if (hit) return JSON.parse(hit);
+  var rows = hofRows_();
+  var out = { ok: true, all: top_(rows, ''), spot: spot, spotTop: spot ? top_(rows, spot) : [], players: countPlayers_(rows) };
+  cache.put(key, JSON.stringify(out), 60);
+  return out;
+}
+
+function hofRows_() {
+  var sh = hofSheet_();
+  var last = sh.getLastRow();
+  if (last < 2) return [];
+  return sh.getRange(2, 1, last - 1, 5).getValues().map(function (r) {
+    return { date: r[0], name: String(r[1]), score: Number(r[2]) || 0, spot: String(r[3]), char: String(r[4]) };
+  });
+}
+
+function best_(rows, spot) {
+  var by = {};
+  rows.forEach(function (r) {
+    if (spot && r.spot !== spot) return;
+    var k = r.name.toLowerCase();
+    if (!by[k] || r.score > by[k].score) by[k] = r;
+  });
+  return Object.keys(by).map(function (k) { return by[k]; }).sort(function (a, b) { return b.score - a.score; });
+}
+
+function top_(rows, spot) {
+  return best_(rows, spot).slice(0, 10).map(function (r) {
+    return { name: r.name, score: r.score, spot: r.spot, char: r.char, date: Utilities.formatDate(new Date(r.date), 'Africa/Dakar', 'dd/MM/yyyy') };
+  });
+}
+
+function rankOf_(name, score, spot) {
+  var rows = hofRows_(), k = name.toLowerCase();
+  var place = function (list) { for (var i = 0; i < list.length; i++) if (list[i].name.toLowerCase() === k) return i + 1; return 0; };
+  return { all: place(best_(rows, '')), spot: place(best_(rows, spot)) };
+}
+
+function countPlayers_(rows) { var s = {}; rows.forEach(function (r) { s[r.name.toLowerCase()] = 1; }); return Object.keys(s).length; }
 
 function book_() { return ORDERS_SHEET_ID ? SpreadsheetApp.openById(ORDERS_SHEET_ID) : SpreadsheetApp.getActiveSpreadsheet(); }
 
