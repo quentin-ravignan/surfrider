@@ -602,3 +602,4 @@ p { margin: 0 0 1em; }
   .hero-video { display: none; }
   .hero.has-video { background: var(--hero-img) center/cover no-repeat; }
 }
+.partner .logo.dark { background: #0B1F33; border-color: #0B1F33; }

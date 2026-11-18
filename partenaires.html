@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/css/style.css?v=20261127">
+  <link rel="stylesheet" href="assets/css/style.css?v=20261128">
   <script src="assets/js/config.js?v=20261124"></script>
   <script src="assets/js/i18n.js?v=20261119"></script>
   <script src="assets/js/main.js?v=20261117" defer></script>
@@ -49,25 +49,26 @@
   <div data-site-footer></div>
 
   <script>
-    /* Une ligne par partenaire : [nom, précision, logo, site web]
+    /* Une ligne par partenaire : [nom, précision, logo, site web, "dark" si logo blanc]
        Pour ajouter un logo : déposer l'image dans assets/img/partenaires/ et
        indiquer son chemin en 3e position ; le site web en 4e position rend la
        carte cliquable. Laisser "" pour une case vide. */
     const L = (f) => "assets/img/partenaires/" + f;
     const GROUPS = [
       { title: "Institutions publiques", color: "#00853F", items: [
-        ["République du Sénégal"], ["Ministère de l'Environnement et de la Transition Écologique", "MEETE"],
-        ["DEEC", "Direction de l'Environnement et des Établissements Classés"], ["ONL", "Observatoire National du Littoral"],
-        ["Ville de Dakar"], ["Commune de Ouakam"], ["Commune de Yoff"], ["Commune de Ngor"], ["Ville de Cenon"]
+        ["République du Sénégal", "Gouvernement du Sénégal", L("gouvernement-senegal.jpg"), "https://primature.sn/"], ["Ministère de l'Environnement et de la Transition Écologique", "MEETE"],
+        ["DEEC", "Direction de l'Environnement et des Établissements Classés", L("deec.png"), "https://www.denv.gouv.sn/"], ["ONL", "Observatoire National du Littoral", L("onl.png"), "https://onl.sn/"],
+        ["Ville de Dakar"], ["Commune de Ouakam"], ["Commune de Yoff"], ["Commune de Ngor"], ["Ville de Cenon", "", "", "https://www.cenon.fr/"]
       ]},
       { title: "Coopération & ambassades", color: "#0072BC", items: [
-        ["Ambassade d'Irlande"], ["Ambassade de France"], ["Ambassade du Portugal", "", L("ambassade-portugal.jpg"), "https://dakar.embaixadaportugal.mne.gov.pt/fr/"], ["AFD", "Agence Française de Développement"]
+        ["Ambassade d'Irlande", "", L("ambassade-irlande.png"), "https://www.ireland.ie/en/senegal/dakar/", "dark"], ["Ambassade de France", "", L("ambassade-france.ico"), "https://sn.diplomatie.gouv.fr/"], ["Ambassade du Portugal", "", L("ambassade-portugal.jpg"), "https://dakar.embaixadaportugal.mne.gov.pt/fr/"], ["AFD", "Agence Française de Développement", L("afd.png"), "https://www.afd.fr/"]
       ]},
       { title: "Recherche & expertise", color: "#E31B23", items: [
-        ["Institut Pasteur de Dakar"], ["IRD", "Institut de Recherche pour le Développement"], ["UCAD", "Université Cheikh Anta Diop"], ["GRET"]
+        ["Institut Pasteur de Dakar", "", "", "https://www.pasteur.sn/"], ["IRD", "Institut de Recherche pour le Développement", L("ird.png"), "https://www.ird.fr/"], ["UCAD", "Université Cheikh Anta Diop", L("ucad.jpg"), "https://www.ucad.sn/"], ["GRET", "", L("gret.svg"), "https://gret.org/"]
       ]},
       { title: "Réseau Surfrider & ONG", color: "#0B1F33", items: [
-        ["Surfrider Foundation Europe"], ["Women for Sea"], ["CARE"], ["Planète Urgence"]
+        ["Surfrider Foundation Europe", "", L("surfrider-europe.webp"), "https://surfrider.eu/"], ["Women for Sea", "", L("women-for-sea.png"), "https://womenforsea.fr/"],
+        ["CARE", "", L("care.svg"), "https://www.carefrance.org/"], ["Planète Urgence", "", L("planete-urgence.svg"), "https://planete-urgence.org/", "dark"]
       ]},
       { title: "Entreprises & mécènes", color: "#0273BE", items: [
         ["Decathlon Sénégal", "", L("decathlon-senegal.png"), "https://www.decathlon.sn/"],
@@ -97,9 +98,9 @@
         <div class="container">
           <h2 style="font-size:2rem"><span style="display:inline-block;width:14px;height:14px;border-radius:4px;background:${g.color};margin-right:10px;vertical-align:4px"></span>${g.title}</h2>
           <div class="grid grid-3">
-            ${g.items.map(([name, sub, logo, url]) => {
+            ${g.items.map(([name, sub, logo, url, tone]) => {
               const inner = `
-                ${logo ? `<span class="logo"><img src="${logo}" alt="Logo ${name.replace(/"/g, "&quot;")}" loading="lazy"></span>` : `<span class="mono" style="background:${g.color}${g.color === "#F2A900" ? ";color:#0B1F33" : ""}">${initials(name)}</span>`}
+                ${logo ? `<span class="logo${tone === "dark" ? " dark" : ""}"><img src="${logo}" alt="Logo ${name.replace(/"/g, "&quot;")}" loading="lazy"></span>` : `<span class="mono" style="background:${g.color}${g.color === "#F2A900" ? ";color:#0B1F33" : ""}">${initials(name)}</span>`}
                 <span><strong>${name}</strong>${sub ? `<small>${sub}</small>` : ""}${url ? `<small class="go">${new URL(url).hostname.replace(/^www\./, "")} ↗</small>` : ""}</span>`;
               return url ? `<a class="partner partner-link" href="${url}" target="_blank" rel="noopener">${inner}</a>` : `<div class="partner">${inner}</div>`;
             }).join("")}
