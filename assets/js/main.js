@@ -20,7 +20,7 @@
     ["partenaires.html", "Partenaires"],
     ["shop.html", "Shop"],
     ["contact.html", "Contact"],
-    ["game.html", "Game", "nav-game"],
+    ["game.html", "Game"],
     ["membres.html", "Espace membres", "nav-members"]
   ];
   const MEMBER_PAGES = ["membres.html", "prelevements.html", "finances.html", "gestion-projets.html", "annuaire.html"];
