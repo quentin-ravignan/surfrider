@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-18T15:37:40Z",
+ "updated": "2026-11-19T15:42:55Z",
  "items": [
   {
    "id": "gn-caa9823bcee5",
@@ -87,6 +87,21 @@
    "published": "2026-11-09",
    "score": 8,
    "first_seen": "2026-11-17"
+  },
+  {
+   "id": "gn-c9240eadef18",
+   "title": "Call for ‘blue shipping corridors’ to harmonise shipping decarbonisation with better ocean health — SMI DIGITAL",
+   "funder": "https://www.shipmanagementinternational.com/",
+   "source": "Google Actualités",
+   "url": "https://news.google.com/rss/articles/CBMimgFBVV95cUxQSk10U3l3TFhzNlN4RlFrYnFvXy1Vb3htNWZvOEUxRlpWRmppZDZwNG5iMS05YTJadl9pQUlNbGVHV2JLNVlQRl9SOWwwNkVuVzlGM1BlWklRTXJYU25lNnZjTUFOQ1ItRllXNVN1VzNONWZfZklNQlRIMXk5SjlwS3lEME5tN0tQd2RCdVhOQ1RDajRwNG5FOGV3?oc=5",
+   "region": "",
+   "amount": "",
+   "deadline": null,
+   "summary": "Article du 2026-11-18 (https://www.shipmanagementinternational.com/) annonçant un appel ou un financement.",
+   "eligibility": "",
+   "published": "2026-11-18",
+   "score": 8,
+   "first_seen": "2026-11-19"
   },
   {
    "id": "eu-HORIZON-MISS-2027-03-OCEAN-04",
@@ -203,6 +218,21 @@
    "published": "2026-11-15",
    "score": 6,
    "first_seen": "2026-11-17"
+  },
+  {
+   "id": "gn-03cd7318067d",
+   "title": "EMFAF call for proposals for scientific advice for fisheries has just opened",
+   "funder": "European Climate, Infrastructure and Environment Executive Agency",
+   "source": "Google Actualités",
+   "url": "https://news.google.com/rss/articles/CBMivwFBVV95cUxNS0dDNERtU2hFYUF4REtUT090RV9OWTFfSktwUldhVVIxSWdlYzNQVEtiRWhhNy1oaFQ3amlsV1lqcE9iYTBqTHlYajh3aXBzcEtjS2ZFczNSRlRCWVhLVUFMQkdtWHUwZzFiMTgzT2RzWk8tMGFqcFVYbWJxdGUtZjhEczRxd1o5ZnBMdjQ3N3A4M0tNeTc3aWxBQkRTRXNFc2Yta3BXZjlISmRHTmx0Xzl2cnBVeWFsVTlkUFBpaw?oc=5",
+   "region": "",
+   "amount": "",
+   "deadline": null,
+   "summary": "Article du 2026-11-12 (European Climate, Infrastructure and Environment Executive Agency) annonçant un appel ou un financement.",
+   "eligibility": "",
+   "published": "2026-11-12",
+   "score": 6,
+   "first_seen": "2026-11-19"
   },
   {
    "id": "gg-363992",
@@ -671,18 +701,19 @@
    "first_seen": "2026-11-17"
   },
   {
-   "id": "gg-364155",
-   "title": "2027 Donald M. Payne International Development Graduate Fellowship Program – Selection",
-   "funder": "Bureau of Human Resources",
-   "source": "Grants.gov (États-Unis)",
-   "url": "https://www.grants.gov/search-results-detail/364155",
-   "region": "États-Unis",
-   "amount": "",
-   "deadline": "2026-11-23",
-   "summary": "DFOP0019966",
-   "eligibility": "Souvent réservé aux organismes américains : vérifier l'éligibilité",
-   "score": 3,
-   "first_seen": "2026-11-17"
+   "id": "gn-3b9bf8337a0e",
+   "title": "Nouvel appel à projets de 500 000 euros du parc éolien en mer Dieppe/Le Tréport",
+   "funder": "Courrier picard",
+   "source": "Google Actualités",
+   "url": "https://news.google.com/rss/articles/CBMi0wFBVV95cUxOakFEZFZpcE5leFUtXy1UaEZRS1pYNFp3SnlDZWlrSVEtbzVweXBOSTdmeXNleUV6NnZHUHRoRWJEaGR6OTd0dy11ZU9Fa3RzV0FZNHZuNVFQZmswNnVkWmtOZXFFemlsZ255X1dYR1lCZldGa0IxWjdGamgxcC11bVFCLV91eTBIb0JGOTRKaTRXa0ZjREUzN09jcmNCSUtOb3h1LTBObVRiXzVvVS1oVXRxOVFTYjVHUHRLSEhCWVJucG5KWXQtcUhrUnRPb1VrQUxR?oc=5",
+   "region": "",
+   "amount": "500 000 euros",
+   "deadline": null,
+   "summary": "Article du 2026-11-02 (Courrier picard) annonçant un appel ou un financement.",
+   "eligibility": "",
+   "published": "2026-11-02",
+   "score": 4,
+   "first_seen": "2026-11-19"
   },
   {
    "id": "gg-364154",
@@ -694,6 +725,20 @@
    "amount": "",
    "deadline": "2026-11-23",
    "summary": "DFOP0020006",
+   "eligibility": "Souvent réservé aux organismes américains : vérifier l'éligibilité",
+   "score": 3,
+   "first_seen": "2026-11-17"
+  },
+  {
+   "id": "gg-364155",
+   "title": "2027 Donald M. Payne International Development Graduate Fellowship Program – Selection",
+   "funder": "Bureau of Human Resources",
+   "source": "Grants.gov (États-Unis)",
+   "url": "https://www.grants.gov/search-results-detail/364155",
+   "region": "États-Unis",
+   "amount": "",
+   "deadline": "2026-11-25",
+   "summary": "DFOP0019966",
    "eligibility": "Souvent réservé aux organismes américains : vérifier l'éligibilité",
    "score": 3,
    "first_seen": "2026-11-17"
