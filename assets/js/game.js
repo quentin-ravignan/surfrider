@@ -459,7 +459,9 @@ function mat(color, opts) {
   const key = color + (opts ? JSON.stringify(opts) : '');
   let m = matCache.get(key);
   if (!m) {
-    m = new THREE.MeshLambertMaterial(Object.assign({ color, flatShading: true }, opts || {}));
+    m = opts && opts.flatShading === false
+      ? new THREE.MeshStandardMaterial(Object.assign({ color, roughness: 0.68, metalness: 0 }, opts))
+      : new THREE.MeshLambertMaterial(Object.assign({ color, flatShading: true }, opts || {}));
     matCache.set(key, m);
   }
   return m;
@@ -783,38 +785,55 @@ function getFaceMat(skin, light) {
   const c = document.createElement('canvas');
   c.width = c.height = 128;
   const g = c.getContext('2d');
-  const brow = light ? '#4a3020' : '#120c08';
-  // sourcils
-  g.strokeStyle = brow; g.lineWidth = 6; g.lineCap = 'round';
+  const brow = light ? '#5a3a24' : '#140d09';
+  // ombres douces : orbites, sous la lèvre inférieure, joues
+  const rgba = (col, a) => col.replace('rgb(', 'rgba(').replace(')', `,${a})`);
+  const soft = (x, y, rx, ry, col, a) => {
+    g.save(); g.translate(x, y); g.scale(1, ry / rx);
+    const gr = g.createRadialGradient(0, 0, 0, 0, 0, rx);
+    gr.addColorStop(0, rgba(col, a)); gr.addColorStop(1, rgba(col, 0));
+    g.fillStyle = gr; g.beginPath(); g.arc(0, 0, rx, 0, Math.PI * 2); g.fill(); g.restore();
+  };
+  for (const s of [-1, 1]) soft(64 + s * 22, 55, 17, 11, shade(skin, 0.62), 0.55);
+  soft(64, 99, 14, 5, shade(skin, 0.6), 0.45);
+  for (const s of [-1, 1]) soft(64 + s * 26, 76, 12, 9, light ? 'rgb(225,140,130)' : shade(skin, 1.25), 0.22);
+  // sourcils fins, légèrement arqués
+  g.strokeStyle = brow; g.lineCap = 'round';
   for (const s of [-1, 1]) {
-    g.beginPath(); g.moveTo(64 + s * 11, 42); g.quadraticCurveTo(64 + s * 23, 35, 64 + s * 35, 41); g.stroke();
+    g.lineWidth = 4.2; g.beginPath(); g.moveTo(64 + s * 12, 44); g.quadraticCurveTo(64 + s * 22, 38.5, 64 + s * 33, 43); g.stroke();
   }
-  // yeux : blanc + iris + pupille + reflet
+  // yeux en amande : blanc légèrement teinté, iris, pupille, reflet, paupière supérieure
   for (const s of [-1, 1]) {
-    const x = 64 + s * 23, y = 56;
-    g.fillStyle = '#fbf8f2';
-    g.beginPath(); g.ellipse(x, y, 12, 8, 0, 0, Math.PI * 2); g.fill();
-    g.fillStyle = light ? '#6a4a2a' : '#3a2214';
-    g.beginPath(); g.arc(x, y + 0.5, 6.5, 0, Math.PI * 2); g.fill();
-    g.fillStyle = '#050403';
-    g.beginPath(); g.arc(x, y + 0.5, 3.2, 0, Math.PI * 2); g.fill();
-    g.fillStyle = '#ffffff';
-    g.beginPath(); g.arc(x - 2.2, y - 2, 1.8, 0, Math.PI * 2); g.fill();
-    g.strokeStyle = light ? '#3a2418' : '#0a0604'; g.lineWidth = 2.4;
-    g.beginPath(); g.ellipse(x, y, 12, 8, 0, Math.PI * 1.05, Math.PI * 1.95); g.stroke();
+    const x = 64 + s * 22, y = 56;
+    const eye = () => { g.beginPath(); g.moveTo(x - 9.5, y + 0.5); g.quadraticCurveTo(x - 1, y - 6.5, x + 9.5, y - 0.5); g.quadraticCurveTo(x + 1, y + 5, x - 9.5, y + 0.5); g.closePath(); };
+    g.save(); eye(); g.fillStyle = '#efe9df'; g.fill(); g.clip();
+    g.fillStyle = light ? '#5b6f45' : '#3b2416';
+    g.beginPath(); g.arc(x + s * 0.5, y - 0.3, 4.6, 0, Math.PI * 2); g.fill();
+    g.fillStyle = '#0a0705'; g.beginPath(); g.arc(x + s * 0.5, y - 0.3, 2.1, 0, Math.PI * 2); g.fill();
+    g.fillStyle = 'rgba(255,255,255,.9)'; g.beginPath(); g.arc(x + s * 0.5 - 1.6, y - 2, 1.1, 0, Math.PI * 2); g.fill();
+    g.fillStyle = 'rgba(0,0,0,.22)'; g.fillRect(x - 10, y - 7, 20, 3.2); // ombre de la paupière
+    g.restore();
+    g.strokeStyle = light ? '#2e1d14' : '#070403'; g.lineWidth = 2;
+    g.beginPath(); g.moveTo(x - 9.5, y + 0.5); g.quadraticCurveTo(x - 1, y - 6.5, x + 9.5, y - 0.5); g.stroke();
+    g.strokeStyle = shade(skin, 0.55); g.lineWidth = 1.2;
+    g.beginPath(); g.moveTo(x - 7, y - 6.5); g.quadraticCurveTo(x, y - 10, x + 8, y - 5.5); g.stroke(); // pli de la paupière
   }
-  // nez (ombre + narines)
-  g.strokeStyle = shade(skin, 0.75); g.lineWidth = 1.8;
-  g.beginPath(); g.moveTo(63, 66); g.quadraticCurveTo(60, 74, 63, 78); g.stroke();
-  g.fillStyle = shade(skin, 0.5);
-  for (const s of [-1, 1]) { g.beginPath(); g.ellipse(64 + s * 3.5, 79, 1.7, 1.1, 0, 0, Math.PI * 2); g.fill(); }
-  // bouche souriante
-  g.fillStyle = light ? '#c8706a' : shade(skin, 0.62);
-  g.beginPath(); g.moveTo(45, 91); g.quadraticCurveTo(64, 85, 83, 91); g.quadraticCurveTo(64, 108, 45, 91); g.fill();
-  g.fillStyle = '#f7f2ea';
-  g.beginPath(); g.moveTo(50, 92); g.quadraticCurveTo(64, 90, 78, 92); g.quadraticCurveTo(64, 98, 50, 92); g.fill();
-  g.strokeStyle = light ? '#7a3330' : shade(skin, 0.38); g.lineWidth = 2.6;
-  g.beginPath(); g.moveTo(44, 90); g.quadraticCurveTo(64, 100, 84, 90); g.stroke();
+  // nez : arête, ailes et narines
+  g.strokeStyle = shade(skin, 0.72); g.lineWidth = 1.6;
+  g.beginPath(); g.moveTo(60, 62); g.quadraticCurveTo(58, 74, 60, 79); g.stroke();
+  g.fillStyle = shade(skin, 0.45);
+  for (const s of [-1, 1]) { g.beginPath(); g.ellipse(64 + s * 4, 80, 2.1, 1.2, s * 0.3, 0, Math.PI * 2); g.fill(); }
+  g.strokeStyle = shade(skin, 0.66); g.lineWidth = 1.3;
+  for (const s of [-1, 1]) { g.beginPath(); g.arc(64 + s * 6.5, 78.5, 3.2, s > 0 ? -0.6 : Math.PI - 0.9, s > 0 ? 0.9 : Math.PI + 0.6); g.stroke(); }
+  // bouche fermée, léger sourire : lèvre supérieure (arc de Cupidon) et inférieure plus pleine
+  const lipTop = light ? '#b5655f' : shade(skin, 0.68), lipBot = light ? '#c77a72' : shade(skin, 0.8);
+  g.fillStyle = lipTop;
+  g.beginPath(); g.moveTo(50, 91); g.quadraticCurveTo(57, 86, 62, 88); g.quadraticCurveTo(64, 89, 66, 88); g.quadraticCurveTo(71, 86, 78, 91); g.quadraticCurveTo(64, 93, 50, 91); g.fill();
+  g.fillStyle = lipBot;
+  g.beginPath(); g.moveTo(51, 91.5); g.quadraticCurveTo(64, 93.5, 77, 91.5); g.quadraticCurveTo(64, 101, 51, 91.5); g.fill();
+  g.strokeStyle = light ? '#6e302c' : shade(skin, 0.4); g.lineWidth = 1.5;
+  g.beginPath(); g.moveTo(49, 90.5); g.quadraticCurveTo(64, 94, 79, 90.5); g.stroke();
+  g.fillStyle = 'rgba(255,255,255,.18)'; g.beginPath(); g.ellipse(64, 95.5, 6, 1.4, 0, 0, Math.PI * 2); g.fill(); // reflet
   const tex = new THREE.CanvasTexture(c);
   tex.colorSpace = THREE.SRGBColorSpace;
   const m = new THREE.MeshLambertMaterial({ map: tex, transparent: true, depthWrite: false });
@@ -878,12 +897,15 @@ function buildSurfer(ch, lite) {
     const shinCol = ch.leggings || skin;
     for (const s of [-1, 1]) {
       const foot = [0, 0.05, s * 0.4], knee = [-0.12, kneeY, s * 0.3], hip = [0, hipY, s * 0.14];
-      legs.push(limb(rider, foot, knee, 0.065, shinCol, true));
+      legs.push(limb(rider, [foot[0], foot[1] + 0.03, foot[2]], knee, 0.05, shinCol, true, 12));
+      const calf = new THREE.Mesh(sphereGeo(0.062, 12, 10), mat(shinCol, SMOOTH)); calf.scale.set(1, 2.1, 1);
+      calf.position.set(foot[0] + (knee[0] - foot[0]) * 0.64 + 0.02, foot[1] + (knee[1] - foot[1]) * 0.64, foot[2] + (knee[2] - foot[2]) * 0.64);
+      calf.quaternion.setFromUnitVectors(UP, _d.set(knee[0] - foot[0], knee[1] - foot[1], knee[2] - foot[2]).normalize()); rider.add(calf);
       // board short ample et évasé, jusqu'au genou (un peu plus bas pour Paulèle)
       const drop = ch.longShorts ? 0.1 : 0.05;
       const kneeLow = [knee[0] - 0.01, knee[1] - drop, knee[2] + s * 0.01];
       shortLeg(rider, kneeLow, hip, 0.11, 0.14, ch.shorts);
-      const f = new THREE.Mesh(sphereGeo(0.06, 8, 6), mat(skin, SMOOTH)); f.scale.set(1, 0.6, 1.7); f.position.set(-0.04, 0.04, s * 0.4); rider.add(f);
+      const f = new THREE.Mesh(sphereGeo(0.055, 12, 8), mat(skin, SMOOTH)); f.scale.set(1.9, 0.62, 0.95); f.position.set(-0.05, 0.035, s * 0.4); rider.add(f);
     }
   }
   const torso = new THREE.Group(); torso.position.y = hipY; rider.add(torso);
@@ -891,9 +913,15 @@ function buildSurfer(ch, lite) {
   const pelvis = new THREE.Mesh(sphereGeo(0.16), mat(ch.shorts, SMOOTH)); pelvis.scale.set(1.08, 0.85, 1.55); pelvis.position.y = 0.04; torso.add(pelvis);
   // tronc (T-shirt)
   const tl = 0.3 * L;
-  const chest = new THREE.Mesh(capsuleGeo(0.16, Math.round(tl * 100) / 100), mat(ch.shirt, SMOOTH));
-  chest.scale.set(0.85, 1, 1.32); chest.position.y = 0.12 + tl / 2 + 0.06; torso.add(chest);
   const topY = 0.12 + tl + 0.12;
+  const chestGeo = cached('torso' + tl.toFixed(3), () => {
+    const H = topY + 0.05, P = [[0.0, 0.0], [0.15, 0.02], [0.148, 0.12], [0.142, 0.2], [0.152, 0.3], [0.163, 0.42], [0.166, 0.55], [0.158, 0.68], [0.135, 0.8], [0.1, 0.9], [0.06, 0.97], [0.0, 1.0]];
+    return new THREE.LatheGeometry(P.map(([r, y]) => new THREE.Vector2(r, 0.02 + y * (H - 0.02))), 28);
+  });
+  const chest = new THREE.Mesh(chestGeo, mat(ch.shirt, SMOOTH));
+  chest.scale.set(0.8, 1, 1.3); torso.add(chest);
+  const hem = new THREE.Mesh(cached('hem', () => new THREE.TorusGeometry(0.15, 0.012, 6, 28)), mat(ch.shirt, SMOOTH));
+  hem.rotation.x = Math.PI / 2; hem.scale.set(0.82, 1.3, 1); hem.position.y = 0.04; torso.add(hem);
   if (!lite) {
     const ly = topY - 0.17;
     if (!isLight(ch.shirt)) {
@@ -913,7 +941,9 @@ function buildSurfer(ch, lite) {
     const faceGeo = cached('face', () => new THREE.SphereGeometry(0.1365, 14, 10, -0.95, 1.9, Math.PI * 0.26, Math.PI * 0.48));
     const face = new THREE.Mesh(faceGeo, getFaceMat(skin, lightSkin)); face.renderOrder = 1; head.add(face);
     // nez en volume
-    const nose = new THREE.Mesh(sphereGeo(0.015, 8, 6), mat(skin, SMOOTH)); nose.scale.set(0.8, 1.1, 0.75); nose.position.set(-0.127, -0.012, 0); head.add(nose);
+    const nose = new THREE.Mesh(sphereGeo(0.017, 10, 8), mat(skin, SMOOTH)); nose.scale.set(0.9, 1.5, 0.85); nose.position.set(-0.128, -0.008, 0); head.add(nose);
+    // mâchoire et menton : bas du visage plus étroit et allongé
+    const jaw = new THREE.Mesh(sphereGeo(0.1, 16, 12), mat(skin, SMOOTH)); jaw.scale.set(0.9, 0.72, 0.98); jaw.position.set(-0.012, -0.068, 0); head.add(jaw);
     // oreilles (cachées par le voile)
     if (ch.hair !== 'hijab' && ch.hair !== 'loose') {
       for (const s of [-1, 1]) {
@@ -949,9 +979,9 @@ function buildSurfer(ch, lite) {
   } else if (ch.hair === 'hijab') {
     // voile : couvre cheveux, oreilles et cou, visage dégagé
     const sc = mat(ch.scarf, { flatShading: false, side: THREE.DoubleSide });
-    const veil = new THREE.Mesh(cached('hijab', () => new THREE.SphereGeometry(0.158, 18, 12, 0.85, Math.PI * 2 - 1.7, 0, Math.PI * 0.82)), sc); veil.scale.set(1, 1.12, 1); veil.position.set(-0.01, headY + 0.01, 0); torso.add(veil);
-    const top = new THREE.Mesh(cached('hijabTop', () => new THREE.SphereGeometry(0.16, 16, 6, 0, Math.PI * 2, 0, Math.PI * 0.3)), sc); top.scale.set(1, 1.12, 1); top.position.set(-0.01, headY + 0.01, 0); torso.add(top);
-    const drape = new THREE.Mesh(cached('drape', () => new THREE.CylinderGeometry(0.12, 0.22, 0.2, 16, 1, true)), sc); drape.position.set(0.0, topY + 0.06, 0); drape.scale.z = 1.2; torso.add(drape);
+    const veil = new THREE.Mesh(cached('hijab', () => new THREE.SphereGeometry(0.149, 24, 16, 0.9, Math.PI * 2 - 1.8, 0, Math.PI * 0.8)), sc); veil.scale.set(1, 1.1, 0.95); veil.position.set(-0.005, headY + 0.008, 0); torso.add(veil);
+    const top = new THREE.Mesh(cached('hijabTop', () => new THREE.SphereGeometry(0.151, 20, 8, 0, Math.PI * 2, 0, Math.PI * 0.3)), sc); top.scale.set(1, 1.1, 0.95); top.position.set(-0.005, headY + 0.008, 0); torso.add(top);
+    const drape = new THREE.Mesh(cached('drape', () => new THREE.CylinderGeometry(0.1, 0.158, 0.19, 24, 1, true)), sc); drape.position.set(0.005, topY + 0.065, 0); drape.scale.set(0.92, 1, 1.05); torso.add(drape);
   } else if (ch.hair === 'loose') {
     // cheveux détachés, aux épaules et dans le dos
     addCap(1.04, 1.17);
@@ -966,7 +996,7 @@ function buildSurfer(ch, lite) {
     addCap();
   }
   // tête + visage + coiffure regroupés et légèrement agrandis (lisibilité)
-  const headG = new THREE.Group(); headG.position.set(-0.02, headY, 0); headG.scale.setScalar(1.12);
+  const headG = new THREE.Group(); headG.position.set(-0.02, headY, 0); headG.scale.setScalar(0.98);
   for (const o of torso.children.slice(firstHeadChild)) { o.position.x += 0.02; o.position.y -= headY; headG.add(o); }
   torso.add(headG);
   // bras
@@ -977,17 +1007,21 @@ function buildSurfer(ch, lite) {
     const arm = new THREE.Group(); arm.position.set(0, shY, s * 0.2); torso.add(arm);
     // bras baissés et souples : coude légèrement plié vers l'avant
     const elbow = [0.04, -0.25, s * 0.15], wrist = [0.13, -0.46, s * 0.22];
-    const sh = new THREE.Mesh(sphereGeo(0.075, 10, 8), mat(sleeveCol, SMOOTH)); arm.add(sh);
+    const sh = new THREE.Mesh(sphereGeo(0.066, 14, 10), mat(sleeveCol, SMOOTH)); sh.scale.set(1, 0.92, 1); arm.add(sh);
+    const fore = [elbow[0] + (wrist[0] - elbow[0]) * 0.35, elbow[1] + (wrist[1] - elbow[1]) * 0.35, elbow[2] + (wrist[2] - elbow[2]) * 0.35];
     if (ch.longSleeves) {
-      limb(arm, [0, 0, 0], elbow, 0.055, sleeveCol, true);
-      limb(arm, elbow, wrist, 0.047, sleeveCol, true);
+      limb(arm, [0, 0, 0], elbow, 0.054, sleeveCol, true, 12);
+      limb(arm, elbow, wrist, 0.045, sleeveCol, true, 12);
     } else {
-      const mid = [elbow[0] * 0.45, elbow[1] * 0.45, elbow[2] * 0.45];
-      limb(arm, [0, 0, 0], mid, 0.062, sleeveCol, true);
-      limb(arm, mid, elbow, 0.05, skin, true);
-      limb(arm, elbow, wrist, 0.045, skin, true);
+      const mid = [elbow[0] * 0.42, elbow[1] * 0.42, elbow[2] * 0.42];
+      limb(arm, [0, 0, 0], mid, 0.064, sleeveCol, true, 12);
+      limb(arm, mid, elbow, 0.046, skin, true, 12);
+      const bic = new THREE.Mesh(sphereGeo(0.05, 12, 8), mat(skin, SMOOTH)); bic.scale.set(1, 1.6, 1); bic.position.set(elbow[0] * 0.62 + 0.01, elbow[1] * 0.62, elbow[2] * 0.62); arm.add(bic);
+      limb(arm, elbow, fore, 0.046, skin, true, 12);
+      limb(arm, fore, wrist, 0.036, skin, true, 12);
     }
-    const hand = new THREE.Mesh(sphereGeo(0.05, 8, 6), mat(skin, SMOOTH)); hand.scale.set(0.8, 1, 1.2); hand.position.set(wrist[0] - 0.01, wrist[1] - 0.02, wrist[2] + s * 0.05); arm.add(hand);
+    const hand = new THREE.Mesh(sphereGeo(0.042, 12, 8), mat(skin, SMOOTH)); hand.scale.set(0.7, 1.35, 1.05); hand.position.set(wrist[0] + 0.005, wrist[1] - 0.05, wrist[2] + s * 0.02); arm.add(hand);
+    limb(arm, [wrist[0] - 0.02, wrist[1] - 0.025, wrist[2] + s * 0.005], [wrist[0] - 0.045, wrist[1] - 0.06, wrist[2] + s * 0.012], 0.013, skin, true, 8); // pouce
     arm.rotation.x = s * -0.08;
     arms.push(arm);
   }
