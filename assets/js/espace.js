@@ -672,16 +672,36 @@
         <input type="search" placeholder="Rechercher (objet, projet, demandeur…)" aria-label="Rechercher">
         <div class="chips chips-filter">${["Tous", "En attente", ...statuses.filter((s) => !/^en attente$/i.test(s))].map((s, i) => `<button type="button" class="chip-btn" data-s="${esc(s)}" aria-pressed="${i === 0}">${esc(s)}</button>`).join("")}</div>
       </div>
-      <p class="muted"><span data-count></span> · Total affiché : <strong data-total></strong> · Le statut se change directement dans la liste (enregistré dans la feuille).</p>
-      <div class="table-scroll"><table class="data-table">
-        <thead><tr>${show.map((i) => `<th>${esc(label(m.head[i]))}</th>`).join("")}<th>Statut</th></tr></thead><tbody></tbody></table></div>`;
+      <p class="muted"><span data-count></span> · Total affiché : <strong data-total></strong> · Le statut se change directement dans la liste (enregistré dans la feuille). <button type="button" class="link-btn" data-reset hidden>Effacer les filtres de colonnes</button></p>
+      <div class="table-scroll"><table class="data-table table-compact">
+        <thead><tr>${show.map((i) => `<th>${esc(label(m.head[i]))}</th>`).join("")}<th>Statut</th></tr>
+        <tr class="col-filters">${[...show, "st"].map((i) => colFilter(i)).join("")}</tr></thead><tbody></tbody></table></div>`;
+    // un filtre sous chaque intitulé : liste déroulante quand la colonne a peu de valeurs, sinon texte libre
+    function colFilter(i) {
+      const lab = i === "st" ? "Statut" : label(m.head[i]);
+      const vals = i === "st" ? [...new Set(m.rows.map((x) => tidy(x.status)).filter(Boolean))]
+        : i === m.c.ts || i === m.c.amount ? [] : [...new Set(m.rows.map((x) => tidy(x.r[i])).filter(Boolean))];
+      if (i === m.c.amount) return `<th><input type="number" min="0" step="1" data-cf="${i}" data-op="min" placeholder="Min." aria-label="${esc(lab)} minimum"></th>`;
+      if (vals.length && vals.length <= 40) return `<th><select data-cf="${i}" aria-label="Filtrer ${esc(lab)}"><option value="">Tous</option>${vals.sort((a, b) => a.localeCompare(b, "fr")).map((v) => `<option>${esc(v)}</option>`).join("")}</select></th>`;
+      return `<th><input type="search" data-cf="${i}" placeholder="${i === m.c.ts ? "ex : 11/2026" : "Filtrer…"}" aria-label="Filtrer ${esc(lab)}"></th>`;
+    }
     let filt = "Tous";
     const q = body.querySelector("input");
-    const fmt = (i, v) => (i === m.c.amount ? money(num(v)) : /^https?:\/\//.test(tidy(v)) ? `<a href="${esc(tidy(v))}" target="_blank" rel="noopener">Ouvrir ↗</a>` : esc(v));
+    const cf = {};
+    const shortDate = (v) => tidy(v).replace(/\s+\d{1,2}:\d{2}(:\d{2})?$/, "");
+    const fmt = (i, v) => (i === m.c.amount ? money(num(v)) : i === m.c.ts ? esc(shortDate(v)) : /^https?:\/\//.test(tidy(v)) ? `<a href="${esc(tidy(v))}" target="_blank" rel="noopener">Ouvrir ↗</a>` : esc(v));
+    const colOk = (x) => Object.entries(cf).every(([k, v]) => {
+      if (k === "st") return tidy(x.status) === v;
+      const i = +k;
+      if (i === m.c.amount) return num(x.r[i]) >= +v;
+      const el = body.querySelector(`[data-cf="${k}"]`);
+      return el.tagName === "SELECT" ? tidy(x.r[i]) === v : tidy(x.r[i]).toLowerCase().includes(v.toLowerCase());
+    });
     const draw = () => {
       const term = q.value.toLowerCase().trim();
-      const L = m.rows.filter((x) => (filt === "Tous" || (filt === "En attente" ? m.pending.includes(x) : filt === "Payé" ? m.isPaid(x.status) : filt === "Refusé" ? m.isRefused(x.status) : x.status.toLowerCase() === filt.toLowerCase())) && (!term || x.r.join(" ").toLowerCase().includes(term)))
+      const L = m.rows.filter((x) => (filt === "Tous" || (filt === "En attente" ? m.pending.includes(x) : filt === "Payé" ? m.isPaid(x.status) : filt === "Refusé" ? m.isRefused(x.status) : x.status.toLowerCase() === filt.toLowerCase())) && (!term || x.r.join(" ").toLowerCase().includes(term)) && colOk(x))
         .sort((a, b) => (b.date || 0) - (a.date || 0));
+      body.querySelector("[data-reset]").hidden = !Object.keys(cf).length;
       body.querySelector("[data-count]").textContent = L.length + " demande(s)";
       body.querySelector("[data-total]").textContent = money(L.filter((x) => x.kind === "out").reduce((a, x) => a + x.amount, 0)) + " de sorties";
       body.querySelector("tbody").innerHTML = L.map((x) => `<tr data-row="${x.row}">${show.map((i) => `<td class="${i === m.c.what ? "cell-long" : ""}">${fmt(i, x.r[i])}</td>`).join("")}
@@ -700,6 +720,17 @@
       }));
     };
     q.addEventListener("input", draw);
+    body.querySelectorAll("[data-cf]").forEach((el) => el.addEventListener(el.tagName === "SELECT" ? "change" : "input", () => {
+      const v = el.value.trim();
+      if (v) cf[el.dataset.cf] = v; else delete cf[el.dataset.cf];
+      el.classList.toggle("is-on", !!v);
+      draw();
+    }));
+    body.querySelector("[data-reset]").addEventListener("click", () => {
+      body.querySelectorAll("[data-cf]").forEach((el) => { el.value = ""; el.classList.remove("is-on"); });
+      Object.keys(cf).forEach((k) => delete cf[k]);
+      draw();
+    });
     body.querySelectorAll("[data-s]").forEach((b) => b.addEventListener("click", () => { filt = b.dataset.s; body.querySelectorAll("[data-s]").forEach((y) => y.setAttribute("aria-pressed", String(y === b))); draw(); }));
     draw();
   }
