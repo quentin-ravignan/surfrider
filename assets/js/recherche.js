@@ -186,7 +186,7 @@
         const L = rows.filter((x) => (field(x, "Statut") || "À étudier") === s).sort((a, b) => (parse(field(a, "Date limite")) || 9e15) - (parse(field(b, "Date limite")) || 9e15));
         return `<section class="kcol"><h4>${s} <span class="count">${L.length}</span></h4>${L.map((x) => card(x)).join("")}</section>`;
       }).join("")}</div>
-      <p class="muted small-print">Enregistré dans la feuille <a href="https://docs.google.com/spreadsheets/d/${S.sheet}/edit" target="_blank" rel="noopener">${esc(TAB)} ↗</a>, partagée par les membres du CA.</p>`;
+      <p class="muted small-print">Enregistré dans l'onglet « ${esc(TAB)} » de la Google Sheet de l'association, partagée par les membres du CA.</p>`;
 
     function card(x) {
       const st = field(x, "Statut") || "À étudier", p = progressOf(st), d = parse(field(x, "Date limite"));

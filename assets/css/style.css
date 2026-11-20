@@ -697,3 +697,48 @@ p { margin: 0 0 1em; }
   .dash-tiles { grid-auto-flow: column; grid-auto-columns: minmax(118px, 1fr); grid-template-columns: none; overflow-x: auto; padding-bottom: 6px; scroll-snap-type: x proximity; }
   .dash-tile { scroll-snap-align: start; }
 }
+
+/* Finances › Tableau de bord : indicateurs en couleur, graphiques et analyse */
+.fkpis { display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); margin-bottom: 14px; }
+.fkpi { --k: #0072BC; position: relative; border-radius: 14px; padding: 14px 16px 12px; color: #fff; background: linear-gradient(135deg, var(--k), color-mix(in srgb, var(--k) 70%, #000)); box-shadow: 0 8px 22px color-mix(in srgb, var(--k) 30%, transparent); overflow: hidden; }
+.fkpi::after { content: ""; position: absolute; right: -24px; top: -24px; width: 90px; height: 90px; border-radius: 50%; background: rgba(255,255,255,.12); }
+.fkpi span { font-size: .8rem; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; opacity: .92; }
+.fkpi strong { display: block; font-family: var(--font-display); font-size: 1.3rem; white-space: nowrap; line-height: 1.15; margin: 4px 0 2px; font-variant-numeric: tabular-nums; }
+.fkpi small { font-size: .78rem; opacity: .92; }
+.fkpi b.up { color: #FFE3E3; } .fkpi b.down { color: #D9FBE6; }
+.fk-blue { --k: #0072BC; } .fk-green { --k: #00853F; } .fk-teal { --k: #0E7490; } .fk-red { --k: #C8161E; } .fk-amber { --k: #D97706; } .fk-violet { --k: #6D28D9; } .fk-navy { --k: #0B1F33; }
+.insights { margin-bottom: 14px; border-left: 5px solid #0072BC; }
+.insights h3 { margin-top: 0; }
+.insights ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.insights li { padding: 8px 12px 8px 36px; border-radius: 10px; position: relative; font-size: .95rem; }
+.insights li::before { position: absolute; left: 11px; top: 8px; font-weight: 800; }
+.in-good { background: #E8F6EE; } .in-good::before { content: "✓"; color: #00853F; }
+.in-warn { background: #FFF4E0; } .in-warn::before { content: "!"; color: #C2410C; }
+.in-info { background: #E7F2FB; } .in-info::before { content: "i"; color: #0072BC; font-family: Georgia, serif; }
+.legend-inline { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: .85rem; color: var(--muted); margin: -4px 0 10px; }
+.legend-inline i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 5px; vertical-align: -1px; }
+.mc-2 .mpair { display: flex; gap: 2px; align-items: flex-end; height: 100%; }
+.mc-2 .mbar { flex: 1; align-self: auto; }
+.mc-2 .mb-in { background: #00853F; } .mc-2 .mb-out { background: #E31B23; }
+.cum-chart { width: 100%; height: auto; display: block; }
+.cum-chart text { font-size: 10px; fill: var(--muted); }
+.cum-chart .grid { stroke: var(--line); stroke-dasharray: 3 4; }
+.cum-chart .ln-prev { fill: none; stroke: #9AA6B2; stroke-width: 2; stroke-dasharray: 5 4; }
+.cum-chart .ln-cur { fill: none; stroke: #0072BC; stroke-width: 3; stroke-linejoin: round; }
+.cum-chart .pt-cur { fill: #fff; stroke: #0072BC; stroke-width: 2; }
+.donut-wrap { display: flex; flex-wrap: wrap; gap: 18px; align-items: center; }
+.donut-wrap .pie { width: 140px; height: 140px; flex-basis: 140px; }
+.dash-legend { flex: 1 1 200px; }
+.dash-legend li { display: grid; grid-template-columns: 12px 1fr auto; gap: 2px 8px; align-items: center; font-size: .88rem; }
+.dash-legend .lg-l { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.dash-legend b { font-variant-numeric: tabular-nums; }
+.dash-legend small { grid-column: 2 / -1; color: var(--muted); margin-top: -4px; }
+.top-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.top-list li { display: grid; grid-template-columns: 28px 1fr auto; gap: 10px; align-items: center; }
+.top-list .rk { width: 28px; height: 28px; border-radius: 50%; color: #fff; display: grid; place-items: center; font-weight: 800; font-size: .85rem; }
+.top-list strong { display: block; font-size: .92rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.top-list small { color: var(--muted); font-size: .78rem; }
+.top-list > li > div { min-width: 0; }
+.top-list b { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.stack { display: flex; height: 16px; border-radius: 999px; overflow: hidden; background: var(--sand-2); margin-bottom: 10px; }
+.stack span { display: block; height: 100%; }

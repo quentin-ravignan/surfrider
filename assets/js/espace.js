@@ -439,12 +439,13 @@
     if (!f) f = await load("finance", true, true);
     if (!f) return financeSetup(panel);
     subTabs(panel, "Finances", [["comptes", "Comptes Wave & NSIA", (b) => financeComptes(b, f)], ["dash", "Tableau de bord", (b) => financeDash(b, f)], ["suivi", "Suivi des décaissements", (b) => financeSuivi(b, f)], ["new", "Demande de décaissement", (b, open) => financeForm(b, f, open)]], "comptes");
-    const foot = document.createElement("p");
-    foot.className = "muted small-print";
-    foot.innerHTML = `Feuille : <a href="https://docs.google.com/spreadsheets/d/${f.id}/edit" target="_blank" rel="noopener">${esc(f.title)} › ${esc(f.tab)} ↗</a>${C.financeSheetId ? "" : ` · <button type="button" class="linklike" data-unlink>changer de feuille</button>`}`;
-    panel.append(foot);
-    const ul = foot.querySelector("[data-unlink]");
-    if (ul) ul.addEventListener("click", () => { D.setFinanceSheet(""); delete S.data.finance; focus("finances"); });
+    if (!C.financeSheetId) { // feuille reliée sur cet appareil seulement : on peut en changer
+      const foot = document.createElement("p");
+      foot.className = "muted small-print";
+      foot.innerHTML = `<button type="button" class="linklike" data-unlink>Changer de feuille</button>`;
+      panel.append(foot);
+      foot.querySelector("[data-unlink]").addEventListener("click", () => { D.setFinanceSheet(""); delete S.data.finance; focus("finances"); });
+    }
   }
 
   function financeSetup(panel) {
@@ -471,31 +472,118 @@
   }
   function sumBy(rows, idx) { const o = {}; rows.forEach((x) => { const k = tidy(x.r[idx]) || "—"; o[k] = (o[k] || 0) + x.amount; }); return Object.entries(o).sort((a, b) => b[1] - a[1]); }
 
-  function financeDash(body, f) {
+  // palette des graphiques (couleurs Surfrider + compléments lisibles)
+  const PAL = ["#0072BC", "#E31B23", "#00853F", "#F2A900", "#6D28D9", "#0E7490", "#C2410C", "#DB2777", "#65A30D", "#64748B"];
+  function donut(entries, max = 6) {
+    const top = entries.slice(0, max), rest = entries.slice(max).reduce((a, e) => a + e[1], 0);
+    const parts = [...top, ...(rest > 0 ? [["Autres", rest]] : [])].map(([label, value], i) => ({ label, value, color: PAL[i % PAL.length] }));
+    const total = parts.reduce((a, p) => a + p.value, 0) || 1;
+    return `<div class="donut-wrap">${pie(parts)}<ul class="rec-legend dash-legend">${parts.map((p) => `<li><i style="background:${p.color}"></i><span class="lg-l">${esc(p.label)}</span><b>${Math.round(p.value / total * 100)} %</b><small>${money(p.value)}</small></li>`).join("")}</ul></div>`;
+  }
+  function cbars(entries, fmt = money) {
+    const max = Math.max(1, ...entries.map((e) => e[1]));
+    return `<div class="bars">${entries.map(([k, v], i) => `<div class="bar-row"><span class="label" title="${esc(k)}">${esc(k)}</span><span class="track"><span class="fill" style="width:${(v / max) * 100}%;background:${PAL[i % PAL.length]}"></span></span><span class="val">${fmt(v)}</span></div>`).join("") || "<p class='muted'>Pas de données.</p>"}</div>`;
+  }
+  const pct = (a, b) => (b ? Math.round((a - b) / b * 100) : null);
+  const short = (n) => (Math.abs(n) >= 1e6 ? (n / 1e6).toLocaleString("fr-FR", { maximumFractionDigits: 1 }) + " M" : Math.abs(n) >= 1e3 ? Math.round(n / 1e3) + " k" : String(Math.round(n)));
+
+  async function financeDash(body, f) {
     const m = financeModel(f);
-    const paid = m.out.filter((x) => m.isPaid(x.status));
-    const year = new Date().getFullYear();
-    const thisYear = m.out.filter((x) => x.date && x.date.getFullYear() === year && !m.isRefused(x.status));
+    const ok = (x) => !m.isRefused(x.status);
     const sum = (L) => L.reduce((a, x) => a + x.amount, 0);
-    const byStatus = {}; m.out.forEach((x) => { const s = m.isPaid(x.status) ? "Payé" : m.isRefused(x.status) ? "Refusé" : (x.status || "Sans statut"); byStatus[s] = byStatus[s] || [0, 0]; byStatus[s][0]++; byStatus[s][1] += x.amount; });
-    const months = []; for (let i = 11; i >= 0; i--) { const d = new Date(); d.setDate(1); d.setMonth(d.getMonth() - i); months.push([d.getFullYear(), d.getMonth()]); }
-    const perMonth = months.map(([y, mo]) => [new Date(y, mo, 1).toLocaleDateString("fr-FR", { month: "short", year: "2-digit" }), sum(m.out.filter((x) => x.date && x.date.getFullYear() === y && x.date.getMonth() === mo && !m.isRefused(x.status)))]);
-    const maxM = Math.max(1, ...perMonth.map((p) => p[1]));
+    const now = new Date(), year = now.getFullYear();
+    const sameP = (d, y) => d && d.getFullYear() === y && (d.getMonth() < now.getMonth() || (d.getMonth() === now.getMonth() && d.getDate() <= now.getDate()));
+    const outOk = m.out.filter(ok), insOk = m.ins.filter(ok);
+    const paid = m.out.filter((x) => m.isPaid(x.status));
+    const outY = outOk.filter((x) => x.date && x.date.getFullYear() === year), inY = insOk.filter((x) => x.date && x.date.getFullYear() === year);
+    const outPrevSame = outOk.filter((x) => sameP(x.date, year - 1));
+    const evo = pct(sum(outY), sum(outPrevSame));
+    const net = sum(inY) - sum(outY);
+
+    // 12 derniers mois : entrées / sorties
+    const months = []; for (let i = 11; i >= 0; i--) { const d = new Date(year, now.getMonth() - i, 1); months.push([d.getFullYear(), d.getMonth()]); }
+    const inM = (L, y, mo) => sum(L.filter((x) => x.date && x.date.getFullYear() === y && x.date.getMonth() === mo));
+    const perMonth = months.map(([y, mo]) => ({ l: new Date(y, mo, 1).toLocaleDateString("fr-FR", { month: "short" }).replace(".", ""), y, out: inM(outOk, y, mo), inn: inM(insOk, y, mo) }));
+    const maxM = Math.max(1, ...perMonth.map((p) => Math.max(p.out, p.inn)));
+    const avg12 = perMonth.reduce((a, p) => a + p.out, 0) / 12;
+    const peak = perMonth.reduce((a, p) => (p.out > a.out ? p : a), perMonth[0]);
+
+    // cumul des dépenses : année en cours vs année précédente
+    const cum = (y) => { let s = 0; return Array.from({ length: 12 }, (_, mo) => (s += inM(outOk, y, mo))); };
+    const cy = cum(year).map((v, i) => (i <= now.getMonth() ? v : null)), py = cum(year - 1);
+    const maxC = Math.max(1, ...py, ...cy.filter((v) => v != null));
+    const W = 560, H = 190, P = 34;
+    const xy = (i, v) => [P + i * (W - P - 8) / 11, H - 22 - (v / maxC) * (H - 40)];
+    const path = (arr) => arr.map((v, i) => (v == null ? "" : `${i && arr[i - 1] != null ? "L" : "M"}${xy(i, v).join(",")}`)).join(" ");
+    const MO = ["J", "F", "M", "A", "M", "J", "J", "A", "S", "O", "N", "D"];
+    const cumSvg = `<svg class="cum-chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="Dépenses cumulées ${year} et ${year - 1}">
+      ${[0, .5, 1].map((t) => `<line x1="${P}" x2="${W - 8}" y1="${xy(0, maxC * t)[1]}" y2="${xy(0, maxC * t)[1]}" class="grid"/><text x="${P - 4}" y="${xy(0, maxC * t)[1] + 4}" text-anchor="end">${short(maxC * t)}</text>`).join("")}
+      ${MO.map((l, i) => `<text x="${xy(i, 0)[0]}" y="${H - 6}" text-anchor="middle">${l}</text>`).join("")}
+      <path d="${path(py)}" class="ln-prev"/><path d="${path(cy)}" class="ln-cur"/>
+      ${cy.map((v, i) => (v == null ? "" : `<circle cx="${xy(i, v)[0]}" cy="${xy(i, v)[1]}" r="3.5" class="pt-cur"><title>${MO[i]} ${year} : ${money(v)}</title></circle>`)).join("")}
+    </svg>`;
+
+    const byProject = m.c.project >= 0 ? sumBy(outY.length ? outY : outOk, m.c.project) : [];
+    const byMethod = m.c.method >= 0 ? sumBy(outY.length ? outY : outOk, m.c.method) : [];
+    const byPayee = m.c.payee >= 0 ? sumBy(outY.length ? outY : outOk, m.c.payee).filter(([k]) => k !== "—").slice(0, 6) : [];
+    const topOut = [...(outY.length ? outY : outOk)].sort((a, b) => b.amount - a.amount).slice(0, 5);
+    const oldPending = m.pending.filter((x) => x.date && (now - x.date) / 864e5 > 30);
+    const byStatus = {}; m.out.forEach((x) => { const s = m.isPaid(x.status) ? "Payé" : m.isRefused(x.status) ? "Refusé" : m.pending.includes(x) ? "En attente" : (x.status || "Sans statut"); byStatus[s] = (byStatus[s] || 0) + 1; });
+    const ST_COL = { "Payé": "#00853F", "En attente": "#F2A900", "Refusé": "#E31B23" };
+    const totSt = Object.values(byStatus).reduce((a, b) => a + b, 0) || 1;
+    const lbl = outY.length ? String(year) : "toutes années";
+
     body.innerHTML = `
-      <div class="kpis">
-        <div class="kpi"><span>Décaissé / payé (${paid.length})</span><strong>${money(sum(paid))}</strong></div>
-        <div class="kpi"><span>En attente (${m.pending.length})</span><strong>${money(sum(m.pending))}</strong></div>
-        <div class="kpi"><span>Dépenses ${year} (${thisYear.length})</span><strong>${money(sum(thisYear))}</strong></div>
-        <div class="kpi"><span>Entrées enregistrées (${m.ins.length})</span><strong>${money(sum(m.ins))}</strong></div>
+      <div class="fkpis">
+        <div class="fkpi fk-blue"><span>Dépenses ${year}</span><strong>${money(sum(outY))}</strong><small>${outY.length} paiements${evo == null ? "" : ` · <b class="${evo > 0 ? "up" : "down"}">${evo > 0 ? "▲" : "▼"} ${Math.abs(evo)} %</b> vs même période ${year - 1}`}</small></div>
+        <div class="fkpi fk-green"><span>Entrées ${year}</span><strong>${money(sum(inY))}</strong><small>${inY.length} entrée(s) enregistrée(s)</small></div>
+        <div class="fkpi ${net >= 0 ? "fk-teal" : "fk-red"}"><span>Résultat ${year}</span><strong>${net >= 0 ? "+" : "−"} ${money(Math.abs(net))}</strong><small>entrées − dépenses</small></div>
+        <div class="fkpi fk-amber"><span>En attente</span><strong>${money(sum(m.pending))}</strong><small>${m.pending.length} demande(s)${oldPending.length ? ` · ${oldPending.length} depuis + de 30 j` : ""}</small></div>
+        <div class="fkpi fk-violet"><span>Moyenne mensuelle</span><strong>${money(avg12)}</strong><small>dépenses des 12 derniers mois</small></div>
+        <div class="fkpi fk-navy" data-runway><span>Trésorerie</span><strong>…</strong><small>Wave + NSIA</small></div>
       </div>
       ${m.c.amount < 0 ? `<p class="notice">Aucune colonne « Montant » trouvée dans l'onglet ${esc(f.tab)} : les totaux sont à 0.</p>` : ""}
+      <div class="card insights"><h3>Analyse</h3><ul data-insights></ul></div>
       <div class="grid grid-2 fin-grid">
-        <div class="card"><h3>Par statut</h3>${bars(Object.entries(byStatus).sort((a, b) => b[1][1] - a[1][1]).map(([k, v]) => [`${k} (${v[0]})`, v[1]]))}</div>
-        <div class="card"><h3>12 derniers mois</h3><div class="month-chart">${perMonth.map(([l, v]) => `<div class="mcol" title="${l} : ${money(v)}"><span class="mbar" style="height:${(v / maxM) * 100}%"></span><small>${l}</small></div>`).join("")}</div></div>
-        ${m.c.project >= 0 ? `<div class="card"><h3>Dépenses par projet</h3>${bars(sumBy(m.out.filter((x) => !m.isRefused(x.status)), m.c.project).slice(0, 10))}</div>` : ""}
-        ${m.c.cat >= 0 ? `<div class="card"><h3>Par catégorie</h3>${bars(sumBy(m.out, m.c.cat).slice(0, 10))}</div>`
-          : m.c.method >= 0 ? `<div class="card"><h3>Par moyen de paiement</h3>${bars(sumBy(m.out.filter((x) => !m.isRefused(x.status)), m.c.method).slice(0, 8))}</div>` : ""}
+        <div class="card"><h3>Entrées et dépenses, 12 derniers mois</h3>
+          <div class="legend-inline"><span><i style="background:#00853F"></i>Entrées</span><span><i style="background:#E31B23"></i>Dépenses</span></div>
+          <div class="month-chart mc-2">${perMonth.map((p) => `<div class="mcol" title="${p.l} ${p.y} · entrées ${money(p.inn)} · dépenses ${money(p.out)}"><span class="mpair"><span class="mbar mb-in" style="height:${(p.inn / maxM) * 100}%"></span><span class="mbar mb-out" style="height:${(p.out / maxM) * 100}%"></span></span><small>${p.l}</small></div>`).join("")}</div></div>
+        <div class="card"><h3>Dépenses cumulées : ${year} vs ${year - 1}</h3>
+          <div class="legend-inline"><span><i style="background:#0072BC"></i>${year}</span><span><i style="background:#9AA6B2"></i>${year - 1}</span></div>${cumSvg}</div>
+        ${byProject.length ? `<div class="card"><h3>Dépenses par projet <small class="muted">(${lbl})</small></h3>${donut(byProject)}</div>` : ""}
+        ${byMethod.length ? `<div class="card"><h3>Par moyen de paiement <small class="muted">(${lbl})</small></h3>${donut(byMethod, 5)}</div>` : ""}
+        <div class="card"><h3>Plus grosses dépenses <small class="muted">(${lbl})</small></h3>
+          <ol class="top-list">${topOut.map((x, i) => `<li><span class="rk" style="background:${PAL[i]}">${i + 1}</span><div><strong>${esc(tidy(x.r[m.c.what]).split(/\n| {2,}/)[0] || "—")}</strong><small>${esc([tidy(x.r[m.c.payee]), tidy(x.r[m.c.project]), x.date ? frDate(x.date) : ""].filter(Boolean).join(" · "))}</small></div><b>${money(x.amount)}</b></li>`).join("") || "<li class='muted'>Aucune dépense.</li>"}</ol></div>
+        <div class="card"><h3>Principaux bénéficiaires <small class="muted">(${lbl})</small></h3>${cbars(byPayee)}
+          <h3 style="margin-top:18px">Statut des demandes</h3>
+          <div class="stack">${Object.entries(byStatus).sort((a, b) => b[1] - a[1]).map(([k, v], i) => `<span style="width:${v / totSt * 100}%;background:${ST_COL[k] || PAL[(i + 4) % PAL.length]}" title="${esc(k)} : ${v}"></span>`).join("")}</div>
+          <div class="legend-inline">${Object.entries(byStatus).sort((a, b) => b[1] - a[1]).map(([k, v], i) => `<span><i style="background:${ST_COL[k] || PAL[(i + 4) % PAL.length]}"></i>${esc(k)} <b>${v}</b></span>`).join("")}</div></div>
       </div>`;
+
+    const ins = [];
+    if (evo != null) ins.push([evo > 15 ? "warn" : evo < -15 ? "good" : "info", `Les dépenses ${year} sont <b>${evo > 0 ? "en hausse" : "en baisse"} de ${Math.abs(evo)} %</b> par rapport à la même période de ${year - 1} (${money(sum(outPrevSame))}).`]);
+    if (byProject.length) { const [p, v] = byProject[0], t = byProject.reduce((a, e) => a + e[1], 0) || 1; ins.push(["info", `Le projet <b>${esc(p)}</b> concentre <b>${Math.round(v / t * 100)} %</b> des dépenses (${money(v)}).`]); }
+    if (peak && peak.out) ins.push(["info", `Mois le plus dépensier sur 12 mois : <b>${peak.l} ${peak.y}</b> avec ${money(peak.out)}, soit ${(peak.out / (avg12 || 1)).toFixed(1).replace(".", ",")} fois la moyenne.`]);
+    ins.push([net >= 0 ? "good" : "warn", net >= 0 ? `Résultat ${year} positif : les entrées dépassent les dépenses de <b>${money(net)}</b>.` : `Résultat ${year} négatif : les dépenses dépassent les entrées de <b>${money(-net)}</b>.`]);
+    if (oldPending.length) ins.push(["warn", `<b>${oldPending.length} demande(s)</b> attendent depuis plus de 30 jours (${money(sum(oldPending))}) : à valider ou refuser.`]);
+    else if (m.pending.length) ins.push(["good", `Aucune demande n'attend depuis plus de 30 jours.`]);
+    const drawIns = () => { body.querySelector("[data-insights]").innerHTML = ins.map(([k, t]) => `<li class="in-${k}">${t}</li>`).join(""); };
+    drawIns();
+
+    // trésorerie (soldes Wave + NSIA) et autonomie au rythme actuel
+    try {
+      const soldes = await loadSoldes(f), moves = accountMoves(m);
+      const w = accountState("wave", moves, soldes), n = accountState("nsia", moves, soldes);
+      const el = body.querySelector("[data-runway]");
+      if (w.balance == null && n.balance == null) { el.querySelector("strong").textContent = "—"; el.querySelector("small").textContent = "aucun relevé saisi"; return; }
+      const cash = (w.balance || 0) + (n.balance || 0), months = avg12 ? cash / avg12 : null;
+      el.querySelector("strong").textContent = money(cash);
+      el.querySelector("small").innerHTML = `Wave ${money(w.balance || 0)} · NSIA ${money(n.balance || 0)}`;
+      if (months != null) {
+        ins.unshift([months < 3 ? "warn" : months < 6 ? "info" : "good", `Trésorerie de <b>${money(cash)}</b> : au rythme des 12 derniers mois (${money(avg12)}/mois), elle couvre environ <b>${months.toFixed(1).replace(".", ",")} mois</b> de dépenses.`]);
+        drawIns();
+      }
+    } catch (e) { /* trésorerie indisponible : le reste du tableau reste affiché */ }
   }
 
 
@@ -771,7 +859,14 @@
       if (fd.type === "file") return `<label for="${id}">${esc(fd.l)}</label><input id="${id}" name="${fd.i}" type="file" accept="image/*,application/pdf" capture="environment">`;
       if (fd.type === "textarea") return `<label for="${id}">${esc(fd.l)}${fd.required ? " *" : ""}</label><textarea id="${id}" name="${fd.i}" rows="3"${req}></textarea>`;
       if (fd.type === "select") return `<label for="${id}">${esc(fd.l)}${fd.required ? " *" : ""}</label><select id="${id}" name="${fd.i}"${req}><option value="">Choisir…</option>${fd.opts.map((o) => `<option>${esc(o)}</option>`).join("")}<option value="__autre">Autre…</option></select><input name="${fd.i}-autre" placeholder="Préciser" hidden>`;
-      if (fd.type === "list") return `<label for="${id}">${esc(fd.l)}</label><input id="${id}" name="${fd.i}" list="${id}-l" value="${esc(fd.value)}"><datalist id="${id}-l">${fd.opts.map((o) => `<option value="${esc(o)}">`).join("")}</datalist>`;
+      if (fd.type === "list") {
+        // vraie liste déroulante (les <datalist> s'affichent mal selon les navigateurs) : valeurs déjà utilisées, sans doublons
+        const seen = new Map();
+        [fd.value, ...fd.opts].map(tidy).filter(Boolean).forEach((o) => { const k = o.toLowerCase(); if (!seen.has(k)) seen.set(k, o); });
+        const opts = [...seen.values()].sort((x, y) => x.localeCompare(y, "fr"));
+        const closed = fd.i === m.c.type; // Type : Entrée / Sortie, pas de valeur libre
+        return `<label for="${id}">${esc(fd.l)}</label><select id="${id}" name="${fd.i}" class="pick">${fd.value ? "" : '<option value="">Choisir…</option>'}${opts.map((o) => `<option${o.toLowerCase() === tidy(fd.value).toLowerCase() ? " selected" : ""}>${esc(o)}</option>`).join("")}${closed ? "" : '<option value="__autre">Autre…</option>'}</select><input name="${fd.i}-autre" placeholder="Préciser" hidden>`;
+      }
       return `<label for="${id}">${esc(fd.l)}${fd.required ? " *" : ""}</label><input id="${id}" name="${fd.i}" type="${fd.type === "email" ? "email" : "text"}" value="${esc(fd.value)}"${req}>`;
     };
     const visible = fields.filter((x) => !x.auto);
@@ -788,7 +883,7 @@
       const msg = fm.querySelector(".form-msg");
       const get = (fd) => {
         const el = fm.querySelector(`[name="${fd.i}"]`);
-        if (fd.type === "select" && el.value === "__autre") return fm.querySelector(`[name="${fd.i}-autre"]`).value.trim();
+        if ((fd.type === "select" || fd.type === "list") && el.value === "__autre") return fm.querySelector(`[name="${fd.i}-autre"]`).value.trim();
         if (fd.type === "date") { if (!el.value) return ""; const [y, mo, d] = el.value.split("-"); return `${d}/${mo}/${y}`; }
         return el.type === "file" ? el.files[0] : el.value.trim();
       };
