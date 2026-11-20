@@ -81,8 +81,8 @@ window.SF_CONFIG = {
   saytoukat: [],
   /* Noms et fonctions affichés dans la partie Membres */
   people: {
-    "quentin@surfrider.sn": ["Quentin de Ravignan", "Responsable partenariats"],
-    "quentin.ravignan@gmail.com": ["Quentin de Ravignan", "Responsable partenariats"],
+    "quentin@surfrider.sn": ["Quentin Ravignan", "Responsable partenariats"],
+    "quentin.ravignan@gmail.com": ["Quentin Ravignan", "Responsable partenariats"],
     "contact@surfrider.sn": ["Surfrider Foundation Sénégal", "Compte de l'association"],
     "babacar@surfrider.sn": ["Babacar Thiaw", "Président"],
     "claire@surfrider.sn": ["Claire Stragier", "Directrice générale"],

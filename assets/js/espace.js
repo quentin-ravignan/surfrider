@@ -337,7 +337,6 @@
         <select data-f="site" aria-label="Site"><option value="">Tous les sites</option>${Object.keys(bySite).sort().map((s) => `<option>${esc(s)}</option>`).join("")}</select>
         <select data-f="year" aria-label="Année"><option value="">Toutes les années</option>${years.map((y) => `<option>${y}</option>`).join("")}</select>
         <span class="tag" data-count></span>
-        <a class="btn btn-outline btn-sm" href="https://docs.google.com/spreadsheets/d/${(C.dataSheetId || C.waterSheetId)}/edit" target="_blank" rel="noopener">Ouvrir la feuille ↗</a>
       </div>
       <div class="table-scroll"><table class="data-table">
         <thead><tr><th>Date</th><th>Site</th><th>Watertester</th><th>Marée</th><th>Couleur</th><th>Odeur</th><th>Déchets eau</th><th>Photos</th><th>Commentaire</th></tr></thead>

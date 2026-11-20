@@ -669,3 +669,18 @@ p { margin: 0 0 1em; }
 .btn-google { display: inline-flex; align-items: center; gap: 12px; font: 600 1rem/1 Roboto, Arial, sans-serif; color: #1f1f1f; background: #fff; border: 1px solid #747775; border-radius: 999px; padding: 11px 22px 11px 14px; cursor: pointer; transition: background .15s, box-shadow .15s; }
 .btn-google:hover { background: #f6f9fe; box-shadow: 0 1px 3px rgba(0,0,0,.2); }
 .btn-google:disabled { opacity: .6; cursor: wait; }
+
+/* Membres : une seule table, rôles bien visibles */
+.role-legend { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 10px; margin-bottom: 16px; }
+.role-filter { font: inherit; text-align: left; display: grid; grid-template-columns: auto 1fr; gap: 0 10px; align-items: baseline; padding: 12px 14px; border-radius: 14px; border: 2px solid transparent; cursor: pointer; }
+.role-filter strong { font-family: var(--font-display); font-size: 1.9rem; line-height: 1; grid-row: span 2; }
+.role-filter span { font-weight: 800; }
+.role-filter small { grid-column: 2; font-size: .78rem; opacity: .8; line-height: 1.25; }
+.role-filter[aria-pressed="true"] { border-color: currentColor; box-shadow: 0 0 0 3px rgba(0,0,0,.06); }
+.role-badge { display: inline-block; margin: 0 4px 4px 0; padding: 4px 10px; border-radius: 999px; font-size: .78rem; font-weight: 800; letter-spacing: .02em; text-transform: uppercase; white-space: nowrap; border: 1.5px solid currentColor; }
+.members-table td { font-size: .9rem; }
+.members-table .contact-cell a { white-space: nowrap; }
+.members-table tr.row-admin td:first-child { box-shadow: inset 4px 0 0 #0273BE; }
+.members-table tr.row-ca td:first-child { box-shadow: inset 4px 0 0 #0B6B36; }
+.members-table tr.row-saytoukat td:first-child { box-shadow: inset 4px 0 0 #C2410C; }
+.members-table tr.row-adherent td:first-child { box-shadow: inset 4px 0 0 #6D28D9; }

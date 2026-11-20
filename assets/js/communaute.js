@@ -166,7 +166,6 @@
         <select data-f="town" aria-label="Ville"><option value="">Toutes les villes</option>${towns.map((n) => `<option${n === S.filterTown ? " selected" : ""}>${esc(n)}</option>`).join("")}</select>
         <select data-f="st" aria-label="Statut"><option value="">Tous les statuts</option>${STATUSES.map((s) => `<option>${s}</option>`).join("")}</select>
         <span class="tag" data-count></span>
-        <a class="btn btn-outline btn-sm" href="https://docs.google.com/spreadsheets/d/${S.sheet}/edit" target="_blank" rel="noopener">Ouvrir la feuille ↗</a>
       </div>
       <div class="com-rows"></div>`;
     S.filterTown = "";
