@@ -15,7 +15,7 @@
 
   function cached() {
     try {
-      const t = JSON.parse(sessionStorage.getItem(KEY) || "null");
+      const t = JSON.parse(localStorage.getItem(KEY) || "null");
       if (t && t.exp > Date.now() + 60000 && t.scope === SCOPES) return t.token;
     } catch (e) {}
     return null;
@@ -37,7 +37,7 @@
           callback: (r) => {
             pending = null;
             if (r.error) return reject(new Error(r.error_description || r.error));
-            try { sessionStorage.setItem(KEY, JSON.stringify({ token: r.access_token, exp: Date.now() + (r.expires_in || 3600) * 1000, scope: SCOPES })); } catch (e) {}
+            try { localStorage.setItem(KEY, JSON.stringify({ token: r.access_token, exp: Date.now() + (r.expires_in || 3600) * 1000, scope: SCOPES })); } catch (e) {}
             resolve(r.access_token);
           },
           error_callback: (e) => { pending = null; reject(new Error(e.type === "popup_closed" ? "Fenêtre Google fermée" : "La fenêtre Google a été bloquée")); }
@@ -54,7 +54,7 @@
     });
     return pending;
   }
-  function forget() { try { sessionStorage.removeItem(KEY); } catch (e) {} }
+  function forget() { try { localStorage.removeItem(KEY); } catch (e) {} }
 
   async function api(url, opts = {}) {
     const tk = await token(opts.interactive !== false);
