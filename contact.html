@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/css/style.css?v=20261132">
+  <link rel="stylesheet" href="assets/css/style.css?v=20261133">
   <script src="assets/js/config.js?v=20261131"></script>
   <script src="assets/js/i18n.js?v=20261119"></script>
   <script src="assets/js/main.js?v=20261118" defer></script>
@@ -105,23 +105,27 @@
       });
 
       const TEAM = [
-        ["Babacar Thiaw", "Président", "#00853F", "babacar-thiaw"],
-        ["Claire Stragier", "Directrice générale", "#0072BC", "claire-stragier"],
+        ["Babacar Thiaw", "Président", "#00853F", "babacar-thiaw", "https://www.linkedin.com/in/babacarthiawcopacabana/"],
+        ["Claire Stragier", "Directrice générale", "#0072BC", "claire-stragier", "https://www.linkedin.com/in/claire-stragier-a07aa2101/"],
         ["Paulèle Cissé", "Trésorière", "#E31B23", "paulele-cisse"],
         ["Adama Samba", "Secrétaire", "#F2A900", "adama-samba"],
-        ["Quentin de Ravignan", "Responsable partenariats", "#0B1F33", "quentin-de-ravignan"],
+        ["Quentin Ravignan", "Responsable partenariats", "#0B1F33", "quentin-de-ravignan", "https://www.linkedin.com/in/quentin-de-ravignan/"],
         ["Marlène Menoux", "Responsable projets", "#00853F", "marlene-menoux"],
         ["Pape Segan Ndiaye", "Responsable sensibilisation et mobilisation sociale", "#0072BC"],
         ["Maguette Diouf", "Animatrice", "#E31B23"],
         ["Mame Khary Diagne", "Animatrice", "#F2A900"]
       ];
-      document.getElementById("team").innerHTML = TEAM.map(([n, r, c, photo]) => `
-        <div class="card team-card">
-          ${photo
+      // 5e valeur : profil LinkedIn (la photo et le prénom deviennent cliquables)
+      document.getElementById("team").innerHTML = TEAM.map(([n, r, c, photo, li]) => {
+        const wrap = (html, cls) => li ? `<a class="${cls}" href="${li}" target="_blank" rel="noopener" aria-label="${n} sur LinkedIn">${html}</a>` : html;
+        return `
+        <div class="card team-card${li ? " has-link" : ""}">
+          ${wrap(photo
             ? `<img class="avatar-photo" src="assets/img/team/${photo}.jpg" alt="${n}" loading="lazy" width="480" height="480">`
-            : `<div class="avatar" style="background:${c}${c === "#F2A900" ? ";color:#0B1F33" : ""}" aria-hidden="true">${n.split(" ").map(w => w[0]).filter(ch => ch === ch.toUpperCase()).slice(0, 2).join("")}</div>`}
-          <h3>${n}</h3><p class="role">${r}</p>
-        </div>`).join("");
+            : `<div class="avatar" style="background:${c}${c === "#F2A900" ? ";color:#0B1F33" : ""}" aria-hidden="true">${n.split(" ").map(w => w[0]).filter(ch => ch === ch.toUpperCase()).slice(0, 2).join("")}</div>`, "team-photo-link")}
+          <h3>${wrap(n + (li ? ' <span class="li-badge" aria-hidden="true">in</span>' : ""), "team-name-link")}</h3><p class="role">${r}</p>
+        </div>`;
+      }).join("");
     });
   </script>
 </body>
