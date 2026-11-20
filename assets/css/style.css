@@ -684,3 +684,16 @@ p { margin: 0 0 1em; }
 .members-table tr.row-ca td:first-child { box-shadow: inset 4px 0 0 #0B6B36; }
 .members-table tr.row-saytoukat td:first-child { box-shadow: inset 4px 0 0 #C2410C; }
 .members-table tr.row-adherent td:first-child { box-shadow: inset 4px 0 0 #6D28D9; }
+
+/* Tableau de bord : toutes les tuiles, plus petites, sur une seule ligne */
+.dash-tiles { grid-template-columns: repeat(auto-fit, minmax(0, 1fr)); grid-auto-flow: column; gap: 8px; }
+.dash-tile { padding: 10px 10px 9px; column-gap: 8px; border-top-width: 4px; border-radius: 12px; min-width: 0; }
+.dash-ico { width: 28px; height: 28px; border-radius: 8px; }
+.dash-ico svg { width: 17px; height: 17px; }
+.dash-title { font-size: .82rem; line-height: 1.1; overflow-wrap: anywhere; }
+.dash-num { font-size: 1.45rem; margin-top: 6px; }
+.dash-sub { font-size: .72rem; min-height: 2.4em; line-height: 1.2; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+@media (max-width: 900px) {
+  .dash-tiles { grid-auto-flow: column; grid-auto-columns: minmax(118px, 1fr); grid-template-columns: none; overflow-x: auto; padding-bottom: 6px; scroll-snap-type: x proximity; }
+  .dash-tile { scroll-snap-align: start; }
+}
