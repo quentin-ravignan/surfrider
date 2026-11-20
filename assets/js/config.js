@@ -112,6 +112,9 @@ window.SF_CONFIG = {
   financeSheetId: "1QVJnesri0SoOlpadunoAcIrQlIbCc80jMRdFEWUBaGg", // « Site Web 2.0 Data »
   financeSheetTab: "Décaissements",
   projectsSheetTab: "Projets",
+  /* Finances › Allocation : « SF | Table d'affectation globale » (onglet « Attribution des financements ») */
+  allocationSheetId: "1LavqEU9_-V9nwDyn-mpZ-_EMsJ24DVtF1dHD3W4vLEg",
+  allocationTab: "Attribution des financements ",
 
   /* Page « Membres » (admins) : annuaires lus avec le compte Google connecté.
      Les colonnes sensibles (CNI, numéro Wave) ne sont jamais affichées. */

@@ -438,7 +438,7 @@
     let f = await load("finance", true);
     if (!f) f = await load("finance", true, true);
     if (!f) return financeSetup(panel);
-    subTabs(panel, "Finances", [["comptes", "Comptes Wave & NSIA", (b) => financeComptes(b, f)], ["dash", "Tableau de bord", (b) => financeDash(b, f)], ["suivi", "Suivi des décaissements", (b) => financeSuivi(b, f)], ["new", "Demande de décaissement", (b, open) => financeForm(b, f, open)]], "comptes");
+    subTabs(panel, "Finances", [["comptes", "Comptes Wave & NSIA", (b) => financeComptes(b, f)], ["dash", "Tableau de bord", (b) => financeDash(b, f)], ["suivi", "Suivi des décaissements", (b) => financeSuivi(b, f)], ["alloc", "Allocation des financements", (b) => financeAllocation(b)], ["new", "Demande de décaissement", (b, open) => financeForm(b, f, open)]], "comptes");
     if (!C.financeSheetId) { // feuille reliée sur cet appareil seulement : on peut en changer
       const foot = document.createElement("p");
       foot.className = "muted small-print";
@@ -486,6 +486,83 @@
   }
   const pct = (a, b) => (b ? Math.round((a - b) / b * 100) : null);
   const short = (n) => (Math.abs(n) >= 1e6 ? (n / 1e6).toLocaleString("fr-FR", { maximumFractionDigits: 1 }) + " M" : Math.abs(n) >= 1e3 ? Math.round(n / 1e3) + " k" : String(Math.round(n)));
+
+  /* ---------------- Allocation des financements ----------------
+     Lit l'onglet « Attribution des financements » de la Google Sheet
+     « SF | Table d'affectation globale » : un bloc « Prévisionnel » et un bloc
+     « Restant » (une ligne par projet, une colonne par poste). Le consommé
+     est calculé : prévu − restant. */
+  async function financeAllocation(body) {
+    const id = C.allocationSheetId;
+    if (!id) { body.innerHTML = `<p class="notice">Aucune table d'allocation configurée (<code>allocationSheetId</code> dans assets/js/config.js).</p>`; return; }
+    let rows;
+    try { rows = await D.read(id, C.allocationTab || "Attribution des financements "); }
+    catch (e) {
+      if (e.code === "auth") throw e;
+      body.innerHTML = `<p class="notice">La table d'allocation n'a pas pu être lue (${esc(e.message)}). Demande à l'administrateur de partager la feuille « SF | Table d'affectation globale » avec ton compte Google.</p>`;
+      return;
+    }
+    const amt = (v) => { const s = String(v ?? "").replace(/[^\d-]/g, ""); return s && s !== "-" ? parseInt(s, 10) : 0; };
+    // repère les deux blocs par leur titre puis leur ligne d'en-tête « Projet »
+    const block = (re) => {
+      const t = rows.findIndex((r) => re.test(tidy(r[0])));
+      if (t < 0) return null;
+      const h = rows.findIndex((r, i) => i > t && /^projet/i.test(tidy(r[0])));
+      if (h < 0) return null;
+      const head = rows[h].map(tidy);
+      const list = [];
+      for (let i = h + 1; i < rows.length && tidy(rows[i][0]); i++) list.push(rows[i]);
+      return { head, list };
+    };
+    const prev = block(/^pr[ée]visionnel/i), rest = block(/^restant/i);
+    if (!prev) { body.innerHTML = `<p class="notice">Bloc « Prévisionnel » introuvable dans la table d'allocation.</p>`; return; }
+    const head = prev.head;
+    const posts = head.map((h, i) => [h, i]).filter(([h, i]) => i >= 3 && h);   // colonnes de postes (après Projet, Période, Total)
+    const short = (h) => h.replace(/\s*\(.*\)\s*/, "").replace(/^Responsable /i, "Resp. ");
+    const isTotal = (r) => /^total/i.test(tidy(r[0]));
+    const restOf = (name) => rest && rest.list.find((r) => tidy(r[0]).toLowerCase() === name.toLowerCase());
+    const projects = prev.list.filter((r) => !isTotal(r)).map((r) => {
+      const name = tidy(r[0]), rr = restOf(name);
+      const cells = posts.map(([h, i]) => { const p = amt(r[i]), left = rr ? amt(rr[i]) : 0; return { h, p, left, used: p - left }; });
+      const p = amt(r[2]) || cells.reduce((a, c) => a + c.p, 0);
+      const left = rr ? amt(rr[2]) : 0;
+      return { name, period: tidy(r[1]), p, left, used: p - left, cells };
+    });
+    const tot = { p: 0, left: 0, used: 0 }; projects.forEach((x) => { tot.p += x.p; tot.left += x.left; tot.used += x.used; });
+    const postTot = posts.map(([h], k) => { const o = { h, p: 0, left: 0 }; projects.forEach((x) => { o.p += x.cells[k].p; o.left += x.cells[k].left; }); o.used = o.p - o.left; return o; });
+    const rate = (u, p) => (p > 0 ? Math.round(u / p * 100) : 0);
+    const gauge = (u, p) => { const r = rate(u, p); const cls = r > 100 ? "over" : r >= 90 ? "hi" : r >= 50 ? "mid" : "lo"; return `<span class="al-gauge ${cls}" title="${r} % consommé"><span style="width:${Math.min(100, Math.max(0, r))}%"></span></span><small>${r} %</small>`; };
+    const cell = (c) => (c.p || c.left
+      ? `<div class="al-cell${c.left < 0 ? " al-neg" : ""}"><b>${money(c.p)}</b>${gauge(c.used, c.p)}<small class="al-left">reste ${c.left < 0 ? "−" : ""}${money(Math.abs(c.left))}</small></div>`
+      : `<span class="muted">—</span>`);
+    const over = [];
+    projects.forEach((x) => x.cells.forEach((c) => { if (c.left < 0) over.push(`<b>${esc(x.name)}</b> · ${esc(short(c.h))} : dépassement de ${money(-c.left)}`); }));
+    const ending = projects.filter((x) => x.p && x.left / x.p < 0.1);
+
+    body.innerHTML = `
+      <div class="fkpis">
+        <div class="fkpi fk-blue"><span>Financements prévus</span><strong>${money(tot.p)}</strong><small>${projects.length} projet(s) financé(s)</small></div>
+        <div class="fkpi fk-violet"><span>Consommé</span><strong>${money(tot.used)}</strong><small>${rate(tot.used, tot.p)} % des financements</small></div>
+        <div class="fkpi ${tot.left >= 0 ? "fk-green" : "fk-red"}"><span>Restant à allouer</span><strong>${money(tot.left)}</strong><small>sur l'ensemble des projets</small></div>
+        <div class="fkpi ${over.length ? "fk-red" : "fk-teal"}"><span>Postes en dépassement</span><strong>${over.length}</strong><small>${over.length ? "à rééquilibrer" : "aucun dépassement"}</small></div>
+      </div>
+      ${over.length || ending.length ? `<div class="card insights"><h3>Points d'attention</h3><ul>
+        ${over.map((t) => `<li class="in-warn">${t}</li>`).join("")}
+        ${ending.map((x) => `<li class="in-info"><b>${esc(x.name)}</b> : il reste ${money(x.left)} (${rate(x.left, x.p)} %) — financement presque entièrement consommé.</li>`).join("")}
+      </ul></div>` : ""}
+      <div class="card"><h3>Table d'allocation par projet et par poste</h3>
+        <p class="muted small-print">Montant prévu, part consommée et reste disponible pour chaque poste.</p>
+        <div class="table-scroll"><table class="data-table alloc-table">
+          <thead><tr><th>Projet</th><th>Total</th>${posts.map(([h]) => `<th title="${esc(h)}">${esc(short(h))}</th>`).join("")}</tr></thead>
+          <tbody>${projects.map((x) => `<tr><td><strong>${esc(x.name)}</strong><small class="al-period">${esc(x.period)}</small></td><td>${cell(x)}</td>${x.cells.map((c) => `<td>${cell(c)}</td>`).join("")}</tr>`).join("")}</tbody>
+          <tfoot><tr><td><strong>Total</strong></td><td>${cell(tot)}</td>${postTot.map((c) => `<td>${cell(c)}</td>`).join("")}</tr></tfoot>
+        </table></div>
+      </div>
+      <div class="grid grid-2 fin-grid">
+        <div class="card"><h3>Répartition des financements par poste</h3>${donut(postTot.filter((o) => o.p > 0).map((o) => [short(o.h), o.p]).sort((a, b) => b[1] - a[1]))}</div>
+        <div class="card"><h3>Financements par projet</h3>${donut(projects.map((x) => [x.name, x.p]).sort((a, b) => b[1] - a[1]))}</div>
+      </div>`;
+  }
 
   async function financeDash(body, f) {
     const m = financeModel(f);

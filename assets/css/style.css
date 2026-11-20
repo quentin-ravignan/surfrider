@@ -742,3 +742,19 @@ p { margin: 0 0 1em; }
 .top-list b { font-variant-numeric: tabular-nums; white-space: nowrap; }
 .stack { display: flex; height: 16px; border-radius: 999px; overflow: hidden; background: var(--sand-2); margin-bottom: 10px; }
 .stack span { display: block; height: 100%; }
+
+/* Finances › Allocation des financements */
+.alloc-table th, .alloc-table td { vertical-align: top; min-width: 130px; }
+.alloc-table td:first-child { min-width: 170px; }
+.alloc-table tfoot td { background: var(--sand, #F6F3EC); border-top: 2px solid #0B1F33; }
+.al-period { display: block; color: #64748B; font-size: .75rem; line-height: 1.25; margin-top: 2px; }
+.al-cell { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 2px 8px; }
+.al-cell b { grid-column: 1 / -1; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.al-cell .al-left { grid-column: 1 / -1; color: #64748B; font-size: .75rem; white-space: nowrap; }
+.al-cell.al-neg .al-left { color: #E31B23; font-weight: 700; }
+.al-gauge { display: block; height: 7px; border-radius: 99px; background: #E5E9EF; overflow: hidden; }
+.al-gauge span { display: block; height: 100%; border-radius: inherit; background: #00853F; }
+.al-gauge.mid span { background: #0072BC; }
+.al-gauge.hi span { background: #F2A900; }
+.al-gauge.over span { background: #E31B23; }
+.al-cell small:not(.al-left) { font-size: .72rem; color: #334155; font-variant-numeric: tabular-nums; }
