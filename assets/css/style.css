@@ -758,3 +758,35 @@ p { margin: 0 0 1em; }
 .al-gauge.hi span { background: #F2A900; }
 .al-gauge.over span { background: #E31B23; }
 .al-cell small:not(.al-left) { font-size: .72rem; color: #334155; font-variant-numeric: tabular-nums; }
+
+/* Finances › Cashflow prévisionnel */
+.cf-chart { width: 100%; height: auto; display: block; margin-top: 6px; }
+.cf-chart text { font-size: 11px; fill: #64748B; }
+.cf-chart text.cf-now { fill: #0B1F33; font-weight: 700; }
+.cf-chart .grid { stroke: #E5E9EF; }
+.cf-chart .cf-zone-warn { fill: #FDF3D6; opacity: .65; }
+.cf-chart .cf-zone-crit { fill: #FDE2E3; opacity: .8; }
+.cf-chart .cf-th { stroke: #F2A900; stroke-dasharray: 5 4; }
+.cf-chart .cf-th-l { fill: #B07A00; font-weight: 700; }
+.cf-chart .cf-zero { stroke: #0B1F33; stroke-width: 1.2; }
+.cf-chart .cf-in { fill: #00853F; rx: 2; }
+.cf-chart .cf-out { fill: #E31B23; rx: 2; }
+.cf-chart .cf-line { fill: none; stroke: #0072BC; stroke-width: 3; stroke-linejoin: round; }
+.cf-chart .cf-pt { stroke: #fff; stroke-width: 2; fill: #0072BC; }
+.cf-chart .cf-pt.cf-warn { fill: #F2A900; }
+.cf-chart .cf-pt.cf-crit { fill: #E31B23; }
+.cf-table th:first-child, .cf-detail td:first-child { position: sticky; left: 0; background: #fff; z-index: 1; }
+.cf-table td.cfn, .cf-detail td.cfn { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.cf-table .cf-now { background: #E6F1FA; }
+.cf-table .cf-r-end td { font-weight: 700; }
+.cf-c-ok { background: #E3F4EA; color: #00602D; }
+.cf-c-warn { background: #FDF3D6; color: #8A5A00; }
+.cf-c-crit { background: #FDE2E3; color: #B0141B; }
+.cf-table td.pos, .cf-detail td.pos { color: #00853F; }
+.cf-table td.neg, .cf-detail td.neg { color: #C0161D; }
+.cf-detail td:first-child { min-width: 220px; white-space: normal; }
+.cf-st { display: inline-block; padding: 2px 8px; border-radius: 99px; font-size: .72rem; font-weight: 700; background: #E5E9EF; white-space: nowrap; }
+.cf-st.st-paid { background: #E3F4EA; color: #00602D; }
+.cf-st.st-due { background: #FDF3D6; color: #8A5A00; }
+.panel-head-sub { margin-top: 0; padding-top: 0; border-top: 0; }
+.cf-table tbody th { color: #0B1F33; background: #fff; text-align: left; font-weight: 700; white-space: nowrap; text-transform: none; letter-spacing: 0; font-size: .82rem; }

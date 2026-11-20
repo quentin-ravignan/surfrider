@@ -52,7 +52,6 @@
     { id: "finances", title: "Finances", roles: ["admin", "ca"] },
     { id: "projets", title: "Projets", roles: ["admin", "ca"] },
     { id: "recherche", title: "Recherche de projets", roles: ["admin", "ca"] },
-    { id: "communaute", title: "Communauté", roles: ["admin", "ca"] },
   ];
 
   const S = { user: null, data: {}, el: null, current: null };
@@ -111,7 +110,8 @@
     });
     refreshKpis(false);
     const want = location.hash.slice(1);
-    if (mods.some((m) => m.id === want)) focus(want);
+    if (want === "communaute" && mods.some((m) => m.id === "projets")) focus("projets", false, "communaute");
+    else if (mods.some((m) => m.id === want)) focus(want);
     window.addEventListener("hashchange", () => { const h = location.hash.slice(1); if (h && h !== S.current && mods.some((m) => m.id === h)) focus(h); });
   }
 
@@ -149,12 +149,11 @@
       setKpi("projets", String(p.live.length), `en cours · ${p.done.length} réalisés${p.avg != null ? ` · avancement moyen ${p.avg} %` : ""}`);
     })));
     if (has("recherche") && window.SF_RECHERCHE) jobs.push(guard("recherche", SF_RECHERCHE.kpi(interactive).then((k) => setKpi("recherche", String(k.n), k.sub))));
-    if (has("communaute") && window.SF_COMMUNAUTE_UI) jobs.push(guard("communaute", SF_COMMUNAUTE_UI.kpi(interactive).then((k) => setKpi("communaute", k.n, k.sub))));
     await Promise.all(jobs);
     S.el.querySelector(".dash-auth").hidden = !needAuth;
   }
 
-  function focus(id, scroll) {
+  function focus(id, scroll, sub) {
     S.current = id;
     S.el.querySelectorAll(".dash-tile").forEach((b) => b.setAttribute("aria-selected", String(b.dataset.m === id)));
     S.el.classList.add("has-focus");
@@ -162,7 +161,7 @@
     const panel = S.el.querySelector(".dash-panel");
     panel.className = "dash-panel dash-panel-" + id;
     panel.innerHTML = `<p class="muted">Chargement…</p>`;
-    const run = { prelevements: panelPrelevements, membres: panelMembres, communication: panelCommunication, finances: panelFinances, projets: panelProjets, recherche: (p) => SF_RECHERCHE.mount(p, S.user, subTabs), communaute: (p) => SF_COMMUNAUTE_UI.mount(p, S.user, subTabs) }[id];
+    const run = { prelevements: panelPrelevements, membres: panelMembres, communication: panelCommunication, finances: panelFinances, projets: (p) => panelProjets(p, sub), recherche: (p) => SF_RECHERCHE.mount(p, S.user, subTabs), communaute: (p) => SF_COMMUNAUTE_UI.mount(p, S.user, subTabs) }[id];
     Promise.resolve(run(panel)).catch((e) => {
       panel.innerHTML = e.code === "auth"
         ? `<div class="notice">Autorise l'accès Google (bouton au-dessus) pour afficher cette partie.</div>`
@@ -172,7 +171,7 @@
   }
 
   function subTabs(panel, title, tabs, start) {
-    panel.innerHTML = `<div class="panel-head"><h2>${title}</h2><div class="tabs" role="tablist">${tabs.map(([k, l]) => `<button type="button" role="tab" data-t="${k}" aria-selected="false">${l}</button>`).join("")}</div></div><div class="panel-body"></div>`;
+    panel.innerHTML = `<div class="panel-head${title ? "" : " panel-head-sub"}">${title ? `<h2>${title}</h2>` : ""}<div class="tabs" role="tablist">${tabs.map(([k, l]) => `<button type="button" role="tab" data-t="${k}" aria-selected="false">${l}</button>`).join("")}</div></div><div class="panel-body"></div>`;
     const body = panel.querySelector(".panel-body");
     const open = (k) => {
       panel.querySelectorAll("[data-t]").forEach((b) => b.setAttribute("aria-selected", String(b.dataset.t === k)));
@@ -438,7 +437,7 @@
     let f = await load("finance", true);
     if (!f) f = await load("finance", true, true);
     if (!f) return financeSetup(panel);
-    subTabs(panel, "Finances", [["comptes", "Comptes Wave & NSIA", (b) => financeComptes(b, f)], ["dash", "Tableau de bord", (b) => financeDash(b, f)], ["suivi", "Suivi des décaissements", (b) => financeSuivi(b, f)], ["alloc", "Allocation des financements", (b) => financeAllocation(b)], ["new", "Demande de décaissement", (b, open) => financeForm(b, f, open)]], "comptes");
+    subTabs(panel, "Finances", [["comptes", "Comptes Wave & NSIA", (b) => financeComptes(b, f)], ["dash", "Tableau de bord", (b) => financeDash(b, f)], ["suivi", "Suivi des décaissements", (b) => financeSuivi(b, f)], ["alloc", "Allocation des financements", (b) => financeAllocation(b)], ["cash", "Cashflow prévisionnel", (b) => financeCashflow(b)], ["new", "Demande de décaissement", (b, open) => financeForm(b, f, open)]], "comptes");
     if (!C.financeSheetId) { // feuille reliée sur cet appareil seulement : on peut en changer
       const foot = document.createElement("p");
       foot.className = "muted small-print";
@@ -562,6 +561,115 @@
         <div class="card"><h3>Répartition des financements par poste</h3>${donut(postTot.filter((o) => o.p > 0).map((o) => [short(o.h), o.p]).sort((a, b) => b[1] - a[1]))}</div>
         <div class="card"><h3>Financements par projet</h3>${donut(projects.map((x) => [x.name, x.p]).sort((a, b) => b[1] - a[1]))}</div>
       </div>`;
+  }
+
+  /* ---------------- Cashflow prévisionnel ----------------
+     Onglet « Cashflow prévisionnel » de la feuille des finances (import du
+     fichier Excel « Cashflow Prévisionnel_SURFRIDER FOUNDATION.xlsx ») :
+     une colonne par mois, des lignes d'encaissements et de décaissements,
+     puis les soldes. Zones : sain ≥ 2 M, attention 0 à 2 M, critique < 0. */
+  async function financeCashflow(body) {
+    const rows = await D.read(D.financeSheet(), C.cashflowTab || "Cashflow prévisionnel");
+    // nombres au format de la feuille (fr : « 1586987,5 » ; en : « 1,586,987.5 »)
+    const val = (v) => {
+      let s = String(v ?? "").replace(/[\s  ]/g, "").replace(/[^\d,.-]/g, "");
+      if (!s || s === "-") return 0;
+      if (/,\d{3}(,|$)/.test(s) && s.includes(".")) s = s.replace(/,/g, "");
+      else if ((s.match(/,/g) || []).length > 1) s = s.replace(/,/g, "");
+      else s = s.replace(",", ".");
+      const n = parseFloat(s); return isFinite(n) ? n : 0;
+    };
+    const lab = (r) => tidy(r && r[0]);
+    const hi = rows.findIndex((r) => r.some((c) => /^janv/i.test(tidy(c))));
+    if (hi < 0) { body.innerHTML = `<p class="notice">Onglet « Cashflow prévisionnel » introuvable ou vide dans la feuille des finances.</p>`; return; }
+    const head = rows[hi].map(tidy);
+    const m0 = head.findIndex((c) => /^janv/i.test(c));
+    const MONTHS = head.slice(m0, m0 + 12);
+    const cTot = head.findIndex((c) => /^total$/i.test(c)), cSt = head.findIndex((c) => /^statut$/i.test(c)), cSrc = head.findIndex((c) => /^source$/i.test(c));
+    const series = (r) => MONTHS.map((_, k) => val(r && r[m0 + k]));
+    const find = (re, from = 0) => { const i = rows.findIndex((r, j) => j >= from && re.test(lab(r))); return i; };
+    const startBal = val((rows[find(/^solde initial/i)] || [])[2]);
+    const iIn = find(/^encaissements/i, hi), iInT = find(/^total encaissements/i, hi);
+    const iOut = find(/^d[ée]caissements/i, hi), iOutT = find(/^total d[ée]caissements/i, hi);
+    const inT = series(rows[iInT]), outT = series(rows[iOutT]);
+    const endR = rows[find(/^solde fin de mois \(fcfa\)/i, hi)];
+    const end = endR ? series(endR) : (() => { let b = startBal; return inT.map((x, k) => (b += x - outT[k])); })();
+    const begin = end.map((e, k) => (k ? end[k - 1] : startBal));
+    const lines = (a, b) => (a < 0 || b < 0 ? [] : rows.slice(a + 1, b).filter((r) => lab(r)).map((r) => {
+      const s = series(r), tot = s.reduce((x, y) => x + y, 0);
+      return { label: lab(r), src: cSrc >= 0 ? tidy(r[cSrc]) : "", s, tot, st: cSt >= 0 ? tidy(r[cSt]) : "" };
+    }).filter((x) => x.tot));
+    const ins = lines(iIn, iInT), outs = lines(iOut, iOutT);
+    const sum = (a) => a.reduce((x, y) => x + y, 0);
+    const totIn = sum(inT), totOut = sum(outT);
+    const minV = Math.min(...end), minK = end.indexOf(minV), maxV = Math.max(...end);
+    const zone = (v) => (v < 0 ? "crit" : v < 2e6 ? "warn" : "ok");
+    const nWarn = end.filter((v) => zone(v) === "warn").length, nCrit = end.filter((v) => v < 0).length;
+    const toPay = outs.filter((x) => /payer/i.test(x.st)), paid = outs.filter((x) => /pay[ée]$/i.test(x.st));
+    const curK = new Date().getMonth();
+
+    // graphique : barres encaissements / décaissements + courbe du solde de fin de mois
+    const W = 720, H = 250, PL = 46, PR = 12, PT = 14, PB = 28;
+    const top = Math.max(1, ...inT, ...outT, ...end, 2e6), bot = Math.min(0, ...end);
+    const y = (v) => PT + (top - v) / (top - bot) * (H - PT - PB);
+    const step = (W - PL - PR) / 12, bw = Math.min(16, step / 3);
+    const cx = (k) => PL + step * k + step / 2;
+    const ticks = [0, .25, .5, .75, 1].map((t) => bot + (top - bot) * t);
+    const svg = `<svg class="cf-chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="Encaissements, décaissements et solde prévisionnels par mois">
+      <rect x="${PL}" y="${y(2e6)}" width="${W - PL - PR}" height="${Math.max(0, y(0) - y(2e6))}" class="cf-zone-warn"/>
+      ${bot < 0 ? `<rect x="${PL}" y="${y(0)}" width="${W - PL - PR}" height="${y(bot) - y(0)}" class="cf-zone-crit"/>` : ""}
+      ${ticks.map((v) => `<line x1="${PL}" x2="${W - PR}" y1="${y(v)}" y2="${y(v)}" class="grid"/><text x="${PL - 5}" y="${y(v) + 4}" text-anchor="end">${short(v)}</text>`).join("")}
+      <line x1="${PL}" x2="${W - PR}" y1="${y(2e6)}" y2="${y(2e6)}" class="cf-th"/><text x="${W - PR - 2}" y="${y(2e6) - 4}" text-anchor="end" class="cf-th-l">seuil 2 M</text>
+      <line x1="${PL}" x2="${W - PR}" y1="${y(0)}" y2="${y(0)}" class="cf-zero"/>
+      ${MONTHS.map((l, k) => `<g><title>${esc(l)} · encaissements ${money(inT[k])} · décaissements ${money(outT[k])} · solde fin ${money(end[k])}</title>
+        <rect x="${cx(k) - bw - 1}" y="${y(inT[k])}" width="${bw}" height="${Math.max(0, y(0) - y(inT[k]))}" class="cf-in"/>
+        <rect x="${cx(k) + 1}" y="${y(outT[k])}" width="${bw}" height="${Math.max(0, y(0) - y(outT[k]))}" class="cf-out"/>
+        <text x="${cx(k)}" y="${H - 9}" text-anchor="middle"${k === curK ? ' class="cf-now"' : ""}>${esc(l.replace(".", ""))}</text></g>`).join("")}
+      <path d="${end.map((v, k) => `${k ? "L" : "M"}${cx(k)},${y(v)}`).join(" ")}" class="cf-line"/>
+      ${end.map((v, k) => `<circle cx="${cx(k)}" cy="${y(v)}" r="4" class="cf-pt cf-${zone(v)}"><title>${esc(MONTHS[k])} : solde ${money(v)}</title></circle>`).join("")}
+    </svg>`;
+
+    const cellZ = (v) => `<td class="cfn cf-c-${zone(v)}">${money(v)}</td>`;
+    const numTd = (v, cls = "") => `<td class="cfn ${cls}">${v ? money(v) : "<span class='muted'>—</span>"}</td>`;
+    const stBadge = (s) => (!s ? "" : `<span class="cf-st ${/pay[ée]$/i.test(s) ? "st-paid" : /payer/i.test(s) ? "st-due" : ""}">${esc(s)}</span>`);
+    const detail = (list, title, cls) => `<div class="card"><h3>${title} <small class="muted">(${money(sum(list.map((x) => x.tot)))})</small></h3>
+      <div class="table-scroll"><table class="data-table table-compact cf-detail">
+        <thead><tr><th>Poste</th><th>Source</th>${MONTHS.map((m) => `<th>${esc(m)}</th>`).join("")}<th>Total</th><th>Statut</th></tr></thead>
+        <tbody>${list.map((x) => `<tr><td>${esc(x.label)}</td><td>${x.src ? `<span class="tag">${esc(x.src)}</span>` : ""}</td>${x.s.map((v) => numTd(v, v ? cls : "")).join("")}<td class="cfn"><b>${money(x.tot)}</b></td><td>${stBadge(x.st)}</td></tr>`).join("") || `<tr><td colspan="16" class="muted">Aucune ligne.</td></tr>`}</tbody>
+      </table></div></div>`;
+    const bySrc = {}; ins.forEach((x) => { const k = x.src || "Autre"; bySrc[k] = (bySrc[k] || 0) + x.tot; });
+
+    body.innerHTML = `
+      <div class="fkpis">
+        <div class="fkpi fk-navy"><span>Solde de départ</span><strong>${money(startBal)}</strong><small>début ${esc(MONTHS[0] || "")}</small></div>
+        <div class="fkpi fk-green"><span>Encaissements prévus</span><strong>${money(totIn)}</strong><small>${ins.length} rentrée(s) sur 12 mois</small></div>
+        <div class="fkpi fk-red"><span>Décaissements prévus</span><strong>${money(totOut)}</strong><small>${outs.length} ligne(s) · ${money(sum(toPay.map((x) => x.tot)))} à payer</small></div>
+        <div class="fkpi ${end[11] >= 2e6 ? "fk-teal" : end[11] >= 0 ? "fk-amber" : "fk-red"}"><span>Solde fin d'année</span><strong>${money(end[11])}</strong><small>${totIn - totOut >= 0 ? "+" : "−"} ${money(Math.abs(totIn - totOut))} sur l'année</small></div>
+        <div class="fkpi ${zone(minV) === "ok" ? "fk-teal" : zone(minV) === "warn" ? "fk-amber" : "fk-red"}"><span>Point bas</span><strong>${money(minV)}</strong><small>en ${esc(MONTHS[minK] || "")} · max ${short(maxV)}</small></div>
+        <div class="fkpi ${nCrit ? "fk-red" : nWarn ? "fk-amber" : "fk-teal"}"><span>Mois sous 2 M</span><strong>${nWarn + nCrit} / 12</strong><small>${nCrit} en zone critique (&lt; 0)</small></div>
+      </div>
+      <div class="card insights"><h3>Analyse</h3><ul>
+        ${nCrit ? `<li class="in-warn">La trésorerie passe sous zéro ${nCrit} mois : il faut avancer une rentrée ou décaler des paiements.</li>` : `<li class="in-good">La trésorerie ne passe jamais sous zéro sur les 12 mois.</li>`}
+        ${zone(minV) !== "ok" ? `<li class="in-warn">Point bas de ${money(minV)} en ${esc(MONTHS[minK])} : sous le seuil d'attention de 2 M.</li>` : ""}
+        ${(() => { const big = [...outs].sort((a, b) => b.tot - a.tot)[0]; return big ? `<li class="in-info">Plus gros décaissement : <b>${esc(big.label)}</b> (${money(big.tot)}, ${Math.round(big.tot / (totOut || 1) * 100)} % des sorties).</li>` : ""; })()}
+        ${Object.keys(bySrc).length ? `<li class="in-info">Rentrées attendues : ${Object.entries(bySrc).sort((a, b) => b[1] - a[1]).map(([k, v]) => `<b>${esc(k)}</b> ${money(v)}`).join(" · ")}.</li>` : ""}
+        ${toPay.length ? `<li class="in-warn">${toPay.length} ligne(s) « A payer » pour ${money(sum(toPay.map((x) => x.tot)))}${paid.length ? ` · ${paid.length} déjà payée(s)` : ""}.</li>` : ""}
+      </ul></div>
+      <div class="card"><h3>Trésorerie prévisionnelle sur 12 mois</h3>
+        <div class="legend-inline"><span><i style="background:#00853F"></i>Encaissements</span><span><i style="background:#E31B23"></i>Décaissements</span><span><i style="background:#0072BC"></i>Solde fin de mois</span><span><i style="background:#FDF3D6;border:1px solid #F2A900"></i>Zone d'attention (0 à 2 M)</span></div>
+        ${svg}</div>
+      <div class="card"><h3>Plan de trésorerie mois par mois</h3>
+        <div class="table-scroll"><table class="data-table table-compact cf-table">
+          <thead><tr><th></th>${MONTHS.map((m, k) => `<th${k === curK ? ' class="cf-now"' : ""}>${esc(m)}</th>`).join("")}<th>Total</th></tr></thead>
+          <tbody>
+            <tr><th>Solde début</th>${begin.map((v) => `<td class="cfn">${money(v)}</td>`).join("")}<td></td></tr>
+            <tr class="cf-r-in"><th>Encaissements</th>${inT.map((v) => numTd(v)).join("")}<td class="cfn"><b>${money(totIn)}</b></td></tr>
+            <tr class="cf-r-out"><th>Décaissements</th>${outT.map((v) => numTd(v)).join("")}<td class="cfn"><b>${money(totOut)}</b></td></tr>
+            <tr><th>Flux net</th>${inT.map((v, k) => { const n = v - outT[k]; return `<td class="cfn ${n < 0 ? "neg" : n > 0 ? "pos" : ""}">${n ? (n > 0 ? "+" : "−") + " " + money(Math.abs(n)) : "<span class='muted'>—</span>"}</td>`; }).join("")}<td class="cfn"><b>${money(totIn - totOut)}</b></td></tr>
+            <tr class="cf-r-end"><th>Solde fin</th>${end.map(cellZ).join("")}<td></td></tr>
+          </tbody></table></div></div>
+      ${detail(ins, "Encaissements prévus", "pos")}
+      ${detail(outs, "Décaissements prévus", "neg")}`;
   }
 
   async function financeDash(body, f) {
@@ -1033,7 +1141,13 @@
     return { list, live: list.filter((p) => p.status === "live"), done: list.filter((p) => p.status === "done"), avg: withP.length ? Math.round(withP.reduce((a, p) => a + p.progress, 0) / withP.length) : null, fromSheet: list[0]?.src === "sheet" };
   }
 
-  async function panelProjets(panel) {
+  /* Projets : la liste des projets et, en second onglet, la Communauté */
+  function panelProjets(panel, start) {
+    const tabs = [["liste", "Projets", (b) => projetsList(b)]];
+    if (window.SF_COMMUNAUTE_UI) tabs.push(["communaute", "Communauté", (b) => SF_COMMUNAUTE_UI.mount(b, S.user, (p, t, list, s) => subTabs(p, "", list, s))]);
+    return subTabs(panel, "Projets", tabs, start);
+  }
+  async function projetsList(panel) {
     const pm = await projectsModel(true);
     const card = (p) => `<article class="card proj-card ${p.status}">
       <div class="meta"><span class="tag ${p.status === "live" ? "tag-live" : "tag-done"}">${esc(p.statusLabel || (p.status === "live" ? "En cours" : "Réalisé"))}</span>${p.theme ? `<span class="tag">${esc(p.theme)}</span>` : ""}${p.period ? `<span class="muted">${esc(p.period)}</span>` : ""}</div>
@@ -1045,7 +1159,6 @@
       <div class="proj-figs">${p.funder ? `<span>Financeur : ${esc(p.funder)}</span>` : ""}${p.owner ? `<span>👤 ${esc(p.owner)}</span>` : ""}${p.budget ? `<span>Budget : ${money(p.budget)}</span>` : ""}${p.spent ? `<span>Dépensé : ${money(p.spent)}</span>` : ""}${p.rest != null && p.rest !== 0 ? `<span>Reste : ${money(p.rest)}</span>` : ""}</div>
     </article>`;
     panel.innerHTML = `
-      <div class="panel-head"><h2>Projets</h2></div>
       <div class="kpis">
         <div class="kpi"><span>En cours</span><strong>${pm.live.length}</strong></div>
         <div class="kpi"><span>Réalisés</span><strong>${pm.done.length}</strong></div>

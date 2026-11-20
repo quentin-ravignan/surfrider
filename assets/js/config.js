@@ -115,6 +115,8 @@ window.SF_CONFIG = {
   /* Finances › Allocation : « SF | Table d'affectation globale » (onglet « Attribution des financements ») */
   allocationSheetId: "1LavqEU9_-V9nwDyn-mpZ-_EMsJ24DVtF1dHD3W4vLEg",
   allocationTab: "Attribution des financements ",
+  /* Finances › Cashflow prévisionnel : onglet de la feuille des finances */
+  cashflowTab: "Cashflow prévisionnel",
 
   /* Page « Membres » (admins) : annuaires lus avec le compte Google connecté.
      Les colonnes sensibles (CNI, numéro Wave) ne sont jamais affichées. */
