@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-20T15:25:19Z",
+ "updated": "2026-11-21T14:38:36Z",
  "items": [
   {
    "id": "gn-caa9823bcee5",
@@ -233,6 +233,21 @@
    "published": "2026-11-12",
    "score": 6,
    "first_seen": "2026-11-19"
+  },
+  {
+   "id": "gn-ff19d03af98b",
+   "title": "Oceana to light up Nicosia's Venetian Walls to call for a sustainable future for European fisheries",
+   "funder": "Cyprus Mail",
+   "source": "Google Actualités",
+   "url": "https://news.google.com/rss/articles/CBMizgFBVV95cUxPZ1JEVUlYQVFiZ3oyWG5IaV9zeHExaHBMWnBEanhjZl9xSkZuUExYaU00MWl1ejRlbTgxYWk5QTREc2tsZW83dFR5NEhleTN2SVJmX00taU9IZ2ducWY1TWFRWm5ZZV9ud3ZvU0thZ2Jja2NQcVhTcEtYMXVsX1V2WXZUSU1OTUNSelJQUHhqRnUtS1dQTzRWcDViMlhtSkUyWjJsZ2hYYmZ1aUpDZVl2MkRoam9uZ0g1NDVLM2pXQzBYWnNFYVVZWk50Z19TZw?oc=5",
+   "region": "",
+   "amount": "",
+   "deadline": null,
+   "summary": "Article du 2026-11-20 (Cyprus Mail) annonçant un appel ou un financement.",
+   "eligibility": "",
+   "published": "2026-11-20",
+   "score": 6,
+   "first_seen": "2026-11-21"
   },
   {
    "id": "gg-363992",
@@ -714,6 +729,21 @@
    "published": "2026-11-02",
    "score": 4,
    "first_seen": "2026-11-19"
+  },
+  {
+   "id": "gn-5a458ed29fe4",
+   "title": "Appel à candidatures pour l’occupation temporaire du Théâtre de la Mer (organisation de concerts à l'été 2027)",
+   "funder": "Ville de Sète",
+   "source": "Google Actualités",
+   "url": "https://news.google.com/rss/articles/CBMi0wFBVV95cUxPdEVPRTFlNzkyNHVTcVF1NXAyajBZTml3aFNrS0pCekdna1pwVVpFQllRT0VUM0w3VWNqdy1FNDZWV002T3BrN1pKN00wOGlBUmowX1A0SGwyVlFlb250bklvalFtWG91VlAtQ3lFTU15Y25KYWpsMlBUSlJjNW5iRXRyWDFUNFUyTjMzWWNiRVdiMFN5WlhBX1dkbXI5NUd1OGxsWjE4bVJ0NE1tYkdnV1E4Z1Y5OFg3ZFlKRldUTTM5U0FDSWVKOU1PS1FSLWp0SVNj?oc=5",
+   "region": "",
+   "amount": "",
+   "deadline": null,
+   "summary": "Article du 2026-10-12 (Ville de Sète) annonçant un appel ou un financement.",
+   "eligibility": "",
+   "published": "2026-10-12",
+   "score": 4,
+   "first_seen": "2026-11-21"
   },
   {
    "id": "gg-364154",
