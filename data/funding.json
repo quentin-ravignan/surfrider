@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-21T14:38:36Z",
+ "updated": "2026-11-22T14:32:51Z",
  "items": [
   {
    "id": "gn-caa9823bcee5",
@@ -248,6 +248,21 @@
    "published": "2026-11-20",
    "score": 6,
    "first_seen": "2026-11-21"
+  },
+  {
+   "id": "gn-b257f8ba3d11",
+   "title": "Les 33 projets lauréats du premier appel à projets pour la décarbonation du transport et des services maritimes",
+   "funder": "Mer et Marine",
+   "source": "Google Actualités",
+   "url": "https://news.google.com/rss/articles/CBMi1wFBVV95cUxQVzNQa1dDWU5OUWpiby01OURCQjlhU1lzdWM3YXdCdkhjVktYTTFybk5mQktFVnM3NmpBaVE5R1NMS1NfalY3X2hFSjhoUjRNQWFUUnlBT3BERnMydEhWdUphd3pxNnRGdjFKT0lmRkEyVTBIRlE4c1ZGTTB4UmE1ZnZXaDZBdGlPYWxMQTJkcUZsTEFQc2pXQi1nelZxSHpFUEJJNUpsUDZWVmJhbVYxbS1sb3BTdnlvVGlzQldsRE1zWWxYRU9WenJfdHpJNXN1QW1zQXFacw?oc=5",
+   "region": "",
+   "amount": "",
+   "deadline": null,
+   "summary": "Article du 2026-11-21 (Mer et Marine) annonçant un appel ou un financement.",
+   "eligibility": "",
+   "published": "2026-11-21",
+   "score": 6,
+   "first_seen": "2026-11-22"
   },
   {
    "id": "gg-363992",
@@ -910,9 +925,9 @@
    "region": "",
    "amount": "",
    "deadline": null,
-   "summary": "Article du 2026-11-17 (Global South Opportunities) annonçant un appel ou un financement.",
+   "summary": "Article du 2026-11-10 (Global South Opportunities) annonçant un appel ou un financement.",
    "eligibility": "",
-   "published": "2026-11-17",
+   "published": "2026-11-10",
    "score": 3,
    "first_seen": "2026-11-17"
   },
