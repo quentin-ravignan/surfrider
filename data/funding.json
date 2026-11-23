@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-22T14:32:51Z",
+ "updated": "2026-11-23T18:01:42Z",
  "items": [
   {
    "id": "gn-caa9823bcee5",
@@ -15,6 +15,20 @@
    "published": "2026-11-02",
    "score": 9,
    "first_seen": "2026-11-17"
+  },
+  {
+   "id": "fn-f3ef989baa3a",
+   "title": "RFPs: Marine and Coastal Natural Capital Accounts and Data Systems for Costa Rica",
+   "funder": "",
+   "source": "fundsforNGOs",
+   "url": "https://www2.fundsforngos.org/fellowships/rfps-marine-and-coastal-natural-capital-accounts-and-data-systems-for-costa-rica/",
+   "region": "International",
+   "amount": "",
+   "deadline": null,
+   "summary": "The United Nations Office for Project Services (UNOPS) is offering a grant to pilot marine and coastal natural capital accounts and enhance the environmental data management system in Costa Rica. This initiative is part of Component 2 of PROCARIBE+, focusing on national capacity building for the sustainable use of marine resources. The deadline for proposal submissions is 15 December 2026. The pos",
+   "eligibility": "",
+   "score": 9,
+   "first_seen": "2026-11-23"
   },
   {
    "id": "fn-b19f6218f253",
@@ -263,6 +277,21 @@
    "published": "2026-11-21",
    "score": 6,
    "first_seen": "2026-11-22"
+  },
+  {
+   "id": "gn-8be14bad3b7d",
+   "title": "The Waterloo Foundation Marine Programme: Funding for Sustainable Fisheries",
+   "funder": "fundsforNGOs - Grants and Resources for Sustainability",
+   "source": "Google Actualités",
+   "url": "https://news.google.com/rss/articles/CBMiuAFBVV95cUxQMzJWVEUzckNWMHFJY1dUSWJtQVhKQjNPZmo0YlBlbnE0elZfVGw0QXhBSmxua2RCM2xOMHNoUjJ0TGEwX1ZaQWJhYXFMR24wcDhKd1NvSERsaUtwMVFnZ09UUXNiSjRBODNfMmpNSEJaU2pseGxjUGF4eGlQOTZNUTR5Qi1FdnNEOTA3Z2RUTjhkNmJKTDR4MFduWC1LYWE5UEdwd0xhanNxTUYwSFJZTDhnYUZDVlVQ0gG-AUFVX3lxTE1la2xYbm9ZTVc4VGNldU5FNlBXOTBKd3BpVUVLU0xOVldxblEta1d1X001R2l0WVVRRkE3Y1NrOW5wbEhWMnRpdzdsUWVUd0M4bFl1c0pLdHNqaktiUFJBSlJtWXhxSWgzRENjTDBfTjVIbTdKNGMxQ1lpY05DYTNEa0J6dHR1MjJQQTZvX1ZCM2xzcHNGRFNrNEtmak9QV0dHZTV1WlNQYmFzcnF5d2ljOE1RUnd4SjUtRnJzd2c?oc=5",
+   "region": "",
+   "amount": "",
+   "deadline": null,
+   "summary": "Article du 2026-11-23 (fundsforNGOs - Grants and Resources for Sustainability) annonçant un appel ou un financement.",
+   "eligibility": "",
+   "published": "2026-11-23",
+   "score": 6,
+   "first_seen": "2026-11-23"
   },
   {
    "id": "gg-363992",
@@ -569,6 +598,36 @@
    "first_seen": "2026-11-17"
   },
   {
+   "id": "gn-c6a4c293f53b",
+   "title": "Canadian Groups Call For Marine Conservation Area In Eastern Lake Ontario",
+   "funder": "DeeperBlue.com",
+   "source": "Google Actualités",
+   "url": "https://news.google.com/rss/articles/CBMiowFBVV95cUxOdGFTN0ljZUpXR2NzS2RuQWFYRjV2aVJ0aFdTRjNnMnJQOGliRlBKem1FTE1MWGxtYmVfQWJydnhFSmQ2MFg2YWwtVlV5WnJkU3R2M0gxQ04xNmJwbkJWZk9mM3FjTE5USDQtV1lVd1RaYjlicDBaLXNfUEhqbGVyQWl5UW5ST0x4c3I0OXZ5SHdoTi13U2R6TjhITVlJejRzaE0w?oc=5",
+   "region": "",
+   "amount": "",
+   "deadline": null,
+   "summary": "Article du 2026-11-21 (DeeperBlue.com) annonçant un appel ou un financement.",
+   "eligibility": "",
+   "published": "2026-11-21",
+   "score": 5,
+   "first_seen": "2026-11-23"
+  },
+  {
+   "id": "gn-7e1995212a3f",
+   "title": "Jeff Bezos’ Earth Fund Drops $25M on Ocean Protection With Nearly $8B Still to Spend",
+   "funder": "Complex",
+   "source": "Google Actualités",
+   "url": "https://news.google.com/rss/articles/CBMilAFBVV95cUxQNVRyU29SdWowMzlwVlFxb1ZzTVptRllvQkRZM3hjUEJtMW9rdDNkWkhUQk9rbFpuUHp5dGdqZXRPSl9CeFByQ3JIUkk2aFAxdENmYWRGZVE2WEl2TEU4b3lGNTNPQVZWR21OSllBV1ZEdFpEeF8yWlh2TjRfbkFWTERxNkx4MmZzSHhkUUVua3hOakxo?oc=5",
+   "region": "",
+   "amount": "$25M",
+   "deadline": null,
+   "summary": "Article du 2026-10-01 (Complex) annonçant un appel ou un financement.",
+   "eligibility": "",
+   "published": "2026-10-01",
+   "score": 5,
+   "first_seen": "2026-11-23"
+  },
+  {
    "id": "eu-EMFAF-2027-PIA-ScientificAdviceFisheries",
    "title": "Improving scientific knowledge to strengthen the science-basis of management decisions under the CFP",
    "funder": "Commission européenne",
@@ -789,6 +848,20 @@
    "first_seen": "2026-11-17"
   },
   {
+   "id": "gg-364301",
+   "title": "Food for Peace International Food Relief Partnership Shelf-Stable Food Commodity Production, Packaging, and Stockpiling",
+   "funder": "Foreign Agricultural Service",
+   "source": "Grants.gov (États-Unis)",
+   "url": "https://www.grants.gov/search-results-detail/364301",
+   "region": "États-Unis",
+   "amount": "",
+   "deadline": "2027-01-07",
+   "summary": "USDA-FAS-10627-0700-25-26-P",
+   "eligibility": "Souvent réservé aux organismes américains : vérifier l'éligibilité",
+   "score": 3,
+   "first_seen": "2026-11-23"
+  },
+  {
    "id": "eu-NDICI-2026-MOBAF",
    "title": "Intra-Africa Academic Mobility Scheme",
    "funder": "Commission européenne",
@@ -843,6 +916,20 @@
    "eligibility": "Consortium avec partenaires UE / pays associés : vérifier l'éligibilité des pays tiers",
    "score": 3,
    "first_seen": "2026-11-17"
+  },
+  {
+   "id": "eu-ERASMUS-EDU-2027-VIRT-EXCH-SSA",
+   "title": "Erasmus+ Virtual Exchanges in Sub-Saharan Africa",
+   "funder": "Commission européenne",
+   "source": "Portail Funding & Tenders (UE)",
+   "url": "https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/topic-details/ERASMUS-EDU-2027-VIRT-EXCH-SSA",
+   "region": "Union européenne",
+   "amount": "",
+   "deadline": "2027-10-12",
+   "summary": "ERASMUS-EDU-2027-VIRT-EXCH-SSA · ERASMUS Lump Sum Grants",
+   "eligibility": "Consortium avec partenaires UE / pays associés : vérifier l'éligibilité des pays tiers",
+   "score": 3,
+   "first_seen": "2026-11-23"
   },
   {
    "id": "gg-364099",
