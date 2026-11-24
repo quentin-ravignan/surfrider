@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-23T18:01:42Z",
+ "updated": "2026-11-24T17:39:46Z",
  "items": [
   {
    "id": "gn-caa9823bcee5",
@@ -96,9 +96,9 @@
    "region": "",
    "amount": "£5,000",
    "deadline": null,
-   "summary": "Article du 2026-11-09 (Global South Opportunities) annonçant un appel ou un financement.",
+   "summary": "Article du 2026-11-23 (Global South Opportunities) annonçant un appel ou un financement.",
    "eligibility": "",
-   "published": "2026-11-09",
+   "published": "2026-11-23",
    "score": 8,
    "first_seen": "2026-11-17"
   },
@@ -189,6 +189,21 @@
    "published": "2026-10-03",
    "score": 7,
    "first_seen": "2026-11-17"
+  },
+  {
+   "id": "gn-7b5fb6b1a396",
+   "title": "« On ne peut pas rester les bras croisés » : un nouvel appel à projets pour décarboner la pêche bretonne",
+   "funder": "Mer et Marine",
+   "source": "Google Actualités",
+   "url": "https://news.google.com/rss/articles/CBMizAFBVV95cUxPUXo2TVVoeFNXQWJJaDZYaTVaYjdyT0tzWGFVeWNrYkZKRG5rd1dFWmJ1WlhyMjZUd0x1S0kzUzhybFU3Sm9iUlNpZUxCR2xpcTZUcWZUdFFPNXRzSk4xdjFUTEhjYXNUWFNpdFhfc2lWNjZ1ODlla1FkelNNQnNZTWRWMmF5cnVEWG1HR18wOHY0TGxwNkFJdDhYUG4xZUhiV1ktTFQ5RzFadHhpWkx2Q2hoYmRDREJIU2tTYm51VFJ3Z1Z6bEw2aDBSZkM?oc=5",
+   "region": "",
+   "amount": "",
+   "deadline": null,
+   "summary": "Article du 2026-09-29 (Mer et Marine) annonçant un appel ou un financement.",
+   "eligibility": "",
+   "published": "2026-09-29",
+   "score": 7,
+   "first_seen": "2026-11-24"
   },
   {
    "id": "eu-HORIZON-MISS-2024-OCEAN-02-01",
@@ -334,6 +349,20 @@
    "eligibility": "Consortium avec partenaires UE / pays associés : vérifier l'éligibilité des pays tiers",
    "score": 5,
    "first_seen": "2026-11-17"
+  },
+  {
+   "id": "fn-206abe82d06c",
+   "title": "Funding Opportunity: Arctic Frontier – Shifts in Science (United Kingdom)",
+   "funder": "",
+   "source": "fundsforNGOs",
+   "url": "https://www2.fundsforngos.org/fellowships/funding-opportunity-arctic-frontier-shifts-in-science-united-kingdom/",
+   "region": "United Kingdom",
+   "amount": "",
+   "deadline": "2027-02-02",
+   "summary": "The UK Research and Innovation (UKRI), in collaboration with the Natural Environment Research Council (NERC), is inviting applications for a significant funding opportunity aimed at advancing autonomous systems research in the Arctic Ocean. This grant supports large-scale deployments to enhance scientific knowledge and innovative capabilities in the UK. Applications are open until 2 February 2027.",
+   "eligibility": "",
+   "score": 5,
+   "first_seen": "2026-11-24"
   },
   {
    "id": "fn-75f644f3f107",
@@ -628,6 +657,21 @@
    "first_seen": "2026-11-23"
   },
   {
+   "id": "gn-e2f432c3ac71",
+   "title": "How Fishers’ Logbooks Can Strengthen a Coastal Conservation Grant Proposal",
+   "funder": "fundsforNGOs - Grants and Resources for Sustainability",
+   "source": "Google Actualités",
+   "url": "https://news.google.com/rss/articles/CBMirAFBVV95cUxNX2Z5YVAyNU1nV193X2lKbmpiWHlEQkFCUlZreGt3b1JzazE1Ty16MGo1andSRUxWcVR2WU1Uc1dzSERrT1B3MVhXb1pSam01WXl3cmljQTFmTG9ReEhMY0tzbEdBaXJ1bmNTRm1GYUxWU3dDeGVDZHNleXVRb3BoSDlBckhXNnE2MEctRGJKT01HdXNlcGs1WTNla1Y1cjJDMENoMUFEVHUzZmhx0gHeAUFVX3lxTE8wZzZzVGVFSXI1Y1cyYmo3cWpLazJUbVc4UUM3OFYyekdPNnNqVkpRcFlhWGxvWG1RS1k5eHhWN2NQV2hTRVNQR3NSTUZ1Yy1wcFRpa1M2S2o0azVJbFJfeFZWTC14MVFNOUs0bGZtemN6NVYyNVdKemk4M0hLbkpDRHRmeXNETGRRcS11N2hhMS1mYnhBYVU1SXVuT2JyN19uZTRNbS1RQThKR0ItZUxsaTVFdDJEMXU2NGx6dm80d19YMzh5MTZXWUZSS3k1cl9ualdyQmRIemVld1pJZw?oc=5",
+   "region": "",
+   "amount": "",
+   "deadline": null,
+   "summary": "Article du 2026-11-24 (fundsforNGOs - Grants and Resources for Sustainability) annonçant un appel ou un financement.",
+   "eligibility": "",
+   "published": "2026-11-24",
+   "score": 5,
+   "first_seen": "2026-11-24"
+  },
+  {
    "id": "eu-EMFAF-2027-PIA-ScientificAdviceFisheries",
    "title": "Improving scientific knowledge to strengthen the science-basis of management decisions under the CFP",
    "funder": "Commission européenne",
@@ -818,6 +862,51 @@
    "published": "2026-10-12",
    "score": 4,
    "first_seen": "2026-11-21"
+  },
+  {
+   "id": "gn-a6d24a8d2351",
+   "title": "Lancement du deuxième appel à candidatures du Commonwealth Blue Charter Incubator afin d'accélérer les actions en faveur des océans",
+   "funder": "Fondation Prince Albert II de Monaco",
+   "source": "Google Actualités",
+   "url": "https://news.google.com/rss/articles/CBMiuwFBVV95cUxQZFpmcmMteEpGSUJiNXdrV0FEOVV2TU4tN21oNE5CbDIzX3YtMWZYenpYZURBeHZKSlJiS0s4bFFIWi0zMExDS081SXUwM3NtMVloOWRuc05JT2E4bFFfcS1aQ1ZuZlYzTWhralZkWFlNbUwyMGRIWlN1cVh2MExBYXdmX2pUMENHY0FXU0NSVlp2MXduem8zcDBwRTd3cXg4eTBBWHNNcndvT1pRZ01RS1JYMTNVQ3FteVRR?oc=5",
+   "region": "",
+   "amount": "",
+   "deadline": null,
+   "summary": "Article du 2026-10-05 (Fondation Prince Albert II de Monaco) annonçant un appel ou un financement.",
+   "eligibility": "",
+   "published": "2026-10-05",
+   "score": 4,
+   "first_seen": "2026-11-24"
+  },
+  {
+   "id": "gn-8bca2c529b8f",
+   "title": "Experts call for stronger reef protection as 20% of coral survey sites bleached",
+   "funder": "South China Morning Post",
+   "source": "Google Actualités",
+   "url": "https://news.google.com/rss/articles/CBMi1gFBVV95cUxNODBUZ1hDU3NPdm00TDNqMEhkTWJIUW1OOVh4NTZTTm51cXhGTTZlcWJERGVSTHRGRWRGUDZiWklzZFVlQlQ1dnp5X3prakxGRWpTdE9kanVLV0syTW1XTTNqWW0tRU82bThzT0RWOUE5TE5rdXlGYW5QUWFuSzZrM055ZlczZ2FxQUQ2WmNJbFl6SVNTTVZtZU8xSXNRcm1wT2Z1SU5IeUN6SDZ1RUtYRDlwekVJNGwyYmhJVE5FMnpkVDA1MFFLVVJBb0lINmZ4LU1yTHRR0gHWAUFVX3lxTE5lTHdVaXN3RGNJa1QxNGtWbU1xZTlVZW9nS3JtXzBTa3lONUN6NG1xMW1Wc0ljSGpxNTluT3ZnNFJWTXFDWmlWcVV1aTAxYmZkeTdnakE2ZWZnNkUzaUxJY1h2NEczQXhVb0FZa3RCVnZ1Y2RITUM2RHBZNDN1SUo2Q1pBZHNpVlJwalF3dGJ5SGhvRDNLQ19FZmpnRktack1qUll1RElqMHpMcFlVMHBjb3hFWVNya2ttMTRYWkxqaWdmZ194TGtFU0hiRWJIbE5QTl9mY1E?oc=5",
+   "region": "",
+   "amount": "",
+   "deadline": null,
+   "summary": "Article du 2026-11-22 (South China Morning Post) annonçant un appel ou un financement.",
+   "eligibility": "",
+   "published": "2026-11-22",
+   "score": 4,
+   "first_seen": "2026-11-24"
+  },
+  {
+   "id": "gn-f253850d7d25",
+   "title": "South Africa: 20+ New Grants for NGOs, Healthcare, Conservation, Green Innovation and Youth Entrepreneurs",
+   "funder": "fundsforNGOs - Grants and Resources for Sustainability",
+   "source": "Google Actualités",
+   "url": "https://news.google.com/rss/articles/CBMi1gFBVV95cUxObW10UHc1b1FSQ1NNR2daMFZPbG9KZ1ZtMklLQWs3NFE3dkhwTE0tYVJFY0hLVGpMX0hZdEpieXdESElGd2djVHFkNXFaMC1hbG1NYUNyLVduY0hBeGl5OHBuS1RVc2dHRlhfYXVvOVlvWEEybVNRaHMxRnpJR21oMU5CVmVybFk5Z1FCakVtck0xSS1pU2JqczNqaFJtWnR6dmNHZGJxczFMNG15NUptUmhpdWN3amtMTEhTZDUxUnJxNTlfY3ZsT1hGQlpTeTU5TGg4T1VB0gHbAUFVX3lxTE9CeDh1T1hOSE5CWVd5emFrUGVVdzZISkhrNm1LUGV1Y3FON2h4dm9WYnVtbFBLUGZxclhRd1RjckZpeVRydkRyMUJkbXAwNGhlOU4xVXB0R292bW1tZUZncm1YbzBHR0oyTk9UdkFkdWFfSXF1YWtnV2FITnNXbGdHMzhhTXNjYUlmcVN0M0lkMmxqZ0pHWFJPLUFuLWZBVFQ5ZjRKQmxpX1picUJTTENXX19RN014bmk2OEluV09jc0g0ZTI0bU1wVUM4ZG5DYTdPXzRYMGpib2dkMA?oc=5",
+   "region": "",
+   "amount": "",
+   "deadline": null,
+   "summary": "Article du 2026-11-02 (fundsforNGOs - Grants and Resources for Sustainability) annonçant un appel ou un financement.",
+   "eligibility": "",
+   "published": "2026-11-02",
+   "score": 4,
+   "first_seen": "2026-11-24"
   },
   {
    "id": "gg-364154",
