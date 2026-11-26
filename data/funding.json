@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-25T17:11:28Z",
+ "updated": "2026-11-26T16:51:44Z",
  "items": [
   {
    "id": "gn-caa9823bcee5",
@@ -96,9 +96,9 @@
    "region": "",
    "amount": "£5,000",
    "deadline": null,
-   "summary": "Article du 2026-11-23 (Global South Opportunities) annonçant un appel ou un financement.",
+   "summary": "Article du 2026-11-09 (Global South Opportunities) annonçant un appel ou un financement.",
    "eligibility": "",
-   "published": "2026-11-23",
+   "published": "2026-11-09",
    "score": 8,
    "first_seen": "2026-11-17"
   },
@@ -116,6 +116,20 @@
    "published": "2026-11-18",
    "score": 8,
    "first_seen": "2026-11-19"
+  },
+  {
+   "id": "fn-0496f2105036",
+   "title": "4 Places Senegalese NGOs Can Look for Grants to Address Coastal Erosion",
+   "funder": "",
+   "source": "fundsforNGOs",
+   "url": "https://www2.fundsforngos.org/articles-searching-grants-and-donors/4-places-senegalese-ngos-can-look-for-grants-to-address-coastal-erosion/",
+   "region": "International",
+   "amount": "",
+   "deadline": null,
+   "summary": "Senegalese NGOs can look to several key international and regional funders for grants to address the critical issue of coastal erosion. These institutions offer a range of funding mechanisms, from large-scale programmatic support to targeted adaptation grants, and understanding their specific mandates and application processes is crucial for successful fundraising. The following four avenues repre",
+   "eligibility": "",
+   "score": 8,
+   "first_seen": "2026-11-26"
   },
   {
    "id": "eu-HORIZON-MISS-2027-03-OCEAN-04",
@@ -307,6 +321,51 @@
    "published": "2026-11-23",
    "score": 6,
    "first_seen": "2026-11-23"
+  },
+  {
+   "id": "gn-f86bcd1586b4",
+   "title": "Glaz Bonus : BrestPort, sélectionné dans l'appel à projets REMO 2026",
+   "funder": "Mer et Marine",
+   "source": "Google Actualités",
+   "url": "https://news.google.com/rss/articles/CBMirwFBVV95cUxNUTlOWUFoakVnTW12TFdRQXRiWVFpUk5qRmprMXFaa2NEZlhaM043M2RqNkpwc3UtQUtncE4yZGE3WlFYaktoX3NWdzRaQVJ5WG5fUjZJaGVMdFd4ejZtZnFRaXE1WHdjMTZkTGVYb0phY01lckh5YmFfNEdGYVVoajNobjBwS2wzazRXYkM0S3hiU0VaMzVrSWlFWDlEdnJva3h0NDdNM1E0aDFBc01z?oc=5",
+   "region": "",
+   "amount": "",
+   "deadline": null,
+   "summary": "Article du 2026-11-17 (Mer et Marine) annonçant un appel ou un financement.",
+   "eligibility": "",
+   "published": "2026-11-17",
+   "score": 6,
+   "first_seen": "2026-11-26"
+  },
+  {
+   "id": "gn-1ce5d4147a86",
+   "title": "Eolien en mer : la Nouvelle Zélande lance un appel à candidatures pour des permis de faisabilité",
+   "funder": "Mer et Marine",
+   "source": "Google Actualités",
+   "url": "https://news.google.com/rss/articles/CBMi2gFBVV95cUxPS0lSTnpuZXBOVURhMV9YZzhiX3RWMnMxNU51MHY1TnMwT1dLMzVEOWJVdzh1Y2R4cGpYakJwMUEtV2ZwV2c3MjFMSGRCOTdlUlUyZjAwaUJLNlNkdlhKSGc3QTdYVUFfVFN3LTEtamVSZFFrRjkzSXFRcVUxUFhmQ2NweXB6WWZyWG5LMHVCczZHYTdxNGtGemV3QVJpQ1V4Z0hibjFuSl9YWXlmRzgwclN5RnRVWmlDRl9YeXFmUGNWNjdwUklGTHM4LVh3RHZPU2RtZVRuLWJJQQ?oc=5",
+   "region": "",
+   "amount": "",
+   "deadline": null,
+   "summary": "Article du 2026-10-23 (Mer et Marine) annonçant un appel ou un financement.",
+   "eligibility": "",
+   "published": "2026-10-23",
+   "score": 6,
+   "first_seen": "2026-11-26"
+  },
+  {
+   "id": "gn-e80c9cbc70f5",
+   "title": "Who Funds Community-Managed Marine Areas in Madagascar? 4 Conservation Funds to Explore",
+   "funder": "fundsforNGOs - Grants and Resources for Sustainability",
+   "source": "Google Actualités",
+   "url": "https://news.google.com/rss/articles/CBMi6gFBVV95cUxPOTl1alRsSGFhYnVRQ3BqZXptZFc5REhKVkQ4dGF3RG5XSV95emNaU2tOR0ZjQnhRNFBtVTRmdTluck1hVmZ2TkduRHR5S2JOLWFwOXZwZmNlWTE1b3p5ejM3bGhpT3NtNUtBMm1lWGZmQ3dTUm1kR0FybFRPSlZTcTdlV3g4d013SUNXb0hEOF8xam9RMDMzbUpKX2Y2Q3BkOU9kM1RGcG5BT2JNR2J3VDUyXzlqLWlPV3hGYmRZSkJzcFloYTBjNVo1QTBXZWNMOWFCZGxtZTVkS1RLWmtYMEdNS2xBU1Z1dGfSAe8BQVVfeXFMTVpkWDRsY1pyYWZRSFhKOTZHbG1QSEJsLTRBbnRDN3o3cmhlWHYyYWRlVFk5U0RFNERjc09jSjJ1SldPM284blpjWDQzR2wyOTgtZ0doR0xPZVFkbnFHc01Kbk1oaHlfbFJsSVY3Uk9BLUF3RnVLdl9QcmtPcnNsVzVyN3k3Mmc3TVJfUW5KYWsxTTgza2d0dHJIZ2FwVFY5a1gwd0swYjZqR2RMd3BnUW1PbTh3Q0NZNGd2djRzRDRMZjZJSXFja0xQckprX0NnZ05leGUxblJIUW9zZkFTbGNVdVZ0bmotdmlxSnV5LVk?oc=5",
+   "region": "",
+   "amount": "",
+   "deadline": null,
+   "summary": "Article du 2026-11-26 (fundsforNGOs - Grants and Resources for Sustainability) annonçant un appel ou un financement.",
+   "eligibility": "",
+   "published": "2026-11-26",
+   "score": 6,
+   "first_seen": "2026-11-26"
   },
   {
    "id": "gg-363992",
@@ -599,13 +658,13 @@
   {
    "id": "gn-d2e730a2b611",
    "title": "Egypt says Africa rejects additional climate burdens without finance, seeks tripling of adaptation funding by 2035",
-   "funder": "Daily News Egypt",
+   "funder": "Dailynewsegypt",
    "source": "Google Actualités",
    "url": "https://news.google.com/rss/articles/CBMi5wFBVV95cUxPRmNQYnZ2WWoxWTIzTldPWGtWYW1pa3FsSU9SRlhRMGNnYjA5Rnh5bmgzUFA2bEd5OWUwTmJxdUZ6X0dCZWw4TFI4TkNfV2VpY040dmQyc0F2c0pGYVBmZzNUMWF5dFBadm9udGpYeW5Uc0FiUmIydXpsM3JqVnFTV0hBSGFmVkZCTDFuQ0k0YXROYmlUc3V1R0hTckw2LUdHS0gxT1BLaVhBVnBOS3Vadk9qZXRPejNqX3M1SjJJbUV0V2xCOGhzZnZ3b3pQM1NDUkNtQXUydHROSGFsQ0p2YmZrNV9KZWM?oc=5",
    "region": "",
    "amount": "",
    "deadline": null,
-   "summary": "Article du 2026-11-15 (Daily News Egypt) annonçant un appel ou un financement.",
+   "summary": "Article du 2026-11-15 (Dailynewsegypt) annonçant un appel ou un financement.",
    "eligibility": "",
    "published": "2026-11-15",
    "score": 5,
@@ -670,6 +729,21 @@
    "published": "2026-11-24",
    "score": 5,
    "first_seen": "2026-11-24"
+  },
+  {
+   "id": "gn-a561ea16c38f",
+   "title": "Call for Applications: Breakthrough Energy Fellows 2027 Offers Up to $500,000 for Climate Innovators",
+   "funder": "MSME Africa",
+   "source": "Google Actualités",
+   "url": "https://news.google.com/rss/articles/CBMixgFBVV95cUxNN2hBdzVHM1ZRaXlJWVNfRFU3M2ljR25laEpWU3VIcFBqMnB3UWVGSXIwRi1FVnJHWlZxLXhKcnBuRTVHMWdESXlJNmRhT0hVeTdZYkk1RnNXaXVCX2J2SFhzajNva29Nb3RPcmZXc1BsTGFxekE2eUNrZk5MY1RRNEx5WGdVM2J5enBRaTFrYy1OQmpZOWY3UHlsT0tfTEtHYlJFNFM4ZlFRUGxsTlBqN0RBNkNoNmpjMnY0MklfWWNkVmtSMWc?oc=5",
+   "region": "",
+   "amount": "$500,000",
+   "deadline": null,
+   "summary": "Article du 2026-10-29 (MSME Africa) annonçant un appel ou un financement.",
+   "eligibility": "",
+   "published": "2026-10-29",
+   "score": 5,
+   "first_seen": "2026-11-26"
   },
   {
    "id": "eu-EMFAF-2027-PIA-ScientificAdviceFisheries",
@@ -907,6 +981,66 @@
    "published": "2026-11-02",
    "score": 4,
    "first_seen": "2026-11-24"
+  },
+  {
+   "id": "gn-9c9606460ab2",
+   "title": "Appel à projets décarbonation du maritime : découvrez les 33 projets sélectionnés par l’Ademe",
+   "funder": "Le marin",
+   "source": "Google Actualités",
+   "url": "https://news.google.com/rss/articles/CBMi_AFBVV95cUxNYUZTVm1McHc4OGRxQ0VybzBkWFI1VVZVVXBNcXdLbzhGQ1cxWndBd1lOMzdmNF9pYjZKdjZxVktQYWxLTVBzZWgtSTdtYXNHTXhZRjZra1NUYThLUHFGcjN0M0c1VERQY09SOURUbjUzWjVRSTNOZ1ZXc1J1M1BZS21Wb3pFWWdRcno2b05jaWhSZk10OVpkMlBMV1JuY1I0RF96Q1hYcjdjeU1IN2VCd3BmeHkwNnhyWVowWUtiRkswdVFYdXZqZjNyWnc1WGlkMGhZbVp2bzVHZjR1SkJ3d1o0ejZ1andHcG9OMTBLTmkzTWJpUjkySjdpZTM?oc=5",
+   "region": "",
+   "amount": "",
+   "deadline": null,
+   "summary": "Article du 2026-11-20 (Le marin) annonçant un appel ou un financement.",
+   "eligibility": "",
+   "published": "2026-11-20",
+   "score": 4,
+   "first_seen": "2026-11-26"
+  },
+  {
+   "id": "gn-9927900ad76a",
+   "title": "What Should a South African NGO Negotiate Before Joining a Consortium Grant Application?",
+   "funder": "fundsforNGOs - Grants and Resources for Sustainability",
+   "source": "Google Actualités",
+   "url": "https://news.google.com/rss/articles/CBMivwFBVV95cUxPVVUwcGtJTUFBUG5rd01FT2wzOFlha2dlVFNqb2N5cm5SeTJyTnVLSTZDSTVEeVZkd0h1Y0JKWWhIT3RJTlV4UFY4WXhNYjlKQ19rd3ZyTzlLWkJxVVNXT1lwbnktQl9qamlVQjc5R0I5SWRrQjNGUHZsTjllaFJ2bmN1bU8tNVd5SkxiNE1neDZBSnBwQ2k5VjBjVmpDX1NvdjVEMnY5MW1Na3NZVGdLbjAtTXZLdEJFdVl1eGJsWdIBxAFBVV95cUxQM0tQWC00VXRlYV9jTFY2Sy02eUJuVU9pdllMSG5xTnVTaVR3TXRvWF9OZFJTY3VYUXJ3ck1VaC1SSDQwdk52UXhmanQ2TDUyUkVVcVV4S3lYaGJtb2Z3U0paNjFILUgxRTZucldHdVp5UkRPNXBSbWpuUGRGN1otYWE5Y1BLWnI0VmFxTDVHOGY0aXBFQjczd0Nud3pfaE9qUG5uaTRneFRvNmZJRzJJVVB4RmxQLU1DQVB0ZE1KdVhxdXZx?oc=5",
+   "region": "",
+   "amount": "",
+   "deadline": null,
+   "summary": "Article du 2026-11-26 (fundsforNGOs - Grants and Resources for Sustainability) annonçant un appel ou un financement.",
+   "eligibility": "",
+   "published": "2026-11-26",
+   "score": 4,
+   "first_seen": "2026-11-26"
+  },
+  {
+   "id": "gn-48c0d324c84a",
+   "title": "Which South African Funders Offer Multi-Year Support, and How Can Your NGO Make the Case for It?",
+   "funder": "fundsforNGOs - Grants and Resources for Sustainability",
+   "source": "Google Actualités",
+   "url": "https://news.google.com/rss/articles/CBMi9AFBVV95cUxNQjI3ekxuVkdEOTBUR0hfMlIxeTQzaXZncGMyS0FpYWswQ3JtcThKTjZNc081WmZFR25PSjJxTFQ5Ny1KWm9nYXZuOVNkaXRRV1NSWTZOWTNISWNNMml4c1c0RVBDdVBkbW5yNU8yM0JSZWJJdkJhN0doWWV1a0Y0cm1CRVM3cHlWcGJ4OFBpaS1Fb1ZWRHYzbURQUVBYSzNrb2JkY05TMEh4dVlkNU9MTzd1WmJ0SDNZSkJBS3RjNHFqZ3B3QzNkaHpJdllTWW9VWDM0UWRhZjcyeUdnSFd5bVh6LW1LXzdhYkN1cGc3WFU1SFJM0gH6AUFVX3lxTE5VNlNiRUJ3X1l6eXZqb3I1MmZIbWNHMEJBNTNuSk1xeWoya2dWUGVMYVdMaXpzQXRqRXZlSEpTeFZUTk5OdjVGb1dBZU0xSEE4SGY2eDVjYThyVjhWRlBYSzIySWFwZ1hXNEkzODhEaGdlendtQU51clhCa1hjV3lzYTg5SGRqeUxMel9BUDRLeVNoM29iTnBLVk1XVUlST21jcTYyekFON2lfT3hBZkFlV2FoZ2RmcUtrdkNDS1Z0TU9VZkdiMTJUeWN6eklrZnhkdngwLU1xY1ZicF9LNHJ1RzduRVphZzdQX3czOWlKT2hXejdIVVNwWVE?oc=5",
+   "region": "",
+   "amount": "",
+   "deadline": null,
+   "summary": "Article du 2026-11-26 (fundsforNGOs - Grants and Resources for Sustainability) annonçant un appel ou un financement.",
+   "eligibility": "",
+   "published": "2026-11-26",
+   "score": 4,
+   "first_seen": "2026-11-26"
+  },
+  {
+   "id": "gn-166431da0991",
+   "title": "Who Funds Cold Storage for Women Fish Traders? 4 Options for West African NGOs",
+   "funder": "fundsforNGOs - Grants and Resources for Sustainability",
+   "source": "Google Actualités",
+   "url": "https://news.google.com/rss/articles/CBMi3gFBVV95cUxOM2c5SEN3bWhoLW1nSG9vaXhwLXNOTFFicHo4X0NCMDZnbzc2aEtrM3NCbjE2aUtjbTlDR3lhLWE2cGItSE9mQ05zMC1wcG9ESUV1VDFVOGxuQW1CRUkzeVpLWkxBOGN2Yk9rcXNjbmxPTm1jeFNVVFNjSUtsQXM0QlZYUkRVNFlWbDQzMWdxQU1QRG94ZUlrcjlDZHdGZ3JmR2tzelFyWWRDQkNaenU2MVN5T0FzQ2VycjRmT3ZmSFpyUk5xUmVwWkFpUklDckNGbnYwYzNwakswdk5TRWc?oc=5",
+   "region": "",
+   "amount": "",
+   "deadline": null,
+   "summary": "Article du 2026-11-26 (fundsforNGOs - Grants and Resources for Sustainability) annonçant un appel ou un financement.",
+   "eligibility": "",
+   "published": "2026-11-26",
+   "score": 4,
+   "first_seen": "2026-11-26"
   },
   {
    "id": "gg-364154",
@@ -1196,6 +1330,21 @@
    "published": "2026-10-21",
    "score": 3,
    "first_seen": "2026-11-18"
+  },
+  {
+   "id": "gn-bf8270edc88b",
+   "title": "5 Grants to Research for Clean Cooking Projects in East Africa",
+   "funder": "fundsforNGOs - Grants and Resources for Sustainability",
+   "source": "Google Actualités",
+   "url": "https://news.google.com/rss/articles/CBMiygFBVV95cUxNNm9lY2U2OGpvNk9SS1F0R3Z6TncxSGhIcWFyNXhwY1dQdVFwS0R6T25rTmc1QmRrM1kyM2JSbGg4SmxDTzYyNXJ4X2dya1ZEWTZ4ZVZPV1Jmc3NMMWVNdnhEZEhROGtXaFhWbFJmRTNZM09nSVdjQVdfUUtqdkhUcWdxejVzeTIwRUF0M2xsWU9UVHE4aXFxRnNzMG9kc2FPZmk4ajVaVzJoNUNBX0QzRWUxaDl4aWVfc0MtZ2JlMEZJRHloenc1SFln0gHPAUFVX3lxTE1WUnFZR3dsRDdoenNXM3ltVzBaVC1rS19oMTlHWklEZTRnR2J4c3dhb3pzS0tQWmk0V2RyTktkNjRsaGFKZW1aVldwU3E0cHpYUjFTeXg5Nmdhb2xIMHRyM1FYNElOaElLLXJLN3dDclVidHMxTGtNVUlwWkNPN1NCdERpVGE0YzZIWVFVTGhoQjdncWlNNE8wcGpPYlJnSnpzRVBhUk5RMEpLU0Y2M2tYQ0pvTTZmXzgtUVp5N3NETHI3aE8zRzBOX08zczRJSQ?oc=5",
+   "region": "",
+   "amount": "",
+   "deadline": null,
+   "summary": "Article du 2026-11-26 (fundsforNGOs - Grants and Resources for Sustainability) annonçant un appel ou un financement.",
+   "eligibility": "",
+   "published": "2026-11-26",
+   "score": 3,
+   "first_seen": "2026-11-26"
   }
  ]
 }
